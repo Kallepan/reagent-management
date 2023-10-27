@@ -10,3 +10,7 @@ npm install -g ${NODE_MODULES} \
 
 # Install Python Packages
 pip install -r backend/requirements.txt
+
+# install npm packages
+cd frontend
+npm install
