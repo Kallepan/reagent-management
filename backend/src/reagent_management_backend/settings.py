@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     # Local
     "authentication",
     "tokenization",
+
+    # Apps:
+    "bak",
 ]
 
 MIDDLEWARE = [
@@ -89,7 +92,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "OPTIONS": {
-            "options": "-c search_path=django,public"
+            "options": "-c search_path=public"
         },
         "NAME": "postgres",
         "USER": os.environ.get("POSTGRES_USER", "postgres"),
@@ -99,25 +102,8 @@ DATABASES = {
         "TEST": {
             "NAME": os.path.join(BASE_DIR, "test_db.sqlite3"),
         }
-    },
-    # Add each separate for each department here:
-    "bak": {
-        "ENGINE": "django.db.backends.postgresql",
-        "OPTIONS": {
-            "options": "-c search_path=bak"
-        },
-        "NAME": "postgres",
-        "USER": os.environ.get("POSTGRES_USER", "postgres"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "postgres"),
-        "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
-        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
-        "TEST": {
-            "NAME": os.path.join(BASE_DIR, "test_db.sqlite3"),
-        }
-    },
+    }
 }
-
-# DATABASE_ROUTERS = ["reagent_management_backend.routers.ReagentRouter"]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
