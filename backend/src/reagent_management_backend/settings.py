@@ -100,6 +100,7 @@ DATABASES = {
         "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
         "PORT": os.environ.get("POSTGRES_PORT", "5432"),
         "TEST": {
+            "ENGINE": "django.db.backends.sqlite3",
             "NAME": os.path.join(BASE_DIR, "test_db.sqlite3"),
         }
     }
@@ -152,8 +153,8 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost").split(",")
-CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://localhost").split(",")
+CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:4201").split(",")
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://localhost:4201").split(",")
 
 # REST Framework Settings
 REST_FRAMEWORK = {
@@ -178,7 +179,6 @@ SIMPLE_JWT = {
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "level": os.environ.get("DJANGO_LOG_LEVEL", "DEBUG"),
     "formatters": {
         "verbose": {"format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}", "style": "{"},
         "simple": {"format": "{levelname} {message}", "style": "{"},
@@ -191,6 +191,7 @@ LOGGING = {
     },
     "loggers": {
         "": {
+            "level": os.environ.get("DJANGO_LOG_LEVEL", "DEBUG"),
             "handlers": ["console"],
         }
     }

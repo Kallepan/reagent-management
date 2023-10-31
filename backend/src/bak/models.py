@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
-from django.db.models.constraints import UniqueConstraint
+from django.db.models.constraints import UniqueConstraint, CheckConstraint
 
 import uuid
 
@@ -63,7 +63,9 @@ class Lot(models.Model):
         constraints = [
             UniqueConstraint(fields=[
                 'name', 'type'
-            ], name='unique_lot')
+            ], name='unique_lot'),
+            CheckConstraint(check=models.Q(valid_from__lte=models.F('valid_until')), name='valid_from_before_valid_until'),
+            CheckConstraint(check=models.Q(in_use_from__lte=models.F('in_use_until')), name='in_use_from_before_in_use_until')
         ]
     
     def __str__(self) -> str:
