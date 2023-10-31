@@ -50,9 +50,25 @@ class LotTest(TestCase):
         self.assertEqual(len(response.data), 0)
 
     def test_is_empty_filter(self):
+        # get empty lot
         response = self.client.get('/api/v1/bak/lots/?is_empty=true')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 0)
+
+        loc = Location.objects.create(name='Test Location')
+
+        lot_two = Lot.objects.create(name='Test Lot 2', valid_until='2021-12-31', created_by='Test User', type=self.type)
+        lot_three = Lot.objects.create(name='Test Lot 3', valid_until='2021-12-31', created_by='Test User', type=self.type)
+        lot_two.reagents.create(amount=0, created_by=self.user, location=loc)
+        response = self.client.get('/api/v1/bak/lots/?is_empty=true')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+
+        # non-empty lot
+        lot_three.reagents.create(amount=10, created_by=self.user, location=loc)
+        response = self.client.get('/api/v1/bak/lots/?is_empty=false')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data),1)
 
     def test_get_specific_lot(self):
         lot = Lot.objects.create(name='Test Lot', valid_until='2021-12-31', created_by='Test User', type=self.type)

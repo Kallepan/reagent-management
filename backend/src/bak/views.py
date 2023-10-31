@@ -1,6 +1,8 @@
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework import viewsets, mixins, status, filters
 
+from django.db.models import Q
+
 from .models import Location, Type, Lot, Reagent
 from .serializers import LocationSerializer, TypeSerializer, LotSerializer, ReagentSerializer
 from .renderers import ResponseRenderer
@@ -52,7 +54,10 @@ class LotViewSet(
         is_empty = self.request.query_params.get('is_empty', None)
         if is_empty is not None:
             if is_empty == 'true':
-                queryset = queryset.filter(reagents__amount__lte=0).distinct()
+                # filter either no reagents or all reagents with amount 0
+                queryset = queryset.complex_filter(
+                    Q(reagents__isnull=True) | Q(reagents__amount=0)
+                ).distinct()
             elif is_empty == 'false':
                 queryset = queryset.filter(reagents__amount__gt=0).distinct()
         return queryset
