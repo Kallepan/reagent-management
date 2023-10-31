@@ -68,6 +68,11 @@ class Lot(models.Model):
             CheckConstraint(check=models.Q(in_use_from__lte=models.F('in_use_until')), name='in_use_from_before_in_use_until')
         ]
     
+    # check if all reagents of this lot are empty
+    @property
+    def is_empty(self) -> bool:
+        return self.reagents.filter(amount__gt=0).count() == 0
+
     def __str__(self) -> str:
         return f'{self.name} ({self.type})'
 
@@ -76,6 +81,7 @@ class Reagent(models.Model):
     Actual reagent model which keeps track of the amount of reagent in stock.
     """
     # Unique constraint on type, location and lot
+    id = models.UUIDField(primary_key=True, db_index=True, default=uuid.uuid4, editable=False)
     location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='reagents')
     lot = models.ForeignKey(Lot, on_delete=models.CASCADE, related_name='reagents')
 

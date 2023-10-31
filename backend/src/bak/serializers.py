@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.fields import empty
 
 from .models import Location, Type, Lot, Reagent
 
@@ -37,49 +38,8 @@ class TypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Type
-        fields = ['id', 'name', 'producer', 'created_at', 'lots']
+        fields = ['id', 'name', 'producer', 'created_at']
         read_only_fields = ['id', 'created_at']
-
-class LotSerializer(serializers.ModelSerializer):
-    """
-    Serializer for Lot model.
-    """
-
-    class Meta:
-        model = Lot
-        fields = ['id', 'name', 'type', 'valid_from', 'valid_until', 'created_at', 'created_by', 'in_use_from', 'in_use_until']
-        read_only_fields = ['id', 'created_at']
-
-
-    def validate(self, *args, **kwargs):
-        # check if name and type combination is unique
-        if Lot.objects.filter(name=self.initial_data.get('name', None), type=self.initial_data.get('type', None)).exists():
-            raise serializers.ValidationError("Lot with this name and type already exists")
-        if self.instance:
-            if Lot.objects.filter(name=self.initial_data.get('name', None), type=self.instance.type).exists():
-                raise serializers.ValidationError("Lot with this name and type already exists")
-            if Lot.objects.filter(name=self.instance.name, type=self.initial_data.get('type', None)).exists():
-                raise serializers.ValidationError("Lot with this name and type already exists")
-        
-        # check saved valid_from and valid_until 
-        old_valid_from = self.instance.valid_from if self.instance else None
-        old_valid_until = self.instance.valid_until if self.instance else None
-        valid_from = self.initial_data.get('valid_from', old_valid_from)
-        valid_until = self.initial_data.get('valid_until', old_valid_until)
-
-        if not is_valid_range(valid_from, valid_until):
-            raise serializers.ValidationError("valid_from must be before valid_until")
-
-        # check if in_use_from and in_use_until are valid
-        old_in_use_from = self.instance.in_use_from if self.instance else None
-        old_in_use_until = self.instance.in_use_until if self.instance else None
-        in_use_from = self.initial_data.get('in_use_from', old_in_use_from)
-        in_use_until = self.initial_data.get('in_use_until', old_in_use_until)
-
-        if not is_valid_range(in_use_from, in_use_until):
-            raise serializers.ValidationError("in_use_from must be before in_use_until")
-  
-        return super().validate(*args, **kwargs)
 
 class ReagentSerializer(serializers.ModelSerializer):
     """
@@ -111,4 +71,53 @@ class ReagentSerializer(serializers.ModelSerializer):
         if Reagent.objects.filter(lot=lot, location=location).exists():
             raise serializers.ValidationError("Reagent with this lot and location already exists")
 
+        return super().validate(*args, **kwargs)
+
+class LotSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Lot model.
+    """
+    reagents = ReagentSerializer(many=True, read_only=True)
+    type = TypeSerializer(read_only=True)
+    type_id = serializers.PrimaryKeyRelatedField(queryset=Type.objects.all(), write_only=True)
+
+    class Meta:
+        model = Lot
+        fields = ['id', 'name', 'type', 'reagents', 'valid_from', 'valid_until', 'created_at', 'created_by', 'in_use_from', 'in_use_until', 'is_empty', 'type_id']
+        read_only_fields = ['id', 'created_at', 'is_empty']
+
+    def create(self, validated_data):
+        # we need to manually pop the type_id from validated_data and create the lot with it
+        type_id = validated_data.pop('type_id')
+        lot = Lot.objects.create(**validated_data, type=type_id)
+        return lot
+
+    def validate(self, *args, **kwargs):
+        # check if name and type combination is unique
+        if Lot.objects.filter(name=self.initial_data.get('name', None), type=self.initial_data.get('type_id', None)).exists():
+            raise serializers.ValidationError("Lot with this name and type already exists")
+        if self.instance:
+            if Lot.objects.filter(name=self.initial_data.get('name', None), type=self.instance.type).exists():
+                raise serializers.ValidationError("Lot with this name and type already exists")
+            if Lot.objects.filter(name=self.instance.name, type=self.initial_data.get('type_id', None)).exists():
+                raise serializers.ValidationError("Lot with this name and type already exists")
+        
+        # check saved valid_from and valid_until 
+        old_valid_from = self.instance.valid_from if self.instance else None
+        old_valid_until = self.instance.valid_until if self.instance else None
+        valid_from = self.initial_data.get('valid_from', old_valid_from)
+        valid_until = self.initial_data.get('valid_until', old_valid_until)
+
+        if not is_valid_range(valid_from, valid_until):
+            raise serializers.ValidationError("valid_from must be before valid_until")
+
+        # check if in_use_from and in_use_until are valid
+        old_in_use_from = self.instance.in_use_from if self.instance else None
+        old_in_use_until = self.instance.in_use_until if self.instance else None
+        in_use_from = self.initial_data.get('in_use_from', old_in_use_from)
+        in_use_until = self.initial_data.get('in_use_until', old_in_use_until)
+
+        if not is_valid_range(in_use_from, in_use_until):
+            raise serializers.ValidationError("in_use_from must be before in_use_until")
+  
         return super().validate(*args, **kwargs)

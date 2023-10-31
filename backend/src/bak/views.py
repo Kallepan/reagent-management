@@ -43,6 +43,19 @@ class LotViewSet(
     serializer_class = LotSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     renderer_classes = [ResponseRenderer]
+
+    def get_queryset(self):
+        """ Filter out all empty lots if  the param is_empty is set to True. """
+        queryset = Lot.objects.all()
+
+        # WE must filter here because I don't know how to filter on a property in the serializer
+        is_empty = self.request.query_params.get('is_empty', None)
+        if is_empty is not None:
+            if is_empty == 'true':
+                queryset = queryset.filter(reagents__amount__lte=0).distinct()
+            elif is_empty == 'false':
+                queryset = queryset.filter(reagents__amount__gt=0).distinct()
+        return queryset
     
 class ReagentViewSet(
     mixins.CreateModelMixin,
@@ -56,3 +69,4 @@ class ReagentViewSet(
     serializer_class = ReagentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     renderer_classes = [ResponseRenderer]
+    filterset_fields = ['amount']

@@ -44,8 +44,13 @@ class LotTest(TestCase):
 
         self.client.force_authenticate(user=self.user)
 
-    def get_lots(self):
+    def test_get_lots(self):
         response = self.client.get('/api/v1/bak/lots/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
+
+    def test_is_empty_filter(self):
+        response = self.client.get('/api/v1/bak/lots/?is_empty=true')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 0)
 
@@ -56,7 +61,10 @@ class LotTest(TestCase):
         self.assertEqual(response.data['name'], lot.name)
         self.assertEqual(response.data['valid_until'], lot.valid_until)
         self.assertEqual(response.data['created_by'], lot.created_by)
-        self.assertEqual(str(response.data['type']), str(lot.type.id))
+
+        self.assertEqual(response.data['type']['id'], str(self.type.id))
+
+        self.assertIn('is_empty', response.data)
 
     def test_delete_lot(self):
         lot = Lot.objects.create(name='Test Lot', valid_until='2021-12-31', valid_from='2022-01-14', created_by='Test User', type=self.type)
@@ -77,7 +85,7 @@ class LotTest(TestCase):
                     'name': 'Test Lot',
                     'valid_until': '2021-12-31',
                     'created_by': 'Test User',
-                    'type': 'Test Type'
+                    'type_id': 'Test Type'
                 },
             },
             {
@@ -87,7 +95,7 @@ class LotTest(TestCase):
                     'name': None,
                     'valid_until': '2021-12-31',
                     'created_by': 'Test User',
-                    'type': str(self.type.id)
+                    'type_id': str(self.type.id)
                 }
             },
             {
@@ -97,7 +105,7 @@ class LotTest(TestCase):
                     'name': 'Test Lot 2',
                     'valid_until': '2021-12-31',
                     'created_by': 'Test User',
-                    'type': str(self.type.id)
+                    'type_id': str(self.type.id)
                 }
             },
             {
@@ -107,7 +115,7 @@ class LotTest(TestCase):
                     'name': 'Test Lot 2',
                     'valid_until': '2021-12-31',
                     'created_by': 'Test User',
-                    'type': str(self.type.id)
+                    'type_id': str(self.type.id)
                 }
             },
             {
@@ -118,7 +126,7 @@ class LotTest(TestCase):
                     'valid_from': '2021-12-31',
                     'valid_until': '2021-12-30',
                     'created_by': 'Test User',
-                    'type': str(self.type.id)
+                    'type_id': str(self.type.id)
                 }
             },
             {
@@ -129,7 +137,7 @@ class LotTest(TestCase):
                     'name': 'Test Lot 4',
                     'valid_until': '2021-12-31',
                     'created_by': 'Test User',
-                    'type': str(self.type.id),
+                    'type_id': str(self.type.id),
                     'in_use_from': '2021-12-31',
                     'in_use_until': '2021-12-30'
                 }
@@ -160,7 +168,7 @@ class LotTest(TestCase):
                 'data': {
                     'valid_until': '2021-12-31',
                     'created_by': 'Test User',
-                    'type': 'Test Type'
+                    'type_id': 'Test Type'
                 },
             },
             {
@@ -170,7 +178,7 @@ class LotTest(TestCase):
                     'valid_from': '2021-12-31',
                     'valid_until': '2021-12-30',
                     'created_by': 'Test User',
-                }
+                },
             },
             {
                 # valid_from is after valid_until
@@ -178,7 +186,7 @@ class LotTest(TestCase):
                 'data': {
                     'valid_from': '2023-01-12',
                     'created_by': 'Test User',
-                }
+                },
             },
             {
                 # in_use_from is after in_use_until
@@ -187,7 +195,7 @@ class LotTest(TestCase):
                     'created_by': 'Test User',
                     'in_use_from': '2021-12-31',
                     'in_use_until': '2021-12-30'
-                }
+                },
             },
             {
                 # good request
@@ -196,7 +204,7 @@ class LotTest(TestCase):
                     'created_by': 'Test User',
                     'in_use_from': '2021-12-30',
                     'in_use_until': '2021-12-31'
-                }
+                },
             },
             {
                 # after previous test, update to false values
@@ -204,16 +212,15 @@ class LotTest(TestCase):
                 'data': {
                     'created_by': 'Test User',
                     'in_use_from': '2023-01-12',
-                }
+                },
             }
         ]
 
         for i, step in enumerate(test_cases):
-            logging.debug(f'Step: {i}')
+            logging.debug(f'Update Lot. Step: {i}')
             
             response = self.client.patch(f'/api/v1/bak/lots/{lot.id}/', data=step['data'], format='json')
-            
-            print(response.data)
+
             self.assertEqual(response.status_code, step['status_code'])
 
 class LocationTest(TestCase):
@@ -327,7 +334,7 @@ class ReagentTest(TestCase):
         ]
 
         for i, step in enumerate(test_steps):
-            logging.debug(f'Step: {i}')
+            logging.debug(f'Update Reagent. Step: {i}')
 
             response = self.client.patch(f'/api/v1/bak/reagents/{self.reagent.id}/', data=step['data'], format='json')
             self.assertEqual(response.status_code, step['status_code'])
@@ -373,7 +380,7 @@ class ReagentTest(TestCase):
         ]
 
         for i, step in enumerate(test_steps):
-            logging.debug(f'Step: {i}')
+            logging.debug(f'Create Reagent. Step: {i}')
 
             response = self.client.post('/api/v1/bak/reagents/', data=step['data'], format='json')
             self.assertEqual(response.status_code, step['status_code'])

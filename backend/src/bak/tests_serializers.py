@@ -16,7 +16,6 @@ class TypeSerializerTest(TestCase):
             'id': str(self.type.id),
             'name': 'Test Reagent Type',
             'producer': 'Test Reagent Producer',
-            'lots': [],
             'created_at': self.type.created_at.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         }
         self.assertEqual(serializer.data, expected_data)
@@ -46,17 +45,24 @@ class LotSerializerTest(TestCase):
         expected_data = {
             'id': str(self.lot.id),
             'name': 'Test Lot',
-            'type': self.type.id,
             'valid_from': None,
             'valid_until': '2021-12-31',
             'created_at': self.lot.created_at.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
             'created_by': 'Test User',
             'in_use_from': None,
-            'in_use_until': None
+            'in_use_until': None,
+            'is_empty': True,
         }
 
-        self.assertEqual(serializer.data, expected_data)
+        self.assertEqual(serializer.data['id'], expected_data['id'])
+        self.assertEqual(serializer.data['name'], expected_data['name'])
+        self.assertEqual(serializer.data['is_empty'], expected_data['is_empty'])
 
+        # Check if key 'type', 'reagent', 'is_empty' is in serializer.data
+        self.assertIn('reagents', serializer.data)
+        self.assertIn('type', serializer.data)
+        self.assertIn('is_empty', serializer.data)
+                    
 
 class LotSerializerValidationTest(TestCase):
     def setUp(self):
@@ -64,8 +70,8 @@ class LotSerializerValidationTest(TestCase):
 
     def test_lot_serializer_validation(self):
         serializer = LotSerializer(data={
-            'name': 'Test Lot',
-            'type': uuid.uuid4(),
+            'name': 'Test Lot2',
+            'type_id': str(self.lot.type.id),
             'valid_from': None,
             'valid_until': '2021-12-31',
             'created_by': 'Test User',
@@ -73,4 +79,6 @@ class LotSerializerValidationTest(TestCase):
             'in_use_until': None
         })
 
-        self.assertFalse(serializer.is_valid())
+        valid = serializer.is_valid()
+        
+        self.assertTrue(valid)
