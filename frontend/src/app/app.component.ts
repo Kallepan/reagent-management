@@ -1,5 +1,4 @@
-import { Component, HostBinding, effect, inject, signal } from '@angular/core';
-import { OverlayContainer } from '@angular/cdk/overlay';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',

@@ -1,11 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MainComponent } from './components/main/main.component';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { GlobalHttpInterceptor } from './interceptors/http-global-interceptors.module';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { AuthHttpInterceptor } from './interceptors/http-auth-interceptors.module';
 import { ErrorHttpInterceptor } from './interceptors/http-error-interceptor.module';
 import { NotificationService } from './services/notification.service';
-import { AppRoutingModule } from '@app/app-routing.module';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
@@ -13,6 +12,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MainComponent,
     CommonModule,
     MatSnackBarModule,
+    HttpClientModule,
   ],
   exports: [
     MainComponent,
@@ -20,7 +20,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
   providers: [
     {
       provide: HTTP_INTERCEPTORS, 
-      useClass: GlobalHttpInterceptor, 
+      useClass: AuthHttpInterceptor, 
       multi: true
     },
     {
@@ -28,6 +28,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
       useClass: ErrorHttpInterceptor,
       multi: true,
     },
+    
     NotificationService,
   ]
 })

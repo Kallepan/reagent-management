@@ -6,6 +6,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router, RouterModule } from '@angular/router';
 import { constants } from '@app/core/constants/constants';
+import { LoginComponent } from '../login/login.component';
 
 @Component({
   selector: 'app-header',
@@ -19,6 +20,7 @@ import { constants } from '@app/core/constants/constants';
     MatIconModule,
     MatButtonModule,
     RouterModule,
+    LoginComponent,
   ],
 })
 export class HeaderComponent {

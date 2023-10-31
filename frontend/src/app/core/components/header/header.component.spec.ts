@@ -4,6 +4,11 @@ import { HeaderComponent } from './header.component';
 import { Router } from '@angular/router';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { LoginComponent } from '../login/login.component';
+import { CommonModule } from '@angular/common';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -15,6 +20,10 @@ describe('HeaderComponent', () => {
       imports: [
         HeaderComponent,
         RouterTestingModule,
+        HttpClientTestingModule,
+        LoginComponent,
+        MatSnackBarModule,
+        BrowserAnimationsModule,
       ],
       providers: [
         Router,

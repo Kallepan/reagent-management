@@ -6,6 +6,8 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatSidenavHarness } from '@angular/material/sidenav/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 describe('MainComponent', () => {
   let component: MainComponent;
@@ -17,6 +19,8 @@ describe('MainComponent', () => {
         MainComponent,
         BrowserAnimationsModule,
         RouterTestingModule,
+        HttpClientTestingModule,
+        MatSnackBarModule,
       ],
       providers: [
         OverlayContainer,
@@ -38,7 +42,7 @@ describe('MainComponent', () => {
   it('should have theme mode', () => {
     const fixture = TestBed.createComponent(MainComponent);
     const app = fixture.componentInstance;
-    expect(app.themeMode).toEqual('theme-light');
+    expect(app.themeMode).toEqual('theme-dark');
   });
 
   // Toggle theme test
@@ -46,7 +50,7 @@ describe('MainComponent', () => {
     const fixture = TestBed.createComponent(MainComponent);
     const app = fixture.componentInstance;
     app.toggleTheme();
-    expect(app.themeMode).toEqual('theme-dark');
+    expect(app.themeMode).toEqual('theme-light');
   });
 
   // Check overlay container

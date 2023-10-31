@@ -1,0 +1,25 @@
+
+<button *ngIf="!authService.isLoggedIn()" mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>account_circle</mat-icon></button>
+<div *ngIf="authService.isLoggedIn()" class="info">
+    {{authService.authData()?.department|titlecase}}
+    <button mat-icon-button (click)="authService.logout()"><mat-icon>logout</mat-icon></button>
+</div>
+<mat-menu #menu="matMenu">
+    <form action="submit" [formGroup]="loginForm" class="mat-app-background menu" (click)="stopPropagation($event)" (keydown.tab)="stopPropagation($event)">
+        <mat-form-field appearance="fill">
+            <mat-label>Identifier</mat-label>
+            <input matInput placeholder="Identifier" formControlName="identifier" type="text" autocomplete="off">
+            <mat-error *ngIf="loginForm.controls['identifier'].hasError('required')">
+                Pflichtfeld
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Passwort</mat-label>
+            <input matInput placeholder="Password" formControlName="password" type="password" autocomplete="off">
+            <mat-error *ngIf="loginForm.controls['password'].hasError('required')">
+                Pflichtfeld
+            </mat-error>
+        </mat-form-field>
+        <button mat-raised-button color="accent" (click)="authService.login(loginForm.controls['identifier'].value, loginForm.controls['password'].value)" [disabled]="loginForm.invalid">Login</button>
+    </form>
+</mat-menu>
