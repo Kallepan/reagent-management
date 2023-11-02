@@ -22,4 +22,6 @@ export class constants {
         { path: '', title: 'Home', },
         { path: 'bak', title: 'BAK', },
     ]
+
+    public static IS_PRODUCTION = environment.production;
 }

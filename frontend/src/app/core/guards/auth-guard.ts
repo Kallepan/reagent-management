@@ -3,6 +3,7 @@ import { AuthService } from "../services/auth.service";
 import { CanActivateFn, Router } from "@angular/router";
 import { NotificationService } from "../services/notification.service";
 import { errors } from "../constants/errors";
+import { constants } from "../constants/constants";
 
 // Guard to check if the user has the feature flag enabled
 export function featureFlagGuard(
@@ -14,6 +15,10 @@ export function featureFlagGuard(
         const router = inject(Router);
         const notificationService = inject(NotificationService);
         
+        // Debug mode
+        if (!constants.IS_PRODUCTION)
+            return true;
+
         const isFeatureEnabled = authService.isFeatureEnabled(flagName);
 
         if (!isFeatureEnabled) {
