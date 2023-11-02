@@ -63,4 +63,17 @@ export class AuthService {
   get authData() {
     return this._authData;
   }
+
+  isFeatureEnabled(featureName: string) {
+    const identifier = this._authData()?.department;
+    
+    if (!identifier) {
+      return false;
+    }
+
+    if (identifier === 'admin') {
+      return true;
+    }
+    return identifier === featureName;
+  }
 }

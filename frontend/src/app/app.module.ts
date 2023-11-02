@@ -4,6 +4,8 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CoreModule } from '@core/core.module';
 import { AppRoutingModule } from './app-routing.module';
+import { NotificationService } from './core/services/notification.service';
+import { AuthService } from './core/services/auth.service';
 
 @NgModule({
   declarations: [
@@ -15,7 +17,10 @@ import { AppRoutingModule } from './app-routing.module';
     CoreModule,
     AppRoutingModule,
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [
+    NotificationService,
+    AuthService,
+  ],
+  bootstrap: [AppComponent],
 })
 export class AppModule { }
