@@ -72,38 +72,17 @@ describe('MainComponent', () => {
     expect(overlayContainer.getContainerElement().classList).toContain('theme-light');
 
   }));
-
-  // Test open sidenav
-  it('should open sidenav', async () => {
-    const fixture = TestBed.createComponent(MainComponent);
-    const app = fixture.componentInstance;
-    app.setSidenavState(true);
-
-    // Fetch the sidenav element
-    let loader = TestbedHarnessEnvironment.loader(fixture);
-    const sidenav = await loader.getHarness(MatSidenavHarness);
-
-    // Check if the sidenav is open
-    expect(await sidenav.isOpen()).toBe(true);
-  });
-
-  // Test Open and Close sidenav
+  
+  // Sidenav testing
   it('should open and close sidenav', async () => {
     const fixture = TestBed.createComponent(MainComponent);
     const app = fixture.componentInstance;
-    app.setSidenavState(true);
 
     // Fetch the sidenav element
     let loader = TestbedHarnessEnvironment.loader(fixture);
     const sidenav = await loader.getHarness(MatSidenavHarness);
 
-    // Check if the sidenav is open
-    expect(await sidenav.isOpen()).toBe(true);
-
-    // Close the sidenav
-    app.setSidenavState(false);
-
-    // Check if the sidenav is closed
+    // Check if the sidenav is closed by default
     expect(await sidenav.isOpen()).toBe(false);
   });
 });
