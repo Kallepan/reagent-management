@@ -7,13 +7,16 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { LoginComponent } from '../login/login.component';
-import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { HarnessLoader } from '@angular/cdk/testing';
+import { MatSlideToggleHarness } from '@angular/material/slide-toggle/testing';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
   let router: Router;
+  let loader: HarnessLoader;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -33,6 +36,8 @@ describe('HeaderComponent', () => {
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
     fixture.detectChanges();
+
+    loader = TestbedHarnessEnvironment.loader(fixture);
   });
 
   it('should create', () => {
@@ -50,5 +55,23 @@ describe('HeaderComponent', () => {
 
     const router = TestBed.inject(Router);
     expect(nodes.length).toEqual(router.config.filter(r => !!r.data).map(r => r.data!).length);
+  });
+
+  it('should emit open sidenav event', () => {
+    spyOn(component.onToggleSidenav, 'emit');
+    // Fetch by 'button' tag
+    const nodes = fixture.debugElement.nativeElement.querySelectorAll('button');
+    nodes[0].click();
+
+    expect(component.onToggleSidenav.emit).toHaveBeenCalled();
+  });
+
+  it('should emit toggle theme event', async () => {
+    spyOn(component.onToggleTheme, 'emit');
+
+    const toggle = await loader.getHarness(MatSlideToggleHarness);
+    await toggle.toggle();
+
+    expect(component.onToggleTheme.emit).toHaveBeenCalled();
   });
 });

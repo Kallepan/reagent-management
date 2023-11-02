@@ -8,11 +8,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { HarnessLoader } from '@angular/cdk/testing';
 
 describe('MainComponent', () => {
   let component: MainComponent;
   let fixture: ComponentFixture<MainComponent>;
   let overlayContainer: OverlayContainer;
+  let loader: HarnessLoader;
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -30,6 +33,7 @@ describe('MainComponent', () => {
     component = fixture.componentInstance;
     overlayContainer = TestBed.inject(OverlayContainer);
     fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
   });
 
   it('should create the app', () => {
@@ -79,7 +83,6 @@ describe('MainComponent', () => {
     const app = fixture.componentInstance;
 
     // Fetch the sidenav element
-    let loader = TestbedHarnessEnvironment.loader(fixture);
     const sidenav = await loader.getHarness(MatSidenavHarness);
 
     // Check if the sidenav is closed by default
