@@ -74,4 +74,4 @@ class ReagentViewSet(
     serializer_class = ReagentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     renderer_classes = [ResponseRenderer]
-    filterset_fields = ['amount']
+    filterset_fields = ['amount', 'lot']
