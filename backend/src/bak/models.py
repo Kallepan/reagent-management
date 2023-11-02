@@ -13,6 +13,9 @@ class Location(models.Model):
 
     class Meta:
         db_table = 'bak"."location'
+    
+    def __str__(self) -> str:
+        return self.name 
 
 class Type(models.Model):
     """
@@ -108,3 +111,6 @@ class Reagent(models.Model):
         index_together = [
             ['location', 'lot']
         ]
+
+    def __str__(self) -> str:
+        return f'{self.lot} ({self.location})'
