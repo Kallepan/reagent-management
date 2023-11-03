@@ -22,7 +22,7 @@ export function featureFlagGuard(
         const isFeatureEnabled = authService.isFeatureEnabled(flagName);
 
         if (!isFeatureEnabled) {
-            notificationService.warnMessage(errors.ROUTING.UNAUTHORIZED);
+            notificationService.warnMessage(errors.AUTH.UNAUTHORIZED);
         }
 
         return isFeatureEnabled || router.createUrlTree([redirectRoute]);

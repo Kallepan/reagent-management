@@ -12,16 +12,15 @@ export class AuthHttpInterceptor implements HttpInterceptor {
     if (!this._authService.isLoggedIn()) {
       return next.handle(req);
     }
-
+    
     // Check if target url is auth api endpoint
-    if (!req.url.includes(constants.APIS.AUTH)) {
+    if (!req.url.includes(constants.APIS.BASE)) {
       return next.handle(req);
     }
 
-    const JWT_ACCESS_TOKEN = sessionStorage.getItem(constants.JWT.ACCESS_STORAGE);
-
+    const token = this._authService.authData()?.access;
     const clonedReq = req.clone({
-      headers: req.headers.set("Authorization", "Bearer " + JWT_ACCESS_TOKEN)
+      headers: req.headers.set("Authorization", "Bearer " + token)
     });
 
     // Send request with token

@@ -3,6 +3,7 @@ import { environment } from "environments/environment";
 export class constants {
     public static APIS = {
         AUTH: environment.authUrl,
+        BASE: environment.apiUrl,
         BAK: {
             BASE: environment.apiUrl + '/bak',
         },

@@ -50,7 +50,7 @@ export class AuthService {
         this._authData.set(data);
       },
       error: () => {
-        this._notificationService.warnMessage(errors.AUTH.LOGIN.INVALID_CREDENTIALS);
+        this._notificationService.warnMessage(errors.AUTH.INVALID_CREDENTIALS);
       }
     });
   }
