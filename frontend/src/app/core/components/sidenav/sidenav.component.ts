@@ -17,4 +17,5 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class SidenavComponent {
   links = constants.ROUTES;
+  @Output() closeSidenav = new EventEmitter<void>();
 }

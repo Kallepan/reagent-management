@@ -1,6 +1,6 @@
 <mat-sidenav-container>
     <mat-sidenav #sidenav fixedInViewport="true" mode="push">
-        <app-sidenav></app-sidenav>
+        <app-sidenav (closeSidenav)="sidenav.close()"></app-sidenav>
     </mat-sidenav>
     <mat-sidenav-content class="app-frame">
         <app-header (onToggleTheme)="toggleTheme()" (onToggleSidenav)="sidenav.toggle()"

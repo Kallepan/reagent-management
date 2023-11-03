@@ -1,3 +1,4 @@
 <div class="container">
-    <button mat-raised-button color="accent" *ngFor="let link of links" router [routerLink]="link.path">{{link.title}}</button>
+    <button mat-raised-button color="accent" *ngFor="let link of links" router [routerLink]="link.path"
+        (click)="closeSidenav.emit()">{{link.title}}</button>
 </div>
