@@ -101,7 +101,7 @@ class LotTest(TestCase):
                     'name': 'Test Lot',
                     'valid_until': '2021-12-31',
                     'created_by': 'Test User',
-                    'type_id': 'Test Type'
+                    'type_id': 'Test-Type'
                 },
             },
             {
@@ -111,7 +111,7 @@ class LotTest(TestCase):
                     'name': None,
                     'valid_until': '2021-12-31',
                     'created_by': 'Test User',
-                    'type_id': str(self.type.id)
+                    'type_id': self.type.id
                 }
             },
             {
@@ -121,7 +121,7 @@ class LotTest(TestCase):
                     'name': 'Test Lot 2',
                     'valid_until': '2021-12-31',
                     'created_by': 'Test User',
-                    'type_id': str(self.type.id)
+                    'type_id': self.type.id
                 }
             },
             {
@@ -131,7 +131,7 @@ class LotTest(TestCase):
                     'name': 'Test Lot 2',
                     'valid_until': '2021-12-31',
                     'created_by': 'Test User',
-                    'type_id': str(self.type.id)
+                    'type_id': self.type.id
                 }
             },
             {
@@ -142,7 +142,7 @@ class LotTest(TestCase):
                     'valid_from': '2021-12-31',
                     'valid_until': '2021-12-30',
                     'created_by': 'Test User',
-                    'type_id': str(self.type.id)
+                    'type_id': self.type.id
                 }
             },
             {
@@ -153,9 +153,9 @@ class LotTest(TestCase):
                     'name': 'Test Lot 4',
                     'valid_until': '2021-12-31',
                     'created_by': 'Test User',
-                    'type_id': str(self.type.id),
                     'in_use_from': '2021-12-31',
-                    'in_use_until': '2021-12-30'
+                    'in_use_until': '2021-12-30',
+                    'type_id': self.type.id,
                 }
             }
         ]
@@ -290,7 +290,7 @@ class ReagentTest(TestCase):
         self.assertEqual(len(response.data), 1)
 
         # Check if multiple reagents are returned
-        reagent_two = Reagent.objects.create(lot=self.lot_two, location=self.location_two, created_by=self.user)
+        _ = Reagent.objects.create(lot=self.lot_two, location=self.location_two, created_by=self.user)
         response = self.client.get('/api/v1/bak/reagents/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 2)
@@ -298,8 +298,7 @@ class ReagentTest(TestCase):
     def test_get_specific_reagent(self):
         response = self.client.get(f'/api/v1/bak/reagents/{self.reagent.id}/')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(str(response.data['lot']), str(self.reagent.lot.id))
-        self.assertEqual(str(response.data['location']), str(self.reagent.location.id))
+        self.assertEqual(str(response.data['location']['id']), str(self.reagent.location.id))
         self.assertEqual(str(response.data['created_by']), str(self.reagent.created_by))
 
     def test_update_reagent(self):
@@ -308,8 +307,8 @@ class ReagentTest(TestCase):
                 # 'Invalid lot',
                 'status_code': 400,
                 'data': {
-                    'lot': 'Test Lot',
-                    'location': str(self.location.id),
+                    'lot_id': 'Test Lot',
+                    'location_id': self.location.id,
                     'created_by': self.user.identifier
                 },
             },
@@ -317,8 +316,8 @@ class ReagentTest(TestCase):
                 # 'Invalid location',
                 'status_code': 400,
                 'data': {
-                    'lot': str(self.lot.id),
-                    'location': 'Test Location',
+                    'lot_id': self.lot.id,
+                    'location_id': 'Test Location',
                     'created_by': self.user.identifier
                 }
             },
@@ -326,8 +325,8 @@ class ReagentTest(TestCase):
                 # 'Invalid created_by',
                 'status_code': 400,
                 'data': {
-                    'lot': str(self.lot.id),
-                    'location': str(self.location.id),
+                    'lot_id': self.lot.id,
+                    'location_id': self.location.id,
                     'created_by': 'Test User'
                 }
             },
@@ -361,8 +360,8 @@ class ReagentTest(TestCase):
                 # 'Invalid lot and location',
                 'status_code': 400,
                 'data': {
-                    'lot': 'Test Lot',
-                    'location': 'Test Location',
+                    'lot_id': 'Test Lot',
+                    'location_id': 'Test Location',
                     'created_by': 'Test User'
                 },
             },
@@ -370,33 +369,33 @@ class ReagentTest(TestCase):
                 # 'Invalid data',
                 'status_code': 400,
                 'data': {
-                    'lot': None,
-                    'location': None,
+                    'lot_id': None,
+                    'location_id': None,
                     'created_by': None
-                }
-            },
-            {
-                # 'Reagent created successfully',
-                'status_code': 201,
-                'data': {
-                    'lot': str(self.lot_two.id),
-                    'location': str(self.location_two.id),
-                    'created_by': self.user.identifier
                 }
             },
             {
                 # 'Reagent with this lot and location already exists',
                 'status_code': 400,
                 'data': {
-                    'lot': str(self.lot.id),
-                    'location': str(self.location.id),
+                    'lot_id': self.lot.id,
+                    'location_id': self.location.id,
                     'created_by': self.user.identifier
                 }
-            }
+            },
+            {
+                # 'Reagent created successfully',
+                'status_code': 201,
+                'data': {
+                    'lot_id': self.lot_two.id,
+                    'location_id': self.location_two.id,
+                    'created_by': self.user.identifier
+                }
+            },
         ]
 
         for i, step in enumerate(test_steps):
             logging.debug(f'Create Reagent. Step: {i}')
-
+            print(step)
             response = self.client.post('/api/v1/bak/reagents/', data=step['data'], format='json')
             self.assertEqual(response.status_code, step['status_code'])

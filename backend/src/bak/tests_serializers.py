@@ -71,14 +71,12 @@ class LotSerializerValidationTest(TestCase):
     def test_lot_serializer_validation(self):
         serializer = LotSerializer(data={
             'name': 'Test Lot2',
-            'type_id': str(self.lot.type.id),
+            'type_id': self.lot.type.id,
             'valid_from': None,
             'valid_until': '2021-12-31',
             'created_by': 'Test User',
             'in_use_from': None,
             'in_use_until': None
         })
-
         valid = serializer.is_valid()
-        
         self.assertTrue(valid)
