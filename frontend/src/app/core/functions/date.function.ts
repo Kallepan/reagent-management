@@ -3,4 +3,11 @@ export const isoDateFormat = (date: Date| null): string | null => {
     if (!date) return null;
 
     return date.toISOString().split('T')[0];
-} 
+}
+
+export const filterNotBeforeToday = (d: Date | null): boolean => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (!d) return false;
+    return d >= today;
+  }
