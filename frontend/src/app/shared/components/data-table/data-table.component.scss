@@ -1,0 +1,21 @@
+.detail-row {
+    height: 0;
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.mat-mdc-no-data-row {
+    td {
+        padding: 17px;
+    }
+}
+
+.dot {
+    height: 25px;
+    width: 25px;
+    border-radius: 50%;
+    display: inline-block;
+}

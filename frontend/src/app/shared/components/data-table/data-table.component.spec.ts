@@ -35,12 +35,12 @@ describe('DataTableComponent', () => {
     ];
     component.data = mockData;
     component.schema = [
-      { key: 'value', label: 'Value' },
-      { key: 'id', label: 'ID' },
+      { key: 'value', label: 'Value', type: 'text', fn: (value: string) => value.toUpperCase() },
+      { key: 'id', label: 'ID', type: 'text', fn: (value: number) => value.toString() },
     ];
     fixture.detectChanges();
-    const rows = fixture.nativeElement.querySelectorAll('tr');
-    expect(rows.length).toBe(mockData.length + 1); // add 1 for the header row
+    const rows = fixture.nativeElement.querySelectorAll('mat-row');
+    expect(rows.length).toBe(mockData.length * 2); 
   });
 
 });
