@@ -9,4 +9,8 @@ export class errors {
         UNKNOWN: 'An unknown error occured',
         SERVER_ERROR: 'An error occured on the server',
     };
+
+    public static BAK = {
+        REAGENT_TRANSFER_FAILED: 'Reagent transfer failed',
+    };
 }
