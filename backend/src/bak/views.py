@@ -1,11 +1,12 @@
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from rest_framework import viewsets, mixins, status, filters
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework import viewsets, mixins
 
 from django.db.models import Q
 
 from .models import Location, Type, Lot, Reagent
 from .serializers import LocationSerializer, TypeSerializer, LotSerializer, ReagentSerializer
 from .renderers import ResponseRenderer
+from .permissions import IsAdminOrBak
 
 class LocationViewSet(
     mixins.RetrieveModelMixin,
@@ -17,7 +18,7 @@ class LocationViewSet(
     """
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrBak]
     renderer_classes = [ResponseRenderer]
 
 class TypeViewSet(
@@ -30,7 +31,7 @@ class TypeViewSet(
     """
     queryset = Type.objects.all()
     serializer_class = TypeSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrBak]
     renderer_classes = [ResponseRenderer]
 
 class LotViewSet(
@@ -43,8 +44,13 @@ class LotViewSet(
 ):
     queryset = Lot.objects.all()
     serializer_class = LotSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrBak]
     renderer_classes = [ResponseRenderer]
+    filterset_fields = [
+        'name', 
+        'type', 
+        'reagents__amount', 
+    ]
 
     def get_queryset(self):
         """ Filter out all empty lots if  the param is_empty is set to True. """
@@ -72,6 +78,6 @@ class ReagentViewSet(
 ):
     queryset = Reagent.objects.all()
     serializer_class = ReagentSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrBak]
     renderer_classes = [ResponseRenderer]
     filterset_fields = ['amount', 'lot']

@@ -7,6 +7,42 @@ from .models import Location, Type, Lot, Reagent
 
 import logging
 
+class PermissionsTest(TestCase):
+    """Test the user model using the APIClient"""
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create(
+            identifier='testuser',
+            email="testuser@example.com",
+            password="testpass123"
+        )
+        self.type = Type.objects.create(name='Test Type', producer='Test Producer')
+
+    def test_permissions(self):
+        data = {
+            'name': 'Test Lot 2',
+            'valid_until': '2021-12-31',
+            'created_by': 'Test User',
+            'type_id': self.type.id
+        }
+            
+
+        # try to post to the api without authentication
+        response = self.client.post('/api/v1/bak/lots/', data=data, format='json')
+        self.assertEqual(response.status_code, 401)
+    
+
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post('/api/v1/bak/lots/', data=data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        self.user.groups.create(name='BAK')
+
+        # try to post to the api with authentication
+        response = self.client.post('/api/v1/bak/lots/', data=data, format='json')
+        self.assertEqual(response.status_code, 201)
+
+
 class TypeTest(TestCase):
     """Test the type model using the APIClient"""
     def setUp(self):
@@ -41,6 +77,7 @@ class LotTest(TestCase):
             email="testuser@example.com",
             password="testpass123"
         )
+        self.group = self.user.groups.create(name='BAK')
 
         self.client.force_authenticate(user=self.user)
 
@@ -281,6 +318,8 @@ class ReagentTest(TestCase):
             email="test@example.com",
             password="testpass123"
         )
+        self.group = self.user.groups.create(name='BAK')
+
         self.client.force_authenticate(user=self.user)
     
     def test_get_reagents(self):
