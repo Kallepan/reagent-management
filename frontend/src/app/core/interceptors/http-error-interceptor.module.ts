@@ -2,7 +2,7 @@ import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest
 import { Observable, catchError, throwError } from "rxjs";
 import { NotificationService } from "../services/notification.service";
 import { Injectable, inject } from "@angular/core";
-import { errors } from "../constants/errors";
+import { messages } from "../constants/messages";
 
 @Injectable()
 export class ErrorHttpInterceptor implements HttpInterceptor {
@@ -16,17 +16,19 @@ export class ErrorHttpInterceptor implements HttpInterceptor {
         // The user does not care about backend errors, therefore we only show general error messages
         switch (error.status) {
           case 400:
-            errorMessage = errors.GENERAL.BAD_REQUEST;
+            errorMessage = messages.GENERAL.BAD_REQUEST;
             break;
           case 401:
-            errorMessage = errors.AUTH.UNAUTHORIZED;
+            errorMessage = messages.AUTH.UNAUTHORIZED;
+            break;
+          case 403:
+            errorMessage = messages.AUTH.FORBIDDEN;
             break;
           case 500:
-            errorMessage = errors.GENERAL.SERVER_ERROR;
+            errorMessage = messages.GENERAL.SERVER_ERROR;
             break;
           default:
-            errorMessage = errors.GENERAL.UNKNOWN;
-            break;
+            return throwError(() => error);
         };
 
         // User Feedback 
@@ -41,4 +43,4 @@ export class ErrorHttpInterceptor implements HttpInterceptor {
       }),
     );
   }
-}
+} 

@@ -3,7 +3,6 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { NotificationService } from './notification.service';
 import { Router } from '@angular/router';
 import { constants } from '../constants/constants';
-import { errors } from '../constants/errors';
 import { map } from 'rxjs';
 import { messages } from '../constants/messages';
 
@@ -52,7 +51,7 @@ export class AuthService {
         this._notificationService.infoMessage(messages.AUTH.LOGGED_IN);
       },
       error: () => {
-        this._notificationService.warnMessage(errors.AUTH.INVALID_CREDENTIALS);
+        this._notificationService.warnMessage(messages.AUTH.INVALID_CREDENTIALS);
       }
     });
   }
