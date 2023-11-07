@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta
+from corsheaders.defaults import default_headers
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -153,13 +154,10 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:4200").split(",")
-CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://localhost:4200").split(",")
-
 # REST Framework Settings
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "tokenization.authenticate.CustomAuthentication",
     ],
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
@@ -174,7 +172,14 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'TOKEN_OBTAIN_SERIALIZER': 'tokenization.serializers.CustomTokenObtainPairSerializer',
+    
+    'REFRESH_COOKIE': 'refresh_token', # Cookie name. Enables cookies if value is set.
+    'AUTH_COOKIE': 'access_token',  # Cookie name. Enables cookies if value is set.
+    'AUTH_COOKIE_DOMAIN': None,     # A string like "example.com", or None for standard domain cookie.
+    'AUTH_COOKIE_SECURE': False,    # Whether the auth cookies should be secure (https:// only).
+    'AUTH_COOKIE_HTTP_ONLY' : True, # Http only cookie flag. It's not fetch by javascript.
+    'AUTH_COOKIE_PATH': '/',        # The path of the auth cookie.
+    'AUTH_COOKIE_SAMESITE': None,  # Whether to set the flag restricting cookie leaks on cross-site requests.
 }
 
 # Logging Settings
@@ -198,3 +203,16 @@ LOGGING = {
         }
     }
 }
+
+# CORS Settings
+CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:4200,http://localhost:8000").split(",")
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS =  list(default_headers) + ['Set-Cookie']
+
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://localhost:4200,http://localhost:8000").split(",")
+CSRF_USE_SESSIONS = False
+CSRF_COOKIE_SAMESITE = None
+CSRF_COOKIE_SECURE = False
+
+SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SAMESITE = None
