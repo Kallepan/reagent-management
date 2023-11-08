@@ -16,7 +16,7 @@ type AuthData = {
   providedIn: 'root'
 })
 export class AuthService {
-  private _http = inject(HttpClient);
+  private http = inject(HttpClient);
   private _notificationService = inject(NotificationService);
   private _router = inject(Router);
 
@@ -35,9 +35,10 @@ export class AuthService {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
       }),
+      withCredentials: true,
     };
 
-    this._http.post<any>(constants.APIS.AUTH, data, httpOptions).pipe(
+    this.http.post<any>(constants.APIS.AUTH, data, httpOptions).pipe(
       map(resp => {
         return {
           access: resp.access,

@@ -16,7 +16,7 @@ export class constants {
         USERNAME_STORAGE: 'username',
     }
 
-    public static TITLE = 'RSMS';
+    public static TITLE = 'RMS';
     public static VERSION = '0.0.1';
 
     public static ROUTES = [

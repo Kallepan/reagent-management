@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MainComponent } from './components/main/main.component';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { AuthHttpInterceptor } from './interceptors/http-auth-interceptors.module';
 import { ErrorHttpInterceptor } from './interceptors/http-error-interceptor.module';
 import { NotificationService } from './services/notification.service';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -18,11 +17,6 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MainComponent,
   ],
   providers: [
-    {
-      provide: HTTP_INTERCEPTORS, 
-      useClass: AuthHttpInterceptor, 
-      multi: true
-    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorHttpInterceptor,
