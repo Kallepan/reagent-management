@@ -3,7 +3,7 @@ export class messages {
         LOGGED_IN: 'Logged in successfully',
 
         INVALID_CREDENTIALS: 'Invalid username or password',
-        UNAUTHORIZED: 'You are not authorized to access this page',
+        UNAUTHORIZED: 'For all functions you need to be logged in',
         FORBIDDEN: 'You are not allowed to access this page',
     };
 

@@ -3,12 +3,10 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { NotificationService } from './notification.service';
 import { Router } from '@angular/router';
 import { constants } from '../constants/constants';
-import { map } from 'rxjs';
+import { catchError, map } from 'rxjs';
 import { messages } from '../constants/messages';
 
 type AuthData = {
-  access: string;
-  refresh: string;
   department: string;
 }
 
@@ -25,6 +23,33 @@ export class AuthService {
     return this._authData() !== null;
   });
 
+  verifyLogin() {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      withCredentials: true,
+    };
+
+    this.http.get<any>(`${constants.APIS.AUTH}/verify`, httpOptions).pipe(
+      map(resp => {
+        console.log(resp);
+        return {
+          department: resp.identifier,
+        };
+      }),
+      catchError(() => {
+        // DO NOTHING
+        return [];
+      }),
+      ).subscribe({
+        next: data => {
+        this._authData.set(data);
+        this._notificationService.infoMessage(messages.AUTH.LOGGED_IN);
+      },
+    });
+  }
+
   login(identifier: string | null, password: string | null) {
     const data = {
       identifier,
@@ -38,11 +63,9 @@ export class AuthService {
       withCredentials: true,
     };
 
-    this.http.post<any>(constants.APIS.AUTH, data, httpOptions).pipe(
+    this.http.post<any>(`${constants.APIS.AUTH}/`, data, httpOptions).pipe(
       map(resp => {
         return {
-          access: resp.access,
-          refresh: resp.refresh,
           department: data.identifier!
         };
       }),

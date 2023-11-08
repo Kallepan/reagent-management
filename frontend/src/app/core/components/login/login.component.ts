@@ -1,4 +1,4 @@
-import { Component, OnDestroy, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '@app/core/services/auth.service';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -23,7 +23,7 @@ import { MatInputModule } from '@angular/material/input';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   authService = inject(AuthService);
   private _fb = inject(FormBuilder);
 
@@ -34,5 +34,9 @@ export class LoginComponent {
 
   stopPropagation(event: Event) {
     event.stopPropagation();
+  }
+
+  ngOnInit(): void {
+    this.authService.verifyLogin();
   }
 }
