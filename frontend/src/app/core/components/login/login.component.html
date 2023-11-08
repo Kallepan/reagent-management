@@ -19,6 +19,6 @@
                 Pflichtfeld
             </mat-error>
         </mat-form-field>
-        <button id="login-confirm" mat-raised-button color="accent" (click)="authService.login(loginForm.controls['identifier'].value, loginForm.controls['password'].value)" [disabled]="loginForm.invalid">Login</button>
+        <button id="login-confirm" mat-raised-button color="accent" (click)="onSubmitLogin()" [disabled]="loginForm.invalid">Login</button>
     </form>
 </mat-menu>

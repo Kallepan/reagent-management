@@ -39,4 +39,9 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.authService.verifyLogin();
   }
+
+  onSubmitLogin() {
+    this.authService.login(this.loginForm.controls['identifier'].value, this.loginForm.controls['password'].value)
+    this.loginForm.reset();
+  }
 }

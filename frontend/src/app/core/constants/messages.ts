@@ -1,6 +1,7 @@
 export class messages {
     public static AUTH = {
         LOGGED_IN: 'Logged in successfully',
+        LOGGED_OUT: 'Logged out successfully',
 
         INVALID_CREDENTIALS: 'Invalid username or password',
         UNAUTHORIZED: 'For all functions you need to be logged in',

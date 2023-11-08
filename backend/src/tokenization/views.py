@@ -68,3 +68,11 @@ class CookieTokenVerifyView(
             return Response({'detail': str(e)}, status=400)
         
         return Response(serializer.validated_data, status=200)
+    
+
+class CookieTokenLogoutView(APIView):
+    def post(self, request, *args, **kwargs):
+        response = Response()
+        response.delete_cookie('access_token')
+        response.delete_cookie('refresh_token')
+        return response

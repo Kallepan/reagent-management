@@ -33,7 +33,6 @@ export class AuthService {
 
     this.http.get<any>(`${constants.APIS.AUTH}/verify`, httpOptions).pipe(
       map(resp => {
-        console.log(resp);
         return {
           department: resp.identifier,
         };
@@ -81,8 +80,21 @@ export class AuthService {
   }
 
   logout() {
-    this._authData.set(null);
-    this._router.navigateByUrl('/');
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      withCredentials: true,
+    };
+
+    // TODO - call the logout API
+    this.http.post<any>(`${constants.APIS.AUTH}/logout/`, {}, httpOptions).subscribe({
+      next: () => {
+        this._authData.set(null);
+        this._notificationService.infoMessage(messages.AUTH.LOGGED_OUT);
+        this._router.navigate(['']);
+      },
+    });
   }
 
   get authData() {
