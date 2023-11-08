@@ -2,5 +2,6 @@
     <mat-form-field appearance="fill">
         <input matInput type="text" placeholder="Search" [formControl]="control" autocomplete="off" (keydown.enter)="searchSubmit.emit(control.value)" (keydown.tab)="searchSubmit.emit(control.value)">
         <mat-icon matSuffix>search</mat-icon>
+        <mat-hint>{{formHint}}</mat-hint>
     </mat-form-field>
 </div>
