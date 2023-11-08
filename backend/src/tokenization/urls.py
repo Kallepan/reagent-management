@@ -1,7 +1,8 @@
 from django.urls import path
-from rest_framework_simplejwt import views as jwt_views
-from .views import CookieTokenObtainPairView, CookieTokenRefreshView
+from .views import CookieTokenObtainPairView, CookieTokenRefreshView, CookieTokenVerifyView
+
 urlpatterns = [
     path('', CookieTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('verify/', CookieTokenVerifyView.as_view(), name='token_verify'),
     path('refresh/', CookieTokenRefreshView.as_view(), name='token_refresh'),
 ]

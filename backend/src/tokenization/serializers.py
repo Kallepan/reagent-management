@@ -2,8 +2,10 @@ from typing import Any, Dict
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import Token
 from rest_framework_simplejwt.exceptions import InvalidToken
-
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.conf import settings
+
+from rest_framework import serializers
 
 class CookieTokenObtainPairSerializer(TokenObtainPairSerializer):
 
@@ -30,4 +32,29 @@ class CookieTokenRefreshSerializer(TokenRefreshSerializer):
         if attrs['refresh']:
             return super().validate(attrs)
         else:
-            raise InvalidToken('No valid token found in cookie \'refresh_token\'')
+            raise InvalidToken('No valid token found in cookie')
+
+
+class CookieTokenValidateSerializer(serializers.Serializer):
+    token = None
+    identifier = serializers.CharField(read_only=True)
+
+    def validate(self, attrs):
+        token = self.context['request'].COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE'])
+
+        if token is None:
+            raise InvalidToken('No valid token found in cookie')
+
+        # validate the input token
+        try:
+            t = JWTAuthentication().get_validated_token(token)
+        except InvalidToken as e:
+            raise InvalidToken('No valid token found in cookie')
+
+        # get the user from the token
+        identifier = JWTAuthentication().get_user(t)
+
+        # Add custom claims
+        attrs['identifier'] = identifier.identifier
+
+        return attrs

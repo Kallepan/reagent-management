@@ -1,5 +1,9 @@
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
-from .serializers import CookieTokenObtainPairSerializer, CookieTokenRefreshSerializer
+
+from .serializers import CookieTokenObtainPairSerializer, CookieTokenRefreshSerializer, CookieTokenValidateSerializer
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 from django.conf import settings
 
@@ -50,3 +54,17 @@ class CookieTokenRefreshView(TokenRefreshView):
             del response.data['refresh']
             
         return super().finalize_response(request, response, *args, **kwargs)
+
+class CookieTokenVerifyView(
+    APIView,
+):
+    serializer_class = CookieTokenValidateSerializer
+    
+    def get(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
+            return Response({'detail': str(e)}, status=400)
+        
+        return Response(serializer.validated_data, status=200)
