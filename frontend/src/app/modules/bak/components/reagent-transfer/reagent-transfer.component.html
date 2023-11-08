@@ -1,0 +1,34 @@
+<h1 mat-dialog-title>Reagenzien verschieben</h1>
+<div mat-dialog-content>
+    <form action="submit" [formGroup]="formGroup" class="form">
+        <div class="upper-form">
+            <mat-form-field>
+                <mat-label>Von</mat-label>
+                <mat-select formControlName="sourceReagent">
+                    <mat-option *ngFor="let reagent of data.reagents" [disabled]="!reagent.amount"
+                        [value]="reagent.id">{{reagent.location.name}} ({{reagent.amount}})</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-icon>arrow_forward</mat-icon>
+            <mat-form-field>
+                <mat-label>Nach</mat-label>
+                <mat-select formControlName="targetReagent">
+                    <mat-option *ngFor="let reagent of data.reagents" [value]="reagent.id">{{reagent.location.name}}
+                        ({{reagent.amount}})</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <mat-form-field *ngIf="(validAmounts$ | async) as amounts">
+            <mat-label>Menge</mat-label>
+            <mat-select formControlName="transferAmount">
+                <mat-option *ngFor="let amount of amounts" [value]="amount">{{amount}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </form>
+</div>
+<div mat-dialog-actions>
+    <button mat-raised-button color="warn" (click)="onAbort()">Abbruch</button>
+    <button id="confirmButton" mat-raised-button color="accent" [disabled]="formGroup.invalid" ckdFocusInitial
+        [mat-dialog-close]="formGroup.value">Ok</button>
+</div>

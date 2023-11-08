@@ -9,7 +9,7 @@ import { CustomResponseType } from '@app/core/interfaces/response';
   providedIn: 'any'
 })
 export class LotAPIService {
-  private _http = inject(HttpClient);
+  private http = inject(HttpClient);
   
   getLots(): Observable<BakLot[]> {
     const url = `${constants.APIS.BAK.BASE}/lots/`
@@ -23,9 +23,30 @@ export class LotAPIService {
           // is_empty: 'false', TODO: implement
         }
       }),
+      withCredentials: true,
     };
 
-    return this._http.get<CustomResponseType>(url, httpOptions).pipe(
+    return this.http.get<CustomResponseType>(url, httpOptions).pipe(
+      map(resp => {
+        return resp.data as BakLot[];
+      }),
+    )
+  }
+
+  searchLots(query: { [param: string]: string | number | boolean | readonly (string | number | boolean)[]; }): Observable<BakLot[]> {
+    const url = `${constants.APIS.BAK.BASE}/lots/`
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      params: new HttpParams({
+        fromObject: query
+      }),
+      withCredentials: true,
+    };
+
+    return this.http.get<CustomResponseType>(url, httpOptions).pipe(
       map(resp => {
         return resp.data as BakLot[];
       }),
@@ -39,9 +60,10 @@ export class LotAPIService {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
       }),
+      withCredentials: true,
     };
 
-    return this._http.get<CustomResponseType>(url, httpOptions).pipe(
+    return this.http.get<CustomResponseType>(url, httpOptions).pipe(
       map(resp => {
         return resp.data as BakLot;
       }),
@@ -55,9 +77,10 @@ export class LotAPIService {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
       }),
+      withCredentials: true,
     };
 
-    return this._http.post<CustomResponseType>(url, lot, httpOptions).pipe(
+    return this.http.post<CustomResponseType>(url, lot, httpOptions).pipe(
       map(resp => {
         return resp.data as BakLot;
       }),
@@ -71,9 +94,10 @@ export class LotAPIService {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
       }),
+      withCredentials: true,
     };
 
-    return this._http.patch<CustomResponseType>(url, data, httpOptions).pipe(
+    return this.http.patch<CustomResponseType>(url, data, httpOptions).pipe(
       map(resp => {
         return resp.data as BakLot;
       }),

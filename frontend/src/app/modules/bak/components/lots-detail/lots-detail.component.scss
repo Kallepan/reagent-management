@@ -1,0 +1,36 @@
+.container {
+    display: flex;
+    margin: auto;
+    flex-direction: column;
+    max-width: 800px;
+    gap: 1rem;
+}
+
+.large-card {
+    width: 100%;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+.content {
+    display: flex;
+    flex-direction: row;
+    align-items: first baseline;
+    justify-content: flex-start;
+    gap: 1rem;
+
+    .content-block {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        p {
+            margin: 0;
+            font-weight: bold;
+        }
+    }
+}

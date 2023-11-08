@@ -1,0 +1,60 @@
+<div class="container">
+    <button mat-raised-button (click)="openDialog()" color="accent">Reagenzien zwischen Lagern verschieben</button>
+    <mat-card class="large-card" *ngIf="(lot$ | async) as lot">
+        <mat-card-header>
+            <mat-card-title><h2>{{lot.name|titlecase}}</h2></mat-card-title>
+            <mat-card-subtitle><h3>{{lot.type.name}} - {{lot.type.producer}}</h3></mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="content">
+            <div class="content-block">
+                <p>Metadaten</p>
+                <mat-list role="list">
+                    <mat-list-item role="listitem">
+                        Haltbar bis: {{lot.valid_until | date: 'dd.MM.yyyy'}}
+                    </mat-list-item>
+                    <mat-list-item role="listitem">
+                        Erstellt am: {{lot.created_at | date: 'dd.MM.yyyy'}}
+                    </mat-list-item>
+                    <mat-list-item role="listitem">
+                        Erstellt von: {{lot.created_by|titlecase}}
+                    </mat-list-item>
+                </mat-list>
+            </div>
+            <div class="content-block">
+                <p>Reagenzien</p>
+                <mat-list>
+                    <mat-list-item *ngFor="let reagent of lot.reagents">{{reagent.location.name}} ({{reagent.amount}})</mat-list-item>
+                </mat-list>
+            </div>
+        </mat-card-content>
+        <mat-card-actions>
+            <form action="submit" class="form" [formGroup]="formGroup">
+                <mat-form-field>
+                    <mat-label>Gültig ab</mat-label>
+                    <input matInput [matDatepicker]="pickerValidFrom" formControlName="validFrom">
+                    <mat-datepicker-toggle matSuffix [for]="pickerValidFrom"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerValidFrom></mat-datepicker>
+                    <mat-hint>Format: JJJJ-MM-TT</mat-hint>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>In Gebrauch von</mat-label>
+                    <input matInput [matDatepicker]="pickerInUseFrom" [matDatepickerFilter]="filterNotBeforeToday"
+                        formControlName="inUseFrom">
+                    <mat-datepicker-toggle matSuffix [for]="pickerInUseFrom"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerInUseFrom></mat-datepicker>
+                    <mat-hint>Format: JJJJ-MM-TT</mat-hint>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>In Gebrauch bis</mat-label>
+                    <input matInput [matDatepicker]="pickerInUseUntil" [matDatepickerFilter]="filterNotBeforeToday"
+                        formControlName="inUseUntil">
+                    <mat-datepicker-toggle matSuffix [for]="pickerInUseUntil"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerInUseUntil></mat-datepicker>
+                    <mat-hint>Format: JJJJ-MM-TT</mat-hint>
+                </mat-form-field>
+                <button mat-raised-button color="accent" (click)="submit()"
+                    [disabled]="formGroup.invalid">Absenden</button>
+            </form>
+        </mat-card-actions>
+    </mat-card>
+</div>

@@ -1,0 +1,38 @@
+<div class="container" *ngIf="bakStateHandlerService.finishedLoading">
+    <app-search-bar [control]="filterControl" (searchSubmit)="searchLots($event)" formHint="Durchsucht die Tabelle. Mit Enter kann eine bestimmte Charge gesucht werden."></app-search-bar>
+    <ng-container *ngIf="{tableData: lots$ | async, search: filter$ | async} as vm">
+        <app-data-table 
+        [schema]="columnsSchema" 
+        [filter]="vm.search || ''"
+        [data]="vm.tableData || []"
+        (editClick)="editLot($event)"
+        [detailRowTemplate]="detailRowTemplate"
+        ></app-data-table>
+    </ng-container>
+    <button mat-raised-button color="accent" routerLink="/bak/lots/create">Anlegen</button>
+</div>
+
+<ng-template #detailRowTemplate let-element>
+    <!-- 
+    This is the template which will be present upon clicking on the lot
+    in the table. It will be displayed below the row.
+    -->
+    <div class="detail-row mat-row" style="overflow: hidden; margin-top: 1rem;">
+        <button mat-raised-button color="accent" (click)="openReagentTransferDialog(element.id)">Reagenzien verschieben</button>
+        <ng-container *ngFor="let reagent of element.reagents">
+            <div class="reagent">
+                <div class="reagent__location">
+                    {{reagent.location.name}}
+                </div>
+                <div class="reagent__amount">
+                    {{reagent.amount}}
+                </div>
+                <div class="reagent__actions">
+                    <button mat-mini-fab color="accent" (click)="patchReagent(reagent.id, reagent.amount + 1)"><mat-icon>add</mat-icon></button>
+                    <button mat-mini-fab color="accent" (click)="patchReagent(reagent.id, reagent.amount - 1)"><mat-icon>remove</mat-icon></button>
+                </div>
+            </div>
+        </ng-container>
+        <p *ngIf="element.reagents.length === 0">Keine Reagenzien vorhanden.</p>
+    </div>
+</ng-template>
