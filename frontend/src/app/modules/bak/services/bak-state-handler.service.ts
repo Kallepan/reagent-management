@@ -17,15 +17,15 @@ import { messages } from '@app/core/constants/messages';
 })
 export class BakStateHandlerService {
   private destroyRef = inject(DestroyRef)
-  private typeAPIService = inject(TypeAPIService); 
+  private typeAPIService = inject(TypeAPIService);
   private lotAPIService = inject(LotAPIService);
   private locationAPIService = inject(LocationAPIService);
   private reagentAPIService = inject(ReagentAPIService);
   private notificationService = inject(NotificationService);
   private router = inject(Router);
 
-  locations: BakLocation[] = [];
-  types: BakType[] = [];
+  locations = new BehaviorSubject<BakLocation[]>([]);
+  types = new BehaviorSubject<BakType[]>([]);
 
   lots = new BehaviorSubject<BakLot[]>([]);
 
@@ -40,12 +40,12 @@ export class BakStateHandlerService {
     this.locationAPIService.getLocations().pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe((locations) => {
-      this.locations = locations;
+      this.locations.next(locations);
     });
     this.typeAPIService.getTypes().pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe((types) => {
-      this.types = types;
+      this.types.next(types);
     });
 
     // populate lots
@@ -118,7 +118,7 @@ export class BakStateHandlerService {
     return this._finishedLoading;
   }
 
-  public handleReagentTransfer(result: { sourceReagent: string, targetReagent: string, sourceAmount: number, targetAmount: number}) {
+  public handleReagentTransfer(result: { sourceReagent: string, targetReagent: string, sourceAmount: number, targetAmount: number }) {
     this.reagentAPIService.patchReagent(result.sourceReagent, result.sourceAmount).pipe(
       tap((data) => {
         this.lots.getValue().find(lot => lot.id === data.lot.id)!.reagents.find(reagent => reagent.id === data.id)!.amount = data.amount;

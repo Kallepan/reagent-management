@@ -6,11 +6,11 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BehaviorSubject } from 'rxjs';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 describe('LotsCreateComponent', () => {
   let component: LotsCreateComponent;
@@ -18,9 +18,8 @@ describe('LotsCreateComponent', () => {
   let bakStateHandlerService: jasmine.SpyObj<BakStateHandlerService>;
   const lastUser = 'TEST';
 
-
   beforeEach(() => {
-    bakStateHandlerService = jasmine.createSpyObj('BakStateHandlerService', ['getTypes', 'getLots', 'getLocations', 'getReagents', 'createLot'], {lots: new BehaviorSubject([])});
+    bakStateHandlerService = jasmine.createSpyObj('BakStateHandlerService', ['getTypes', 'getLots', 'getLocations', 'getReagents', 'createLot'], { lots: new BehaviorSubject([]), types: new BehaviorSubject([]), locations: new BehaviorSubject([]) });
     TestBed.configureTestingModule({
       imports: [
         BrowserAnimationsModule,
@@ -29,7 +28,7 @@ describe('LotsCreateComponent', () => {
         MatFormFieldModule,
         MatDatepickerModule,
         MatNativeDateModule,
-        MatSelectModule,
+        MatAutocompleteModule,
         MatInputModule,
       ],
       declarations: [LotsCreateComponent],

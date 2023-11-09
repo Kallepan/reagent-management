@@ -36,7 +36,8 @@
             </mat-form-field>
             <mat-form-field>
                 <mat-label>Haltbarkeit</mat-label>
-                <input matInput [matDatepicker]="pickerValidUntil" [matDatepickerFilter]="filterNotBeforeToday" formControlName="validUntil">
+                <input matInput [matDatepicker]="pickerValidUntil" [matDatepickerFilter]="filterNotBeforeToday"
+                    formControlName="validUntil">
                 <mat-datepicker-toggle matSuffix [for]="pickerValidUntil"></mat-datepicker-toggle>
                 <mat-datepicker #pickerValidUntil></mat-datepicker>
                 <mat-error *ngIf="formGroup.get('validUntil')?.hasError('required')">
@@ -48,14 +49,16 @@
         <div class="form__row">
             <mat-form-field>
                 <mat-label>In Gebrauch von</mat-label>
-                <input matInput [matDatepicker]="pickerInUseFrom" [matDatepickerFilter]="filterNotBeforeToday" formControlName="inUseFrom">
+                <input matInput [matDatepicker]="pickerInUseFrom" [matDatepickerFilter]="filterNotBeforeToday"
+                    formControlName="inUseFrom">
                 <mat-datepicker-toggle matSuffix [for]="pickerInUseFrom"></mat-datepicker-toggle>
                 <mat-datepicker #pickerInUseFrom></mat-datepicker>
                 <mat-hint>Format: JJJJ-MM-TT</mat-hint>
             </mat-form-field>
             <mat-form-field>
                 <mat-label>In Gebrauch bis</mat-label>
-                <input matInput [matDatepicker]="pickerInUseUntil" [matDatepickerFilter]="filterNotBeforeToday" formControlName="inUseUntil">
+                <input matInput [matDatepicker]="pickerInUseUntil" [matDatepickerFilter]="filterNotBeforeToday"
+                    formControlName="inUseUntil">
                 <mat-datepicker-toggle matSuffix [for]="pickerInUseUntil"></mat-datepicker-toggle>
                 <mat-datepicker #pickerInUseUntil></mat-datepicker>
                 <mat-hint>Format: JJJJ-MM-TT</mat-hint>
@@ -63,20 +66,23 @@
         </div>
         <div class="form__row">
             <mat-form-field>
-                <mat-label>Typen</mat-label>
-                <mat-select formControlName="typeId">
-                    <mat-option *ngFor="let type of types" [value]="type.id">
-                        {{ type.name }} - {{type.producer}} - Art. Nr.
+                <mat-label>Artikelart</mat-label>
+                <input type="text" placeholder="Artikel der Lot" matInput formControlName="typeId"
+                    [matAutocomplete]="auto">
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor="let type of filteredTypes | async" [value]="type.id">
+                        {{ type.name }} - {{type.producer}} - Art. Nr.: {{type.article_number}}
                     </mat-option>
-                </mat-select>
+                </mat-autocomplete>
                 <mat-error *ngIf="formGroup.get('typeId')?.hasError('required')">
-                    Typ muss angegeben werden
+                    Artikelart muss angegeben werden
                 </mat-error>
             </mat-form-field>
         </div>
 
         <div class="form__row">
-            <button id="submitButton" mat-raised-button color="accent" (click)="submit()" [disabled]="formGroup.invalid">Absenden</button>
+            <button id="submitButton" mat-raised-button color="accent" (click)="submit()"
+                [disabled]="formGroup.invalid">Absenden</button>
         </div>
     </form>
 </div>

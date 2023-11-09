@@ -25,6 +25,7 @@ import { MatListModule } from '@angular/material/list';
 import { ReagentTransferComponent } from './components/reagent-transfer/reagent-transfer.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ChoiceDialogComponent } from '@app/shared/components/choice-dialog/choice-dialog.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
   declarations: [
@@ -38,18 +39,18 @@ import { ChoiceDialogComponent } from '@app/shared/components/choice-dialog/choi
     BakRoutingModule,
     HttpClientModule,
     ReactiveFormsModule,
-    
+
     MatButtonModule,
     MatIconModule,
     MatInputModule,
     MatFormFieldModule,
-    MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatCardModule,
     MatListModule,
     MatDialogModule,
-    
+    MatAutocompleteModule,
+
     DataTableComponent,
     SearchBarComponent,
     ChoiceDialogComponent,
@@ -65,6 +66,6 @@ import { ChoiceDialogComponent } from '@app/shared/components/choice-dialog/choi
     }
   ]
 })
-export class BakModule { 
-  
+export class BakModule {
+
 }

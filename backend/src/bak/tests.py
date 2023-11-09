@@ -285,7 +285,7 @@ class LocationTest(TestCase):
     def test_get_location(self):
         response = self.client.get('/api/v1/bak/locations/')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data), 4) # migrations from database
     
     def test_get_specific_location(self):
         response = self.client.get(f'/api/v1/bak/locations/{self.location_one.id}/')
