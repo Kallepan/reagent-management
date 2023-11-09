@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "reagent-stock-management-system": {
+    "reagent-management-system": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/reagent-stock-management-system",
+            "outputPath": "dist/frontend",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -71,10 +71,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "reagent-stock-management-system:build:production"
+              "browserTarget": "reagent-management-system:build:production"
             },
             "development": {
-              "browserTarget": "reagent-stock-management-system:build:development"
+              "browserTarget": "reagent-management-system:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -82,7 +82,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "reagent-stock-management-system:build"
+            "browserTarget": "reagent-management-system:build"
           }
         },
         "test": {
