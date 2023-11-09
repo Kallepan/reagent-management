@@ -8,7 +8,7 @@ import uuid
 
 class TypeSerializerTest(TestCase):
     def setUp(self):
-        self.type = Type.objects.create(name='Test Reagent Type', producer='Test Reagent Producer')
+        self.type = Type.objects.create(name='Test Reagent Type', producer='Test Reagent Producer', article_number='123')
 
     def test_type_serializer(self):
         serializer = TypeSerializer(instance=self.type)
@@ -16,6 +16,7 @@ class TypeSerializerTest(TestCase):
             'id': str(self.type.id),
             'name': 'Test Reagent Type',
             'producer': 'Test Reagent Producer',
+            'article_number': '123',
             'created_at': self.type.created_at.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         }
         self.assertEqual(serializer.data, expected_data)

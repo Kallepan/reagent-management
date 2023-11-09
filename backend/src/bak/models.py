@@ -26,6 +26,7 @@ class Type(models.Model):
     name = models.CharField(max_length=50, db_index=True)
     producer = models.CharField(max_length=100, db_index=True)
 
+    article_number = models.CharField(max_length=50, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

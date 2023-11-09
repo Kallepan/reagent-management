@@ -53,7 +53,7 @@ class TypeTest(TestCase):
     def test_get_types(self):
         response = self.client.get('/api/v1/bak/types/')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data), 48) # 48 due to applied initial migrations
     
     def test_type(self):
         response = self.client.get(f'/api/v1/bak/types/{self.type.id}/')

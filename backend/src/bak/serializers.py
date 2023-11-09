@@ -39,7 +39,7 @@ class TypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Type
-        fields = ['id', 'name', 'producer', 'created_at']
+        fields = ['id', 'name', 'producer', 'created_at', 'article_number']
         read_only_fields = ['id', 'created_at']
 
 class LotReagentSerializer(serializers.ModelSerializer):

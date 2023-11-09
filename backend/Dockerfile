@@ -10,10 +10,10 @@ WORKDIR /home/app/web
 COPY requirements.txt .
 
 RUN \
- apk add --no-cache postgresql-libs && \
- apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev && \
- python3 -m pip install --no-cache -r requirements.txt && \
- apk --purge del .build-deps
+    apk add --no-cache postgresql-libs && \
+    apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev && \
+    python3 -m pip install --no-cache -r requirements.txt && \
+    apk --purge del .build-deps
 
 COPY src/ .
 COPY entrypoint.sh .
