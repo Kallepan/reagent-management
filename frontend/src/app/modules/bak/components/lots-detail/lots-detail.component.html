@@ -2,8 +2,12 @@
     <button mat-raised-button (click)="openDialog()" color="accent">Reagenzien zwischen Lagern verschieben</button>
     <mat-card class="large-card" *ngIf="(lot$ | async) as lot">
         <mat-card-header>
-            <mat-card-title><h2>{{lot.name|titlecase}}</h2></mat-card-title>
-            <mat-card-subtitle><h3>{{lot.type.name}} - {{lot.type.producer}}</h3></mat-card-subtitle>
+            <mat-card-title>
+                <h2>{{lot.name|titlecase}}</h2>
+            </mat-card-title>
+            <mat-card-subtitle>
+                <h3>{{lot.type.name}} - {{lot.type.producer}}, Art-nr.: {{lot.type.article_number}}</h3>
+            </mat-card-subtitle>
         </mat-card-header>
         <mat-card-content class="content">
             <div class="content-block">
@@ -23,7 +27,8 @@
             <div class="content-block">
                 <p>Reagenzien</p>
                 <mat-list>
-                    <mat-list-item *ngFor="let reagent of lot.reagents">{{reagent.location.name}} ({{reagent.amount}})</mat-list-item>
+                    <mat-list-item *ngFor="let reagent of lot.reagents">{{reagent.location.name}}
+                        ({{reagent.amount}})</mat-list-item>
                 </mat-list>
             </div>
         </mat-card-content>
