@@ -4,7 +4,7 @@
 import csv
 import os
 
-from django.db import migrations, transaction
+from django.db import migrations
 
 def populate_types(apps, schema_editor):
     with open(os.path.join(os.path.dirname(__file__), '0004_types.csv'), 'r') as f:
