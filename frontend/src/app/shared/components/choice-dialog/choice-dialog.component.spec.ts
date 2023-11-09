@@ -46,7 +46,6 @@ describe('ChoiceDialogComponent', () => {
   });
 
   it('#onAbort should close the dialog', () => {
-    spyOn(component.dialogRef, 'close');
     component.onAbort();
     expect(component.dialogRef.close).toHaveBeenCalled();
   });
@@ -54,6 +53,7 @@ describe('ChoiceDialogComponent', () => {
   it('should have as many buttons as choices', () => {
     const buttons = fixture.nativeElement.querySelectorAll('button');
 
-    expect(buttons.length).toEqual(mockData.choices.length);
+    // length of buttons should be equal to the number of choices + 1 (for the abort button)
+    expect(buttons.length).toEqual(mockData.choices.length + 1);
   });
 });
