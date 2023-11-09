@@ -1,0 +1,51 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: rms-ingressroute-https
+  namespace: reagent-management
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - match: Host(`rms.mibi`) && PathPrefix(`/`)
+    kind: Rule
+    services:
+    - kind: Service
+      name: rms-frontend
+      namespace: reagent-management
+      passHostHeader: true
+      port: 80
+  # tls:
+  # secretName: labmed-tls
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: rms-ingressroute-http
+  namespace: reagent-management
+spec:
+  entryPoints:
+  - web
+  routes:
+  - match: Host(`rms.mibi`) && PathPrefix(`/`)
+    kind: Rule
+    # middlewares:
+    # - name: redirect-to-https
+    #   namespace: reagent-management
+    services:
+    - kind: Service
+      name: rms-frontend
+      namespace: reagent-management
+      passHostHeader: true
+      scheme: http
+      port: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-to-https
+  namespace: reagent-management
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true

@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rms-db
+  namespace: reagent-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rms-db
+  template:
+    metadata:
+      labels:
+        app: rms-db
+        tier: backend
+    spec:
+      containers:
+      - name: rms-db
+        image: postgres:16
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 5432
+        envFrom:
+          - secretRef:
+              name: secrets
+        securityContext:
+          allowPrivilegeEscalation: false
+        resources:
+          limits:
+            memory: "2Gi"
+          requests:
+            memory: "2Gi"
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - postgres
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 10
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - postgres
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 10
+        volumeMounts:
+          - name: rms-db
+            mountPath: /var/lib/postgres/data
+            readOnly: false
+      volumes:
+        - name: rms-db
+          persistentVolumeClaim:
+            readOnly: false
+            claimName: rms-db-pvc
