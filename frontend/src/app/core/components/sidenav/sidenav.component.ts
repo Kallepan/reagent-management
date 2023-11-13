@@ -16,6 +16,6 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrls: ['./sidenav.component.scss']
 })
 export class SidenavComponent {
-  links = constants.ROUTES;
+  routes = constants.ROUTES;
   @Output() closeSidenav = new EventEmitter<void>();
 }

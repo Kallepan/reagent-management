@@ -42,8 +42,5 @@ export class LoginComponent implements OnInit {
 
   onSubmitLogin() {
     this.authService.login(this.loginForm.controls['identifier'].value, this.loginForm.controls['password'].value);
-    setTimeout(() => {
-      this.loginForm.reset();
-    }, 0);
   }
 }

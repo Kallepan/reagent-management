@@ -18,7 +18,7 @@ export class AuthService {
   private _notificationService = inject(NotificationService);
   private _router = inject(Router);
 
-  private _authData = signal<AuthData|null>(null);
+  private _authData = signal<AuthData | null>(null);
   isLoggedIn = computed(() => {
     return this._authData() !== null;
   });
@@ -41,8 +41,8 @@ export class AuthService {
         // DO NOTHING
         return [];
       }),
-      ).subscribe({
-        next: data => {
+    ).subscribe({
+      next: data => {
         this._authData.set(data);
         this._notificationService.infoMessage(messages.AUTH.LOGGED_IN);
       },
@@ -54,7 +54,7 @@ export class AuthService {
       identifier,
       password
     };
- 
+
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ export class AuthService {
 
   isFeatureEnabled(featureName: string) {
     const identifier = this._authData()?.department;
-    
+
     if (!identifier) {
       return false;
     }

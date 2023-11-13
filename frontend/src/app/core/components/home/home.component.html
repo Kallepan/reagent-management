@@ -1,0 +1,6 @@
+<div class="container">
+    <div class="row">
+        <button mat-raised-button color="accent" *ngFor="let route of routes" [routerLink]="route.path"
+            class="button">{{route.title}}</button>
+    </div>
+</div>

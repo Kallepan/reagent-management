@@ -3,9 +3,8 @@
         <app-sidenav (closeSidenav)="sidenav.close()"></app-sidenav>
     </mat-sidenav>
     <mat-sidenav-content class="app-frame">
-        <app-header (onToggleTheme)="toggleTheme()" (onToggleSidenav)="sidenav.toggle()"
-            [isDark]="isDark"></app-header>
-            <router-outlet></router-outlet>
-        <app-footer></app-footer>
+        <app-header (onToggleTheme)="toggleTheme()" (onToggleSidenav)="sidenav.toggle()" [isDark]="isDark"></app-header>
+        <router-outlet></router-outlet>
     </mat-sidenav-content>
 </mat-sidenav-container>
+<app-footer></app-footer>

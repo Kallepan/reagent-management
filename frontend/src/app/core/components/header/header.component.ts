@@ -36,7 +36,7 @@ export class HeaderComponent {
     const data = route.data || {};
     return {
       path: route.path,
-      label: data['label'],	
+      label: data['label'],
     }
   }).filter((route) => !!route.label); // Filter out the routes without labels
 

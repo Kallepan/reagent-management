@@ -133,7 +133,7 @@ export class BakStateHandlerService {
         this.notificationService.infoMessage(messages.BAK.REAGENT_TRANSFER_SUCCESS);
       },
       error: (err) => {
-        this.notificationService.warnMessage(messages.BAK.REAGENT_TRANSFER_FAILED);
+        this.notificationService.warnMessage(messages.GENERAL.UPDATE_FAILED);
       }
     })
   }
