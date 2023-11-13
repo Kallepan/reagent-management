@@ -25,9 +25,9 @@ export class LotsDetailComponent {
     filter((lot): lot is any => !!lot),
     tap(lot => {
       // populate form
-      this.formGroup.get('validFrom')?.setValue(lot.valid_from? new Date(lot.valid_from) : '', { emitEvent: false });
-      this.formGroup.get('inUseFrom')?.setValue(lot.in_use_from? new Date(lot.in_use_from) : '', { emitEvent: false });
-      this.formGroup.get('inUseUntil')?.setValue(lot.in_use_until? new Date(lot.in_use_until) : '', { emitEvent: false });
+      this.formGroup.get('validFrom')?.setValue(lot.valid_from ? new Date(lot.valid_from) : '', { emitEvent: false });
+      this.formGroup.get('inUseFrom')?.setValue(lot.in_use_from ? new Date(lot.in_use_from) : '', { emitEvent: false });
+      this.formGroup.get('inUseUntil')?.setValue(lot.in_use_until ? new Date(lot.in_use_until) : '', { emitEvent: false });
     }),
   );
 
@@ -36,9 +36,9 @@ export class LotsDetailComponent {
 
   constructor() {
     this.formGroup = this.fb.group({
-      validFrom: ['', ],
-      inUseFrom: ['', ],
-      inUseUntil: ['', ],
+      validFrom: ['',],
+      inUseFrom: ['',],
+      inUseUntil: ['',],
     });
   }
 
@@ -48,7 +48,7 @@ export class LotsDetailComponent {
     const validFrom = this.formGroup.get('validFrom')?.value as Date | null;
     const inUseFrom = this.formGroup.get('inUseFrom')?.value as Date | null;
     const inUseUntil = this.formGroup.get('inUseUntil')?.value as Date | null;
-    
+
     if (!validFrom && !inUseFrom && !inUseUntil) return;
 
     const data: any = {
@@ -74,7 +74,7 @@ export class LotsDetailComponent {
 
       const sourceReagent = result.sourceReagent as string;
       const sourceAmount = this.bakStateHandlerService.lots.getValue().find(lot => lot.id === this.id)!.reagents.find(r => r.id === sourceReagent)!.amount - transferAmount;
-      
+
       const targetReagent = result.targetReagent as string;
       const targetAmount = this.bakStateHandlerService.lots.getValue().find(lot => lot.id === this.id)!.reagents.find(r => r.id === targetReagent)!.amount + transferAmount;
 
@@ -86,5 +86,9 @@ export class LotsDetailComponent {
         targetAmount,
       });
     });
+  }
+
+  patchReagent(reagentId: string, amount: number): void {
+    this.bakStateHandlerService.patchReagent(reagentId, amount);
   }
 }
