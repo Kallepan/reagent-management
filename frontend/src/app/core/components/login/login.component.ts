@@ -1,7 +1,7 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '@app/core/services/auth.service';
-import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -41,7 +41,9 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmitLogin() {
-    this.authService.login(this.loginForm.controls['identifier'].value, this.loginForm.controls['password'].value)
-    this.loginForm.reset();
+    this.authService.login(this.loginForm.controls['identifier'].value, this.loginForm.controls['password'].value);
+    setTimeout(() => {
+      this.loginForm.reset();
+    }, 0);
   }
 }
