@@ -1,9 +1,7 @@
 from rest_framework import serializers
-from rest_framework.fields import empty
 
 from .models import Location, Type, Lot, Reagent
 
-import uuid
 from datetime import date
 
 def is_valid_range(from_date, until_date) -> bool:

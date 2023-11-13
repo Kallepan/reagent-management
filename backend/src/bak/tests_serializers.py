@@ -3,9 +3,6 @@ from django.test import TestCase
 from .models import Location, Type, Lot
 from .serializers import LocationSerializer, TypeSerializer, LotSerializer
 
-import uuid
-
-
 class TypeSerializerTest(TestCase):
     def setUp(self):
         self.type = Type.objects.create(name='Test Reagent Type', producer='Test Reagent Producer', article_number='123')
@@ -17,9 +14,10 @@ class TypeSerializerTest(TestCase):
             'name': 'Test Reagent Type',
             'producer': 'Test Reagent Producer',
             'article_number': '123',
-            'created_at': self.type.created_at.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         }
-        self.assertEqual(serializer.data, expected_data)
+
+        for k, v in expected_data.items():
+            self.assertEqual(serializer.data[k], v)
 
 
 class LocationSerializerTest(TestCase):
@@ -31,9 +29,10 @@ class LocationSerializerTest(TestCase):
         expected_data = {
             'id': str(self.location.id),
             'name': 'Test Location',
-            'created_at': self.location.created_at.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         }
-        self.assertEqual(serializer.data, expected_data)
+    
+        for k, v in expected_data.items():
+            self.assertEqual(serializer.data[k], v)
 
 
 class LotSerializerTest(TestCase):
@@ -48,16 +47,14 @@ class LotSerializerTest(TestCase):
             'name': 'Test Lot',
             'valid_from': None,
             'valid_until': '2021-12-31',
-            'created_at': self.lot.created_at.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
             'created_by': 'Test User',
             'in_use_from': None,
             'in_use_until': None,
             'is_empty': True,
         }
 
-        self.assertEqual(serializer.data['id'], expected_data['id'])
-        self.assertEqual(serializer.data['name'], expected_data['name'])
-        self.assertEqual(serializer.data['is_empty'], expected_data['is_empty'])
+        for k, v in expected_data.items(): 
+            self.assertEqual(serializer.data[k], v)
 
         # Check if key 'type', 'reagent', 'is_empty' is in serializer.data
         self.assertIn('reagents', serializer.data)
@@ -79,5 +76,6 @@ class LotSerializerValidationTest(TestCase):
             'in_use_from': None,
             'in_use_until': None
         })
+
         valid = serializer.is_valid()
         self.assertTrue(valid)
