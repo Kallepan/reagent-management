@@ -50,6 +50,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatListModule,
     MatDialogModule,
     MatAutocompleteModule,
+    MatSelectModule,
 
     DataTableComponent,
     SearchBarComponent,
