@@ -1,0 +1,13 @@
+.reagents {
+    display: flex;
+    gap: .5rem;
+    flex-direction: row;
+    align-items: center;
+
+    .reagents__actions {
+        display: flex;
+        flex-direction: row;
+        gap: .5rem;
+        align-items: center;
+    }
+}

@@ -26,6 +26,7 @@ import { ReagentTransferComponent } from './components/reagent-transfer/reagent-
 import { MatDialogModule } from '@angular/material/dialog';
 import { ChoiceDialogComponent } from '@app/shared/components/choice-dialog/choice-dialog.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { ReagentEditComponent } from './components/reagent-edit/reagent-edit.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     LotsDetailComponent,
     LotsCreateComponent,
     ReagentTransferComponent,
+    ReagentEditComponent,
   ],
   imports: [
     CommonModule,
