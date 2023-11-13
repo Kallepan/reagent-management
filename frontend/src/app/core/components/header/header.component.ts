@@ -26,7 +26,7 @@ import { LoginComponent } from '../login/login.component';
 export class HeaderComponent {
   private _router = inject(Router);
 
-  title = constants.TITLE;
+  title = constants.TITLE_SHORT;
   @Input() isDark = false;
   @Output() onToggleTheme = new EventEmitter<void>();
   @Output() onToggleSidenav = new EventEmitter<void>();

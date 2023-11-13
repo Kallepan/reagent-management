@@ -16,8 +16,9 @@ export class constants {
         USERNAME_STORAGE: 'username',
     }
 
-    public static TITLE = 'RMS';
-    public static VERSION = '0.0.1';
+    public static TITLE_SHORT = 'RMS';
+    public static TITLE_LONG = 'RMS - Reagent Management System';
+    public static VERSION = '1.0.0';
 
     public static ROUTES = [
         { path: '', title: 'Home', },

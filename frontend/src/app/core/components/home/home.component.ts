@@ -17,4 +17,6 @@ import { RouterModule } from '@angular/router';
 })
 export class HomeComponent {
   routes = constants.ROUTES;
+
+  title = constants.TITLE_LONG;
 }
