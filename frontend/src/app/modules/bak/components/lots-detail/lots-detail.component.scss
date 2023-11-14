@@ -16,6 +16,7 @@
     gap: 1rem;
     width: 100%;
 }
+
 .content {
     display: flex;
     flex-direction: row;
@@ -33,4 +34,8 @@
             font-weight: bold;
         }
     }
+}
+
+.reagents {
+    margin-bottom: 1rem;
 }

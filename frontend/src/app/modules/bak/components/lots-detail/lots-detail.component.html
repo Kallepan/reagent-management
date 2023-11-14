@@ -63,6 +63,7 @@
         </mat-card-actions>
     </mat-card>
     <div class="reagents">
+        <h3>Lagerorte</h3>
         <app-reagent-edit *ngFor="let reagent of lot.reagents" [reagent]="reagent"
             (onPatchReagent)="patchReagent(reagent.id, $event)"></app-reagent-edit>
     </div>
