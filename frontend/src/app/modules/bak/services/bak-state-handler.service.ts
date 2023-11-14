@@ -90,10 +90,10 @@ export class BakStateHandlerService {
 
         // update lots
         this.lots.next(lots);
+
+        // navigate to the new lot
+        this.router.navigate(['bak', 'lots', 'detail', resp.id]);
       },
-      complete: () => {
-        this.router.navigate(['bak', 'lots']);
-      }
     });
   }
 
