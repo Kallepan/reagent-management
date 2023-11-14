@@ -43,7 +43,7 @@ export class LotsListComponent implements OnInit {
       key: 'valid_until',
       label: 'Haltbarkeit',
       type: 'text',
-      fn: (lot: BakLot) => new Date(lot.valid_until).toLocaleDateString(),
+      fn: (lot: BakLot) => new Date(lot.valid_until).toLocaleDateString("de-DE"),
     },
     {
       key: 'type',
@@ -70,7 +70,7 @@ export class LotsListComponent implements OnInit {
     this.router.navigate(['bak', 'lots', 'detail', lot.id]);
   }
 
-  openReagentTransferDialog(lotId: string):void {
+  openReagentTransferDialog(lotId: string): void {
     const dialogRef = this.dialog.open(ReagentTransferComponent, {
       data: {
         reagents: this.bakStateHandlerService.lots.getValue().find(lot => lot.id === lotId)!.reagents,
@@ -81,13 +81,13 @@ export class LotsListComponent implements OnInit {
       if (!result) return;
 
       const transferAmount = result.transferAmount as number;
-      
+
       const sourceReagent = result.sourceReagent as string;
       const sourceAmount = this.bakStateHandlerService.lots.getValue().find(lot => lot.id === lotId)!.reagents.find(r => r.id === sourceReagent)!.amount - transferAmount;
-      
+
       const targetReagent = result.targetReagent as string;
       const targetAmount = this.bakStateHandlerService.lots.getValue().find(lot => lot.id === lotId)!.reagents.find(r => r.id === targetReagent)!.amount + transferAmount;
-      
+
       // calculate amount
       this.bakStateHandlerService.handleReagentTransfer({
         sourceReagent,
@@ -98,7 +98,7 @@ export class LotsListComponent implements OnInit {
     });
   }
 
-  patchReagent(reagentId: string, amount: number) :void {
+  patchReagent(reagentId: string, amount: number): void {
     this.bakStateHandlerService.patchReagent(reagentId, amount);
   }
 

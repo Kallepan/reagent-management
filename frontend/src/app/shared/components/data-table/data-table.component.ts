@@ -37,8 +37,8 @@ export type ColumnsSchema = {
   ],
   animations: [
     trigger('detailExpand', [
-      state('collapsed', style({height: '0px', minHeight: '0'})),
-      state('expanded', style({height: '*'})),
+      state('collapsed', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
       transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
     ]),
   ],
@@ -54,15 +54,15 @@ export class DataTableComponent<T> implements OnInit, AfterViewInit {
   }
   @Input() schema: ColumnsSchema[] = [];
   @Input() detailRowTemplate: TemplateRef<any> | null = null;
-  
-  @ViewChild(MatPaginator, {static: true}) paginator!: MatPaginator;
-  @ViewChild(MatSort, {static: true}) sort!: MatSort;
+
+  @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort!: MatSort;
 
   displayedColumns: string[] = [];
   dataSource: MatTableDataSource<T> = new MatTableDataSource<T>();
-  pageSizeOptions: number[] = [5, 10, 25, 50];
+  pageSizeOptions: number[] = [5, 10, 25, 50, 100];
   expandedElement: T | null = null;
-  
+
   ngOnInit(): void {
     this.displayedColumns = this.schema.map((column) => column.key).concat(['actions']);
     this.dataSource.filterPredicate = (data: T, filter: string) => {
@@ -70,7 +70,7 @@ export class DataTableComponent<T> implements OnInit, AfterViewInit {
       return dataStr.indexOf(filter) !== -1;
     }
   }
-  
+
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
