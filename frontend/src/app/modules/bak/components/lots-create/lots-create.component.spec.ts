@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BehaviorSubject } from 'rxjs';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { BakType } from '../../interfaces/type';
 
 describe('LotsCreateComponent', () => {
   let component: LotsCreateComponent;
@@ -61,7 +62,7 @@ describe('LotsCreateComponent', () => {
       validFrom: '',
       inUseFrom: '',
       inUseUntil: '',
-      typeId: 'typeId',
+      type: 'type',
     });
     component.submit();
     expect(component.formGroup.valid).toBeFalsy();
@@ -71,6 +72,17 @@ describe('LotsCreateComponent', () => {
     expect(submitButton.disabled).toBeTruthy();
 
     expect(bakStateHandlerService.createLot).not.toHaveBeenCalled();
+  });
+
+  it('should display type name', () => {
+    const undefinedType = undefined as unknown as BakType;
+    expect(component.displayFn(undefinedType)).toBe('');
+
+    const type = { name: 'name', producer: 'producer', article_number: 'article_number' } as BakType;
+    expect(component.displayFn(type)).toBe(`${type.name} - ${type.producer} - ${type.article_number}`);
+
+    const type2 = {} as BakType;
+    expect(component.displayFn(type2)).toBe('');
   });
 
   it('should fill formGroup createdBy with lastUser from localStorage', () => {
@@ -87,7 +99,7 @@ describe('LotsCreateComponent', () => {
       validFrom: '',
       inUseFrom: '',
       inUseUntil: '',
-      typeId: 'typeId',
+      type: 'typeId',
     });
     component.submit();
     expect(bakStateHandlerService.createLot).toHaveBeenCalled();

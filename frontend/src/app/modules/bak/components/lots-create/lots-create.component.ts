@@ -30,7 +30,7 @@ export class LotsCreateComponent implements OnInit {
       validUntil: ['', [Validators.required]],
       inUseFrom: ['',],
       inUseUntil: ['',],
-      typeId: ['', [Validators.required]],
+      type: ['', [Validators.required]],
     });
 
   }
@@ -47,7 +47,7 @@ export class LotsCreateComponent implements OnInit {
 
     this.filteredTypes = combineLatest([
       this.bakStateHandlerService.types.asObservable(),
-      this.formGroup.get('typeId')!.valueChanges.pipe(
+      this.formGroup.get('type')!.valueChanges.pipe(
         takeUntilDestroyed(this.destroyRef),
         startWith(''),
         filter(value => typeof value === 'string'),
@@ -67,7 +67,7 @@ export class LotsCreateComponent implements OnInit {
     const validUntil = this.formGroup.get('validUntil')?.value as Date;
     const inUseFrom = this.formGroup.get('inUseFrom')?.value as Date | null;
     const inUseUntil = this.formGroup.get('inUseUntil')?.value as Date | null;
-    const typeId = this.formGroup.get('typeId')?.value as string;
+    const type = this.formGroup.get('type')?.value as BakType;
 
     const data: CreateBakLot = {
       name,
@@ -76,7 +76,7 @@ export class LotsCreateComponent implements OnInit {
       valid_until: isoDateFormat(validUntil)!,
       in_use_from: isoDateFormat(inUseFrom),
       in_use_until: isoDateFormat(inUseUntil),
-      type_id: typeId,
+      type_id: type.id,
     };
 
     this.bakStateHandlerService.createLot(data);
@@ -84,5 +84,12 @@ export class LotsCreateComponent implements OnInit {
 
   private _filterType(types: BakType[], filterValue: string): BakType[] {
     return types.filter(option => option.name.toLowerCase().includes(filterValue) || option.producer.toLowerCase().includes(filterValue) || option.article_number?.toLowerCase().includes(filterValue));
+  }
+
+  displayFn(type: BakType): string {
+    if (!type) return '';
+    return type && type.name ?
+      `${type.name} - ${type.producer} - ${type.article_number}` :
+      '';
   }
 }
