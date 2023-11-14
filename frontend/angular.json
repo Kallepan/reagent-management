@@ -71,10 +71,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "reagent-management-system:build:production"
+              "buildTarget": "reagent-management-system:build:production"
             },
             "development": {
-              "browserTarget": "reagent-management-system:build:development"
+              "buildTarget": "reagent-management-system:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -82,7 +82,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "reagent-management-system:build"
+            "buildTarget": "reagent-management-system:build"
           }
         },
         "test": {
