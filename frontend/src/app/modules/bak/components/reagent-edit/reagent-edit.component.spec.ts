@@ -22,6 +22,10 @@ describe('ReagentEditComponent', () => {
     component.reagent = {
       amount: 1,
       id: "1",
+      location: {
+        name: "test",
+        id: "1"
+      }
     } as any;
     fixture.detectChanges();
   });
