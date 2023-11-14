@@ -21,6 +21,7 @@ class CookieTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         # Add custom claims
         token['identifier'] = user.identifier
+        token['groups'] = user.groups.values_list('name', flat=True)
 
         return token
 
@@ -38,6 +39,7 @@ class CookieTokenRefreshSerializer(TokenRefreshSerializer):
 class CookieTokenValidateSerializer(serializers.Serializer):
     token = None
     identifier = serializers.CharField(read_only=True)
+    has_access = serializers.ListField(read_only=True)
 
     def validate(self, attrs):
         token = self.context['request'].COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE'])
@@ -52,9 +54,10 @@ class CookieTokenValidateSerializer(serializers.Serializer):
             raise InvalidToken('No valid token found in cookie')
 
         # get the user from the token
-        identifier = JWTAuthentication().get_user(t)
+        user = JWTAuthentication().get_user(t)
 
-        # Add custom claims
-        attrs['identifier'] = identifier.identifier
+        # Add custom claims, identifier and groups
+        attrs['identifier'] = user.identifier
+        attrs['groups'] = user.groups.values_list('name', flat=True)
 
         return attrs
