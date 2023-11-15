@@ -5,7 +5,7 @@ import { NotificationService } from "../services/notification.service";
 import { constants } from "../constants/constants";
 import { messages } from "../constants/messages";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { catchError, map, tap } from "rxjs";
+import { catchError, map, of, tap } from "rxjs";
 
 // Guard to check if a feature flag is enabled for the user
 export const featureFlagGuard: CanActivateFn = (
@@ -25,22 +25,11 @@ export const featureFlagGuard: CanActivateFn = (
 
     const requestedFeatureFlag = (route.data['featureFlag'] as string).trim().toUpperCase();
 
-    return http.get<any>(`${constants.APIS.AUTH}/verify`, httpOptions).pipe(
-        map(resp => {
-            return {
-                identifier: resp.identifier,
-                groups: resp.groups as string[],
-            }
-        }),
-        // Check if the user is an admin or if the feature flag is enabled for the user
-        map(data => data.identifier === 'admin' || data.groups.includes(requestedFeatureFlag)),
-        // If the feature flag is disabled, show a warning message
-        tap(isEnabled => {
-            if (!isEnabled)
-                notificationService.warnMessage(messages.GENERAL.FEATURE_FLAG_DISABLED);
-        }),
+    return http.get<any>(`${constants.APIS.AUTH}/has_access/${requestedFeatureFlag}`, httpOptions).pipe(
+        map(() => true),
+        catchError(() => of(false)),
         // If the feature flag is disabled, redirect the user to the home page
-        map(isEnabled => isEnabled || router.createUrlTree(['']))
+        map(isEnabled => isEnabled || router.createUrlTree([''])),
     );
 };
 
