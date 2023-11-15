@@ -10,7 +10,7 @@ import { CustomResponseType } from '@app/core/interfaces/response';
 })
 export class LotAPIService {
   private http = inject(HttpClient);
-  
+
   getLots(): Observable<BakLot[]> {
     const url = `${constants.APIS.BAK.BASE}/lots/`
 
@@ -102,5 +102,18 @@ export class LotAPIService {
         return resp.data as BakLot;
       }),
     );
+  }
+
+  deleteLot(lotId: string) {
+    const url = `${constants.APIS.BAK.BASE}/lots/${lotId}/`
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      withCredentials: true,
+    };
+
+    return this.http.delete<CustomResponseType>(url, httpOptions);
   }
 }

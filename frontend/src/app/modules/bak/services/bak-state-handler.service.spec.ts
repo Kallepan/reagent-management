@@ -15,7 +15,7 @@ describe('BakStateHandlerService', () => {
   let service: BakStateHandlerService;
   let httpMock: HttpTestingController;
   const typeAPIService = jasmine.createSpyObj('TypeAPIService', ['getTypes']);
-  const lotAPIService = jasmine.createSpyObj('LotAPIService', ['getLots', 'postLot']);
+  const lotAPIService = jasmine.createSpyObj('LotAPIService', ['getLots', 'postLot', 'deleteLot']);
   const locationAPIService = jasmine.createSpyObj('LocationAPIService', ['getLocations']);
   const reagentAPIService = jasmine.createSpyObj('ReagentAPIService', ['getReagents']);
 
@@ -74,5 +74,17 @@ describe('BakStateHandlerService', () => {
     service.createLot(mockLot);
 
     expect(navigateSpy).toHaveBeenCalledWith(['bak', 'lots', 'detail', mockLot.id]);
+  });
+
+  it('should delete lot', () => {
+    const mockLot = { id: 123 } as any;
+    lotAPIService.postLot.and.returnValue(of(mockLot));
+    lotAPIService.deleteLot.and.returnValue(of({}));
+
+    service.createLot(mockLot);
+    expect(service.lots.value).toContain(mockLot);
+
+    service.deleteLot(mockLot.id);
+    expect(service.lots.value).not.toContain(mockLot);
   });
 });

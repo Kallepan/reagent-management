@@ -97,6 +97,23 @@ export class BakStateHandlerService {
     });
   }
 
+  // Delete a lot.
+  deleteLot(lotId: string) {
+    this.lotAPIService.deleteLot(lotId).subscribe({
+      next: () => {
+        const lots = this.lots.getValue();
+        const lotIndex = lots.findIndex(lot => lot.id === lotId);
+        lots.splice(lotIndex, 1);
+
+        // update lots
+        this.lots.next(lots);
+
+        // navigate to the new lot
+        this.router.navigate(['bak', 'lots']);
+      },
+    });
+  }
+
   // Patch a lot.
   patchLot(lotId: string, data: any) {
     this.lotAPIService.patchLot(lotId, data).subscribe({

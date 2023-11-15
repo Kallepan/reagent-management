@@ -91,4 +91,10 @@ export class LotsDetailComponent {
   patchReagent(reagentId: string, amount: number): void {
     this.bakStateHandlerService.patchReagent(reagentId, amount);
   }
+
+  deleteLot() {
+    if (!confirm('Sind Sie sicher, dass Sie diesen Lot löschen wollen?')) return;
+
+    this.bakStateHandlerService.deleteLot(this.id!);
+  }
 }
