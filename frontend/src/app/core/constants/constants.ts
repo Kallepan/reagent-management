@@ -23,6 +23,7 @@ export class constants {
     public static ROUTES = [
         { path: '', title: 'Home', },
         { path: 'bak', title: 'BAK', },
+        { path: 'pcr', title: 'PCR', },
     ]
 
     public static IS_PRODUCTION = environment.production;

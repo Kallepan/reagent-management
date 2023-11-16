@@ -4,7 +4,7 @@ export class messages {
         LOGGED_OUT: 'Logout erfolgreich',
 
         INVALID_CREDENTIALS: 'Ungültiger Identifier oder Passwort',
-        UNAUTHORIZED: 'Zur Ausführung dieser Funktion müssen Sie angemeldet sein',
+        UNAUTHORIZED: 'Sie sind nicht berechtigt, diese Funktion auszuführen',
         FORBIDDEN: 'Sie dürfen diese Funktion nicht ausführen',
     };
 
@@ -18,5 +18,6 @@ export class messages {
         UNKNOWN: 'An unknown error occured',
         UPDATE_FAILED: 'Update fehlgeschlagen',
         SERVER_ERROR: 'An error occured on the server',
+        FEATURE_FLAG_DISABLED: 'Diese Funktion ist fuer Sie nicht verfügbar',
     };
 }
