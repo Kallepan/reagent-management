@@ -1,12 +1,10 @@
 <div class="reagents">
-    <div class="reagents__descriptor">
-        {{reagent.location.name}} - {{reagent.amount}}
-    </div>
-
-    <div class="reagents__actions">
-        <button mat-mini-fab color="accent"
-            (click)="onPatchReagent.emit(reagent.amount + 1)"><mat-icon>add</mat-icon></button>
-        <button mat-mini-fab color="accent"
-            (click)="onPatchReagent.emit(reagent.amount - 1)"><mat-icon>remove</mat-icon></button>
-    </div>
+    {{reagent.location.name}}
+    <button mat-mini-fab color="accent"
+        (click)="onPatchReagent.emit(reagent.amount + 1)"><mat-icon>add</mat-icon></button>
+    <span class="reagents__amount">
+        {{reagent.amount}}
+    </span>
+    <button mat-mini-fab color="accent"
+        (click)="onPatchReagent.emit(reagent.amount - 1)"><mat-icon>remove</mat-icon></button>
 </div>
