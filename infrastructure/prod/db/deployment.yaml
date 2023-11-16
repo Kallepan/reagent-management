@@ -54,7 +54,7 @@ spec:
           failureThreshold: 10
         volumeMounts:
           - name: rms-db
-            mountPath: /var/lib/postgres/data
+            mountPath: /var/lib/postgresql/data
             readOnly: false
       volumes:
         - name: rms-db

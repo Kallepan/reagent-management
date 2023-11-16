@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=v1
+VERSION=v2
 NAMESPACE=reagent-management
 export $(grep -v '^#' .env | xargs)
 
