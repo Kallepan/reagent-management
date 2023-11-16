@@ -4,7 +4,7 @@ export class messages {
         LOGGED_OUT: 'Logout erfolgreich',
 
         INVALID_CREDENTIALS: 'Ungültiger Identifier oder Passwort',
-        UNAUTHORIZED: 'Zur Ausführung dieser Funktion müssen Sie angemeldet sein',
+        UNAUTHORIZED: 'Sie sind nicht berechtigt, diese Funktion auszuführen',
         FORBIDDEN: 'Sie dürfen diese Funktion nicht ausführen',
     };
 
