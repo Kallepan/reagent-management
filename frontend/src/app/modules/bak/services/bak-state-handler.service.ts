@@ -2,7 +2,7 @@ import { DestroyRef, Injectable, inject } from '@angular/core';
 import { TypeAPIService } from './type-api.service';
 import { LocationAPIService } from './location-api.service';
 import { LotAPIService } from './lot-api.service';
-import { BehaviorSubject, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, interval, switchMap, tap } from 'rxjs';
 import { BakLocation } from '../interfaces/location';
 import { BakType } from '../interfaces/type';
 import { ReagentAPIService } from './reagent-api.service';
@@ -34,6 +34,18 @@ export class BakStateHandlerService {
   constructor() {
     // populate locations and types
     this.refreshData();
+
+    // refresh lots every 5 minutes
+    interval(1000 * 60 * 5).pipe(
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(() => {
+      this.lotAPIService.getLots().pipe(
+        takeUntilDestroyed(this.destroyRef),
+        tap(() => this._finishedLoading = true),
+      ).subscribe((lots) => {
+        this.lots.next(lots);
+      });
+    });
   }
 
   refreshData() {
