@@ -24,6 +24,7 @@ export class AuthService {
   });
 
   verifyLogin() {
+    /* Called at ngOnInit() in app.component.ts to check if the user is logged in using cookies */
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -99,18 +100,5 @@ export class AuthService {
 
   get authData() {
     return this._authData;
-  }
-
-  isFeatureEnabled(featureName: string) {
-    const identifier = this._authData()?.department;
-
-    if (!identifier) {
-      return false;
-    }
-
-    if (identifier === 'admin') {
-      return true;
-    }
-    return identifier === featureName;
   }
 }

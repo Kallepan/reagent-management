@@ -23,7 +23,6 @@ export class ChoiceDialogComponent<T extends { id: string, name: string }> {
   constructor(@Inject(MAT_DIALOG_DATA) data: { title: string, choices: T[] }) {
     this.title = data.title;
     this.choices = data.choices;
-    debugger;
   }
 
   onAbort(): void {
