@@ -20,7 +20,7 @@ export class LotAPIService {
       }),
       params: new HttpParams({
         fromObject: {
-          // is_empty: 'false', TODO: implement
+          is_empty: 'false',
         }
       }),
       withCredentials: true,
