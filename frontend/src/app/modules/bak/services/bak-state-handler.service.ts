@@ -13,7 +13,7 @@ import { NotificationService } from '@app/core/services/notification.service';
 import { messages } from '@app/core/constants/messages';
 
 @Injectable({
-  providedIn: 'any'
+  providedIn: null,
 })
 export class BakStateHandlerService {
   private destroyRef = inject(DestroyRef)
@@ -113,6 +113,7 @@ export class BakStateHandlerService {
   deleteLot(lotId: string) {
     this.lotAPIService.deleteLot(lotId).subscribe({
       next: () => {
+        // remove lot from lots
         const lots = this.lots.getValue();
         const lotIndex = lots.findIndex(lot => lot.id === lotId);
         lots.splice(lotIndex, 1);
@@ -120,7 +121,7 @@ export class BakStateHandlerService {
         // update lots
         this.lots.next(lots);
 
-        // navigate to the new lot
+        // navigate to lots page
         this.router.navigate(['bak', 'lots']);
       },
     });

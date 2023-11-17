@@ -14,23 +14,34 @@ import { Router } from '@angular/router';
 describe('BakStateHandlerService', () => {
   let service: BakStateHandlerService;
   let httpMock: HttpTestingController;
-  const typeAPIService = jasmine.createSpyObj('TypeAPIService', ['getTypes']);
-  const lotAPIService = jasmine.createSpyObj('LotAPIService', ['getLots', 'postLot', 'deleteLot']);
-  const locationAPIService = jasmine.createSpyObj('LocationAPIService', ['getLocations']);
-  const reagentAPIService = jasmine.createSpyObj('ReagentAPIService', ['getReagents']);
 
-  locationAPIService.getLocations.and.returnValue(of([]));
-  typeAPIService.getTypes.and.returnValue(of([]));
-  lotAPIService.getLots.and.returnValue(of([]));
+  let typeAPIService: jasmine.SpyObj<TypeAPIService>;
+  let lotAPIService: jasmine.SpyObj<LotAPIService>;
+  let locationAPIService: jasmine.SpyObj<LocationAPIService>;
+  let reagentAPIService: jasmine.SpyObj<ReagentAPIService>;
+
+
+  const mockLot = { id: 123 } as any;
 
   beforeEach(() => {
+    typeAPIService = jasmine.createSpyObj('TypeAPIService', ['getTypes']);
+    lotAPIService = jasmine.createSpyObj('LotAPIService', ['getLots', 'postLot', 'deleteLot']);
+    locationAPIService = jasmine.createSpyObj('LocationAPIService', ['getLocations']);
+    reagentAPIService = jasmine.createSpyObj('ReagentAPIService', ['getReagents']);
+
+    typeAPIService.getTypes.and.returnValue(of([]));
+    lotAPIService.getLots.and.returnValue(of([]));
+    locationAPIService.getLocations.and.returnValue(of([]));
+
+    lotAPIService.postLot.and.returnValue(of(mockLot));
+    lotAPIService.deleteLot.and.returnValue(of({} as any));
+
     TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
         MatSnackBarModule,
       ],
       providers: [
-        BakStateHandlerService,
         NotificationService,
         {
           provide: TypeAPIService,
@@ -50,8 +61,14 @@ describe('BakStateHandlerService', () => {
         }
       ]
     });
-    service = TestBed.inject(BakStateHandlerService);
     httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  beforeEach(() => {
+    TestBed.runInInjectionContext(() => {
+      service = new BakStateHandlerService();
+    });
+
   });
 
   it('should be created', () => {
@@ -59,16 +76,11 @@ describe('BakStateHandlerService', () => {
   });
 
   it('created lot should be added to lots', () => {
-    const mockLot = { id: 123 } as any;
-    lotAPIService.postLot.and.returnValue(of(mockLot));
     service.createLot(mockLot);
     expect(service.lots.value).toContain(mockLot);
   });
 
   it('should navigate to /lots/detail/:id', () => {
-    const mockLot = { id: 123 } as any;
-    lotAPIService.postLot.and.returnValue(of(mockLot));
-
     const router = TestBed.inject(Router);
     const navigateSpy = spyOn(router, 'navigate');
     service.createLot(mockLot);
@@ -77,10 +89,6 @@ describe('BakStateHandlerService', () => {
   });
 
   it('should delete lot', () => {
-    const mockLot = { id: 123 } as any;
-    lotAPIService.postLot.and.returnValue(of(mockLot));
-    lotAPIService.deleteLot.and.returnValue(of({}));
-
     service.createLot(mockLot);
     expect(service.lots.value).toContain(mockLot);
 

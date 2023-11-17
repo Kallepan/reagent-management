@@ -1,16 +1,37 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BakStateHandlerService } from '../../services/bak-state-handler.service';
 import { CreateBakLot } from '../../interfaces/lot';
 import { filterNotBeforeToday, isoDateFormat } from '@app/core/functions/date.function';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, combineLatest, filter, forkJoin, map, startWith, switchMap, tap } from 'rxjs';
+import { Observable, combineLatest, filter, map, startWith, tap } from 'rxjs';
 import { BakType } from '../../interfaces/type';
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
+import { RouterModule } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-lots-create',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+
+    MatFormFieldModule,
+    MatDatepickerModule,
+    MatAutocompleteModule,
+    MatInputModule,
+    MatButtonModule,
+
+    RouterModule,
+  ],
   templateUrl: './lots-create.component.html',
-  styleUrls: ['./lots-create.component.scss']
+  styleUrls: ['./lots-create.component.scss'],
+
 })
 export class LotsCreateComponent implements OnInit {
   private destroyRef = inject(DestroyRef);

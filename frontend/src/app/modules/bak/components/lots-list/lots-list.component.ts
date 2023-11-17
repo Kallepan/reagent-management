@@ -3,18 +3,34 @@ import { BakStateHandlerService } from '../../services/bak-state-handler.service
 import { debounceTime, filter, tap } from 'rxjs';
 import { BakLot } from '../../interfaces/lot';
 import { FormControl } from '@angular/forms';
-import { Router } from '@angular/router';
-import { ColumnsSchema } from '@app/shared/components/data-table/data-table.component';
+import { Router, RouterModule } from '@angular/router';
+import { ColumnsSchema, DataTableComponent } from '@app/shared/components/data-table/data-table.component';
 import { ReagentTransferComponent } from '../reagent-transfer/reagent-transfer.component';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from '@app/core/services/notification.service';
 import { messages } from '@app/core/constants/messages';
 import { ChoiceDialogComponent } from '@app/shared/components/choice-dialog/choice-dialog.component';
+import { CommonModule } from '@angular/common';
+import { ReagentEditComponent } from '../reagent-edit/reagent-edit.component';
+import { SearchBarComponent } from '@app/shared/components/search-bar/search-bar.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterTestingModule } from '@angular/router/testing';
 
 @Component({
   selector: 'app-lots-list',
   templateUrl: './lots-list.component.html',
-  styleUrls: ['./lots-list.component.scss']
+  styleUrls: ['./lots-list.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReagentEditComponent,
+
+    SearchBarComponent,
+    DataTableComponent,
+    MatButtonModule,
+    RouterModule,
+  ]
 })
 export class LotsListComponent implements OnInit {
   private router = inject(Router);

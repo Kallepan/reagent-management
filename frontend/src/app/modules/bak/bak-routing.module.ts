@@ -1,14 +1,12 @@
-import { NgModule } from '@angular/core';
+import { NgModule, importProvidersFrom } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LotsListComponent } from './components/lots-list/lots-list.component';
-import { LotsCreateComponent } from './components/lots-create/lots-create.component';
-import { LotsDetailComponent } from './components/lots-detail/lots-detail.component';
+import { BakModule } from './bak.module';
 
 const routes: Routes = [
-  { path: 'lots/create', component: LotsCreateComponent, title: 'Create Lot' },
-  { path: 'lots/detail/:id', component: LotsDetailComponent, title: 'Lot Detail', }, // TODO: canActivate: [isAuthenticated]
-  { path: 'lots', component: LotsListComponent, title: 'Lots' },
-  { path: '', redirectTo: 'lots', pathMatch: 'full' }
+  { path: 'lots/create', loadComponent: () => import('./components/lots-create/lots-create.component').then(m => m.LotsCreateComponent), title: 'Create Lot', providers: [importProvidersFrom(BakModule)] },
+  { path: 'lots/detail/:id', loadComponent: () => import('./components/lots-detail/lots-detail.component').then(m => m.LotsDetailComponent), title: 'Lot Detail', providers: [importProvidersFrom(BakModule)] },
+  { path: 'lots', loadComponent: () => import('./components/lots-list/lots-list.component').then(m => m.LotsListComponent), title: 'Lots', providers: [importProvidersFrom(BakModule)] },
+  { path: '', redirectTo: 'lots', pathMatch: 'full', },
 ];
 
 @NgModule({

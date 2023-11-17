@@ -1,10 +1,9 @@
 import { HttpClient } from "@angular/common/http";
-import { ActivatedRoute, ActivatedRouteSnapshot, Router, RouterState, RouterStateSnapshot, UrlSegment, UrlSegmentGroup, UrlTree } from "@angular/router";
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlSegment, UrlSegmentGroup, UrlTree } from "@angular/router";
 import { NotificationService } from "../services/notification.service";
 import { TestBed, fakeAsync } from "@angular/core/testing";
-import { Observable, of } from "rxjs";
+import { Observable, of, throwError } from "rxjs";
 import { featureFlagGuard } from "./auth-guard";
-import { ɵWebAnimationsStyleNormalizer } from "@angular/animations/browser";
 import { RouterTestingModule } from "@angular/router/testing";
 
 describe('featureFlagGuard', () => {
@@ -54,19 +53,33 @@ describe('featureFlagGuard', () => {
         });
     }));
 
-    it('user should be able to access routes with matching feature flag', fakeAsync(async () => {
+    it('user should not access mismatching feature flag', fakeAsync(async () => {
+        // http get should return an error if no feature flag is provided
+        http.get.and.returnValue(throwError(() => new Error({ status: 403 } as any)));
+
+
+        const routes = [
+            { url: 'test2', featureFlag: 'PER2' },
+            { url: 'test3', featureFlag: '' },
+        ];
+
+        routes.forEach(async (route) => {
+            const allowed = await runAuthGuardWithContext(getAuthGuardWithDummyUrl(route.url, route.featureFlag));
+
+            expect(router.createUrlTree).toHaveBeenCalled();
+        });
+    }));
+
+    it('user should be able to access routes with matching feature flag and group', fakeAsync(async () => {
         http.get.and.returnValue(of({ identifier: 'user', groups: ['PER1'] }));
 
         const routes = [
-            { url: 'test', featureFlag: 'PER1', allowed: true },
-            { url: 'test2', featureFlag: 'PER2', allowed: false },
+            { url: 'test', featureFlag: 'PER1' },
+            { url: 'test2', featureFlag: 'PER1' },
         ];
         routes.forEach(async (route) => {
             const allowed = await runAuthGuardWithContext(getAuthGuardWithDummyUrl(route.url, route.featureFlag));
-            if (route.allowed)
-                expect(allowed).toBeTruthy();
-            else
-                expect(allowed).toBeFalsy();
+            expect(allowed).toBeTruthy();
         });
     }));
 

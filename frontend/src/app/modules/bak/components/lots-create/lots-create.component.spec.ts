@@ -31,8 +31,8 @@ describe('LotsCreateComponent', () => {
         MatNativeDateModule,
         MatAutocompleteModule,
         MatInputModule,
+        LotsCreateComponent,
       ],
-      declarations: [LotsCreateComponent],
       providers: [
         {
           provide: BakStateHandlerService,

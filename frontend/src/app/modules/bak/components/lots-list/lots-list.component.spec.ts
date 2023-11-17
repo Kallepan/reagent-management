@@ -12,7 +12,7 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 
-const mockSearchResults: {id:string, name:string, type: {name: string, producer: string}}[] = [
+const mockSearchResults: { id: string, name: string, type: { name: string, producer: string } }[] = [
   {
     id: "1",
     name: "Test Lot 1",
@@ -44,9 +44,9 @@ describe('LotsListComponent', () => {
   let fixture: ComponentFixture<LotsListComponent>;
   let bakStateHandlerService: jasmine.SpyObj<BakStateHandlerService>;
   let loader: HarnessLoader;
-  
+
   beforeEach(async () => {
-    bakStateHandlerService = jasmine.createSpyObj('BakStateHandlerService', ['getTypes', 'getLots', 'getLocations', 'getReagents', 'searchLots', 'refreshData'], {lots: new BehaviorSubject([])});
+    bakStateHandlerService = jasmine.createSpyObj('BakStateHandlerService', ['getTypes', 'getLots', 'getLocations', 'getReagents', 'searchLots', 'refreshData'], { lots: new BehaviorSubject([]) });
 
     await TestBed.configureTestingModule({
       imports: [
@@ -55,8 +55,9 @@ describe('LotsListComponent', () => {
         MatSnackBarModule,
         BrowserAnimationsModule,
         RouterTestingModule.withRoutes([
-          {path: 'bak/lots/detail/:id', redirectTo: ''},
+          { path: 'bak/lots/detail/:id', redirectTo: '' },
         ]),
+        LotsListComponent,
       ],
       providers: [
         {
@@ -64,7 +65,6 @@ describe('LotsListComponent', () => {
           useValue: bakStateHandlerService
         },
       ],
-      declarations: [LotsListComponent]
     }).compileComponents();
   });
 

@@ -12,6 +12,7 @@ describe('LocationAPIService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
+      providers: [LocationAPIService],
     });
     service = TestBed.inject(LocationAPIService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -51,6 +52,6 @@ describe('LocationAPIService', () => {
 
     const req = httpMock.expectOne(constants.APIS.BAK.BASE + '/locations/1');
     expect(req.request.method).toBe('GET');
-    req.flush({data: mockLocation});
+    req.flush({ data: mockLocation });
   });
 });

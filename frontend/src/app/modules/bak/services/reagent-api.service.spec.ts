@@ -9,6 +9,7 @@ describe('ReagentAPIService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
+      providers: [ReagentAPIService],
     });
     service = TestBed.inject(ReagentAPIService);
   });

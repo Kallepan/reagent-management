@@ -13,9 +13,10 @@ describe('ReagentEditComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         MatButtonModule,
-        MatIconModule
+        MatIconModule,
+
+        ReagentEditComponent,
       ],
-      declarations: [ReagentEditComponent]
     });
     fixture = TestBed.createComponent(ReagentEditComponent);
     component = fixture.componentInstance;

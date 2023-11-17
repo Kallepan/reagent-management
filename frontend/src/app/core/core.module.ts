@@ -22,7 +22,6 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
       useClass: ErrorHttpInterceptor,
       multi: true,
     },
-    
     NotificationService,
   ]
 })

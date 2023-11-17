@@ -9,6 +9,7 @@ describe('LotAPIService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
+      providers: [LotAPIService],
     });
     service = TestBed.inject(LotAPIService);
   });
