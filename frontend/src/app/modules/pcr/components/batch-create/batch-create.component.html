@@ -45,6 +45,7 @@
             </form>
         </mat-step>
         <mat-step [stepControl]="reagentsFormGroup">
+            <ng-template matStepLabel>Reagenzien anlegen</ng-template>
             <!-- this is necessary for the provider resolution to correctly find the formGroup! -->
             <div [formGroup]="reagentsFormGroup">
                 <app-reagent-create controlKey="reagents"></app-reagent-create>
