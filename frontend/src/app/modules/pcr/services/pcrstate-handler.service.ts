@@ -7,6 +7,7 @@ import { RemovalService } from './removal.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BehaviorSubject } from 'rxjs';
 import { Analysis, Device, Kind } from '../interfaces/simple';
+import { Reagent } from '../interfaces/reagent';
 
 @Injectable({
   providedIn: 'any'
@@ -26,6 +27,7 @@ export class PCRStateHandlerService {
   kinds = new BehaviorSubject<Kind[]>([]);
   devices = new BehaviorSubject<Device[]>([]);
   analyses = new BehaviorSubject<Analysis[]>([]);
+  reagents = new BehaviorSubject<Reagent[]>([]);
 
   constructor() {
     this.refreshData();

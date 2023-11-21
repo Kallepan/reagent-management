@@ -1,1 +1,16 @@
-<p>batch-list works!</p>
+<div class="container">
+    <app-search-bar [control]="filterControl" (searchSubmit)="searchReagents($event)"
+        formHint="Durchsucht die Tabelle. Mit Enter kann eine bestimmte Charge gesucht werden."></app-search-bar>
+    <app-data-table></app-data-table>
+    <button mat-raised-button color="accent" routerLink="/pcr/batch/create">Anlegen</button>
+</div>
+
+<ng-template #detailRowTemplate let-element>
+    <!-- 
+    This is the template which will be present upon clicking on the lot
+    in the table. It will be displayed below the row.
+    -->
+    <div class="detail-row mat-row" style="overflow: hidden; margin-top: 1rem;">
+        TEST
+    </div>
+</ng-template>
