@@ -41,7 +41,7 @@ export class LotAPIService {
         'Content-Type': 'application/json',
       }),
       params: new HttpParams({
-        fromObject: query
+        fromObject: query,
       }),
       withCredentials: true,
     };

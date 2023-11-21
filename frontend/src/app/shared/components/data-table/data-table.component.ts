@@ -49,9 +49,7 @@ export class DataTableComponent<T> implements OnInit, AfterViewInit {
   @Input() set data(data: T[]) {
     this.dataSource.data = data;
   }
-  @Input() set filter(searchTerm: string) {
-    this.dataSource.filter = searchTerm.trim().toLowerCase();
-  }
+
   @Input() schema: ColumnsSchema[] = [];
   @Input() detailRowTemplate: TemplateRef<any> | null = null;
 

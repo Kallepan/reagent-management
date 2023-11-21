@@ -34,18 +34,6 @@ export class BakStateHandlerService {
   constructor() {
     // populate locations and types
     this.refreshData();
-
-    // refresh lots every 5 minutes
-    interval(1000 * 60 * 5).pipe(
-      takeUntilDestroyed(this.destroyRef),
-    ).subscribe(() => {
-      this.lotAPIService.getLots().pipe(
-        takeUntilDestroyed(this.destroyRef),
-        tap(() => this._finishedLoading = true),
-      ).subscribe((lots) => {
-        this.lots.next(lots);
-      });
-    });
   }
 
   refreshData() {
@@ -72,7 +60,7 @@ export class BakStateHandlerService {
   // search for a lot
   searchLots(searchString: string) {
     const params = {
-      name: searchString,
+      search: searchString,
     };
 
     return this.lotAPIService.searchLots(params);

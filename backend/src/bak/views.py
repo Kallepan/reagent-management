@@ -1,5 +1,7 @@
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, filters
+
+from django_filters.rest_framework import DjangoFilterBackend
 
 from django.db.models import Q
 
@@ -46,10 +48,14 @@ class LotViewSet(
     serializer_class = LotSerializer
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrBak]
     renderer_classes = [ResponseRenderer]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = [
         'name', 
         'type', 
         'reagents__amount', 
+    ]
+    search_fields = [
+        '^name',
     ]
 
     def get_queryset(self):

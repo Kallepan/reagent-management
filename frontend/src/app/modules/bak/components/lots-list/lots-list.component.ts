@@ -1,6 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { BakStateHandlerService } from '../../services/bak-state-handler.service';
-import { debounceTime, filter, tap } from 'rxjs';
+import { debounceTime, filter, switchMap, takeUntil, tap } from 'rxjs';
 import { BakLot } from '../../interfaces/lot';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -10,6 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from '@app/core/services/notification.service';
 import { messages } from '@app/core/constants/messages';
 import { ChoiceDialogComponent } from '@app/shared/components/choice-dialog/choice-dialog.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-lots-list',
@@ -18,14 +19,19 @@ import { ChoiceDialogComponent } from '@app/shared/components/choice-dialog/choi
 })
 export class LotsListComponent implements OnInit {
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
   dialog = inject(MatDialog);
 
   // Search stuff
   filterControl = new FormControl('');
   filter$ = this.filterControl.valueChanges.pipe(
+    takeUntilDestroyed(this.destroyRef),
     filter((contents): contents is string => typeof contents === 'string'),
     debounceTime(200),
-  );
+    switchMap(searchString => this.bakStateHandlerService.searchLots(searchString)),
+  ).subscribe(lots => {
+    this.bakStateHandlerService.lots.next(lots);
+  });
 
   // Table stuff
   bakStateHandlerService = inject(BakStateHandlerService);

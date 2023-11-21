@@ -1,8 +1,8 @@
 <div class="container" *ngIf="bakStateHandlerService.finishedLoading">
     <app-search-bar [control]="filterControl" (searchSubmit)="searchLots($event)"
         formHint="Durchsucht die Tabelle. Mit Enter kann eine bestimmte Charge gesucht werden."></app-search-bar>
-    <ng-container *ngIf="{tableData: lots$ | async, search: filter$ | async} as vm">
-        <app-data-table [schema]="columnsSchema" [filter]="vm.search || ''" [data]="vm.tableData || []"
+    <ng-container *ngIf="{tableData: lots$ | async } as vm">
+        <app-data-table [schema]="columnsSchema" [data]="vm.tableData || []"
             (editClick)="editLot($event)" [detailRowTemplate]="detailRowTemplate"></app-data-table>
     </ng-container>
     <button mat-raised-button color="accent" routerLink="/bak/lots/create">Anlegen</button>
