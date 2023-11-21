@@ -1,4 +1,11 @@
 <div class="container" *ngIf="(lot$ | async) as lot">
+    <div class="reagents">
+        <h3>Lagerorte</h3>
+        <span class="row">
+            <app-reagent-edit *ngFor="let reagent of lot.reagents" [reagent]="reagent"
+                (onPatchReagent)="patchReagent(reagent.id, $event)"></app-reagent-edit>
+        </span>
+    </div>
     <button mat-raised-button (click)="openDialog()" color="accent">Reagenzien zwischen Lagern verschieben</button>
     <mat-card class="large-card">
         <mat-card-header>
@@ -63,9 +70,4 @@
         </mat-card-actions>
     </mat-card>
     <button mat-raised-button color="warn" (click)="deleteLot()">Lot mitsamt Lagerorte loeschen</button>
-    <div class="reagents">
-        <h3>Lagerorte</h3>
-        <app-reagent-edit *ngFor="let reagent of lot.reagents" [reagent]="reagent"
-            (onPatchReagent)="patchReagent(reagent.id, $event)"></app-reagent-edit>
-    </div>
 </div>

@@ -37,5 +37,9 @@
 }
 
 .reagents {
-    margin-bottom: 1rem;
+    .row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+    }
 }
