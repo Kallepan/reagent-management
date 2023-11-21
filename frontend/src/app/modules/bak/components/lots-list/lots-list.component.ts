@@ -14,8 +14,6 @@ import { CommonModule } from '@angular/common';
 import { ReagentEditComponent } from '../reagent-edit/reagent-edit.component';
 import { SearchBarComponent } from '@app/shared/components/search-bar/search-bar.component';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { RouterTestingModule } from '@angular/router/testing';
 
 @Component({
   selector: 'app-lots-list',
@@ -30,7 +28,7 @@ import { RouterTestingModule } from '@angular/router/testing';
     DataTableComponent,
     MatButtonModule,
     RouterModule,
-  ]
+  ],
 })
 export class LotsListComponent implements OnInit {
   private router = inject(Router);

@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 
-import { BakRoutingModule } from './bak-routing.module';
 import { LocationAPIService } from './services/location-api.service';
 import { TypeAPIService } from './services/type-api.service';
 import { LotAPIService } from './services/lot-api.service';
@@ -9,20 +8,17 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { ReagentAPIService } from './services/reagent-api.service';
 
 @NgModule({
-  imports: [
-    BakRoutingModule,
-  ],
-  providers: [
-    BakStateHandlerService,
-    LocationAPIService,
-    TypeAPIService,
-    LotAPIService,
-    ReagentAPIService,
-    {
-      provide: MAT_DATE_LOCALE,
-      useValue: 'de-DE',
-    },
-  ],
+    providers: [
+        BakStateHandlerService,
+        LocationAPIService,
+        TypeAPIService,
+        LotAPIService,
+        ReagentAPIService,
+        {
+            provide: MAT_DATE_LOCALE,
+            useValue: 'de-DE',
+        },
+    ],
 })
 export class BakModule {
 

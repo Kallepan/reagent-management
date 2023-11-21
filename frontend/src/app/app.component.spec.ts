@@ -1,22 +1,27 @@
-import { TestBed, fakeAsync, flush } from '@angular/core/testing';
+import { TestBed, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
-import { constants } from './core/constants/constants';
-import { AppModule } from './app.module';
-
-import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import { MatSidenavHarness } from '@angular/material/sidenav/testing';
-import { OverlayContainer } from '@angular/cdk/overlay';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
+import { routes } from './app.routes';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { AuthService } from './core/services/auth.service';
+import { NotificationService } from './core/services/notification.service';
 
 describe('AppComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        AppModule,
-        RouterTestingModule,
+        AppComponent,
       ],
-      declarations: [AppComponent],
+      providers: [
+        provideNoopAnimations(),
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
   });
 
@@ -24,4 +29,11 @@ describe('AppComponent', () => {
     const app = TestBed.createComponent(AppComponent).componentInstance;
     expect(app).toBeTruthy();
   }));
+
+  it("should contain app-main", () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const compiled = fixture.debugElement.nativeElement;
+    expect(compiled.querySelector('app-main')).toBeTruthy();
+  });
 });
