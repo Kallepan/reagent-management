@@ -25,6 +25,13 @@ export class LotsDetailComponent {
   lot$ = this.lotAPIService.getLotById(this.id || "").pipe(
     filter((lot): lot is any => !!lot),
     tap(lot => {
+      // insert lot into bakStateHandlerService
+      this.bakStateHandlerService.lots.next([
+        ...this.bakStateHandlerService.lots.getValue().filter(l => l.id !== lot.id),
+        lot,
+      ]);
+    }),
+    tap(lot => {
       // populate form
       this.formGroup.get('validFrom')?.setValue(lot.valid_from ? new Date(lot.valid_from) : '', { emitEvent: false });
       this.formGroup.get('inUseFrom')?.setValue(lot.in_use_from ? new Date(lot.in_use_from) : '', { emitEvent: false });
