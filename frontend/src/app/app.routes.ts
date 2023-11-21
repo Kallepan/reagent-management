@@ -5,7 +5,6 @@ import { importProvidersFrom } from '@angular/core'
 import { PcrModule } from './modules/pcr/pcr.module'
 import { HomeComponent } from './core/components/home/home.component'
 
-
 export const routes: Routes = [
     // Routes can be guarded by feature flags which have to be enabled for the user (groups) and have to defined here
     {
@@ -70,7 +69,8 @@ export const routes: Routes = [
                 providers: [importProvidersFrom(PcrModule)],
             },
         ],
+        canActivate: [featureFlagGuard],
+        data: { featureFlag: 'PCR' },
     },
-    { path: 'pcr', loadComponent: () => import('./modules/pcr/components/batch-list/batch-list.component').then(m => m.BatchListComponent), title: 'PCR', canActivate: [featureFlagGuard], data: { featureFlag: 'PCR' } },
     { path: '', component: HomeComponent, title: 'Home' },
 ]

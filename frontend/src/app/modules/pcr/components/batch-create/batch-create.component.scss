@@ -1,0 +1,16 @@
+.container {
+    display: flex;
+    margin: auto;
+    justify-content: center;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+
+    .wide-form {
+        min-width: 300px
+    }
+}

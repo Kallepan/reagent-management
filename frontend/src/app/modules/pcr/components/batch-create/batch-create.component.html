@@ -1,0 +1,54 @@
+<div class="container">
+    <mat-stepper #stepper [animationDuration]="'1000'" [linear]="true">
+        <mat-step [stepControl]="groupForm">
+            <form [formGroup]="groupForm">
+                <ng-template matStepLabel>Gruppe anlegen</ng-template>
+                <div class="form-group">
+                    @for (formControlInfo of shownFormControls; track formControlInfo) {
+                    @if (!formControlInfo.autcomplete) {
+                    <!-- Default case no autocomplete -->
+                    <mat-form-field class="wide-form">
+                        <mat-label>{{formControlInfo.label}}</mat-label>
+                        <input matInput [type]="formControlInfo.type" [placeholder]="formControlInfo.placeholder || ''"
+                            [formControlName]="formControlInfo.key" required>
+                        <mat-hint>{{formControlInfo.hint}}</mat-hint>
+                        @if (groupForm.get(formControlInfo.key)?.hasError('required')) {
+                        <mat-error>Bitte füllen Sie dieses Feld aus.</mat-error>
+                        }
+                    </mat-form-field>
+                    } @else {
+                    <!-- Autocomplete case -->
+                    <mat-form-field class="wide-form">
+                        <mat-label>{{formControlInfo.label}}</mat-label>
+                        <input matInput [type]="formControlInfo.type" [placeholder]="formControlInfo.placeholder || ''"
+                            [formControlName]="formControlInfo.key" [matAutocomplete]="auto" required>
+                        <mat-hint>{{formControlInfo.hint}}</mat-hint>
+                        @if (groupForm.get(formControlInfo.key)?.hasError('required')) {
+                        <mat-error>Bitte füllen Sie dieses Feld aus.</mat-error>
+                        }
+
+                        <mat-autocomplete #auto>
+                            @if (formControlInfo.data | async; as data){
+                            @for (option of data; track $index) {
+                            <mat-option [value]="option">{{option.name}}</mat-option>
+                            }
+                            }
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    }
+                    }
+                </div>
+                <div>
+                    <!--TODO: Add disabled button if invalid-->
+                    <button mat-raised-button color="accent" id="firstContinueButton" matStepperNext>Fortfahren</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step [stepControl]="reagentsFormGroup">
+            <!-- this is necessary for the provider resolution to correctly find the formGroup! -->
+            <div [formGroup]="reagentsFormGroup">
+                <app-reagent-create controlKey="reagents"></app-reagent-create>
+            </div>
+        </mat-step>
+    </mat-stepper>
+</div>
