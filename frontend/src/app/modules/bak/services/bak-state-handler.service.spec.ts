@@ -13,24 +13,27 @@ import { Router } from '@angular/router';
 
 describe('BakStateHandlerService', () => {
   let service: BakStateHandlerService;
-  let httpMock: HttpTestingController;
-  const typeAPIService = jasmine.createSpyObj('TypeAPIService', ['getTypes']);
-  const lotAPIService = jasmine.createSpyObj('LotAPIService', ['getLots', 'postLot', 'deleteLot']);
-  const locationAPIService = jasmine.createSpyObj('LocationAPIService', ['getLocations']);
-  const reagentAPIService = jasmine.createSpyObj('ReagentAPIService', ['getReagents']);
+  let typeAPIService: jasmine.SpyObj<TypeAPIService>;
+  let lotAPIService: jasmine.SpyObj<LotAPIService>;
+  let locationAPIService: jasmine.SpyObj<LocationAPIService>;
+  let reagentAPIService: jasmine.SpyObj<ReagentAPIService>;
 
-  locationAPIService.getLocations.and.returnValue(of([]));
-  typeAPIService.getTypes.and.returnValue(of([]));
-  lotAPIService.getLots.and.returnValue(of([]));
 
   beforeEach(() => {
+    typeAPIService = jasmine.createSpyObj('TypeAPIService', ['getTypes']);
+    lotAPIService = jasmine.createSpyObj('LotAPIService', ['getLots', 'postLot', 'deleteLot']);
+    locationAPIService = jasmine.createSpyObj('LocationAPIService', ['getLocations']);
+    reagentAPIService = jasmine.createSpyObj('ReagentAPIService', ['getReagents', 'patchReagent']);
+
+    locationAPIService.getLocations.and.returnValue(of([]));
+    typeAPIService.getTypes.and.returnValue(of([]));
+    lotAPIService.getLots.and.returnValue(of([]));
+
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule,
         MatSnackBarModule,
       ],
       providers: [
-        BakStateHandlerService,
         NotificationService,
         {
           provide: TypeAPIService,
@@ -50,8 +53,12 @@ describe('BakStateHandlerService', () => {
         }
       ]
     });
-    service = TestBed.inject(BakStateHandlerService);
-    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  beforeEach(() => {
+    TestBed.runInInjectionContext(() => {
+      service = new BakStateHandlerService();
+    });
   });
 
   it('should be created', () => {
@@ -79,12 +86,58 @@ describe('BakStateHandlerService', () => {
   it('should delete lot', () => {
     const mockLot = { id: 123 } as any;
     lotAPIService.postLot.and.returnValue(of(mockLot));
-    lotAPIService.deleteLot.and.returnValue(of({}));
+    lotAPIService.deleteLot.and.returnValue(of(
+      {} as any
+    ));
 
     service.createLot(mockLot);
     expect(service.lots.value).toContain(mockLot);
 
     service.deleteLot(mockLot.id);
     expect(service.lots.value).not.toContain(mockLot);
+  });
+
+  it('patched reagent is not present and shoult not throw error', () => {
+    const mockReagent = {
+      id: 123456,
+      lot: {
+        id: 123456,
+      },
+      amount: 1000,
+    } as any;
+
+    expect(service.lots.value).toEqual([]);
+
+    reagentAPIService.patchReagent.and.returnValue(of(mockReagent));
+
+    service.patchReagent(mockReagent.id, 123);
+  });
+
+  it('patch reagent should update value if present in array', () => {
+    const mockLot = {
+      id: "123456",
+      reagents: [
+        {
+          id: "123456",
+          amount: 1000,
+        }
+      ]
+    } as any;
+
+    const mockResponse = {
+      id: "123456",
+      amount: 123,
+      lot: {
+        id: "123456",
+      }
+    } as any;
+
+    service.lots.next([mockLot]);
+    reagentAPIService.patchReagent.and.returnValue(of(mockResponse));
+
+    // The value passed to patchReagent is not important, only the id is used.
+    service.patchReagent(mockResponse.id, -1);
+
+    expect(service.lots.value[0].reagents[0].amount).toEqual(mockResponse.amount);
   });
 });

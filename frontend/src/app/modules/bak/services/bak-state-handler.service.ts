@@ -2,7 +2,7 @@ import { DestroyRef, Injectable, inject } from '@angular/core';
 import { TypeAPIService } from './type-api.service';
 import { LocationAPIService } from './location-api.service';
 import { LotAPIService } from './lot-api.service';
-import { BehaviorSubject, interval, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, switchMap, tap } from 'rxjs';
 import { BakLocation } from '../interfaces/location';
 import { BakType } from '../interfaces/type';
 import { ReagentAPIService } from './reagent-api.service';
@@ -71,7 +71,18 @@ export class BakStateHandlerService {
     this.reagentAPIService.patchReagent(reagentId, amount).subscribe({
       next: (resp) => {
         // update lots
-        this.lots.getValue().find(lot => lot.id === resp.lot.id)!.reagents.find(reagent => reagent.id === resp.id)!.amount = resp.amount;
+        const lots = this.lots.getValue();
+        const lotIndex = lots.findIndex(lot => lot.id === resp.lot.id);
+
+        if (lotIndex === -1)
+          return;
+
+        const reagentIndex = lots[lotIndex].reagents.findIndex(reagent => reagent.id === resp.id);
+        if (reagentIndex === -1)
+          return;
+
+        lots[lotIndex].reagents[reagentIndex].amount = resp.amount;
+        this.lots.next(lots);
       }
     });
   }
