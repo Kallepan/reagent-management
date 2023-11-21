@@ -2,8 +2,8 @@
     <app-search-bar [control]="filterControl" (searchSubmit)="searchLots($event)"
         formHint="Durchsucht die Tabelle. Mit Enter kann eine bestimmte Charge gesucht werden."></app-search-bar>
     <ng-container *ngIf="{tableData: lots$ | async } as vm">
-        <app-data-table [schema]="columnsSchema" [data]="vm.tableData || []"
-            (editClick)="editLot($event)" [detailRowTemplate]="detailRowTemplate"></app-data-table>
+        <app-data-table [schema]="columnsSchema" [data]="vm.tableData || []" (editClick)="editLot($event)"
+            [detailRowTemplate]="detailRowTemplate"></app-data-table>
     </ng-container>
     <button mat-raised-button color="accent" routerLink="/bak/lots/create">Anlegen</button>
 </div>
@@ -16,12 +16,13 @@
     <div class="detail-row mat-row" style="overflow: hidden; margin-top: 1rem;">
         <button mat-raised-button color="accent" (click)="openReagentTransferDialog(element.id)">Reagenzien
             verschieben</button>
-        <ng-container *ngFor="let reagent of element.reagents">
-            <div class="reagents">
-                <app-reagent-edit (onPatchReagent)="patchReagent(reagent.id, $event)"
-                    [reagent]="reagent"></app-reagent-edit>
-            </div>
-        </ng-container>
+        <div class="reagents">
+            |
+            @for (reagent of element.reagents; track $index) {
+            <app-reagent-edit (onPatchReagent)="patchReagent(reagent.id, $event)"
+                [reagent]="reagent"></app-reagent-edit> |
+            }
+        </div>
         <p *ngIf="element.reagents.length === 0">Keine Reagenzien vorhanden.</p>
     </div>
 </ng-template>
