@@ -6,6 +6,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { filterNotBeforeToday, isoDateFormat } from '@app/core/functions/date.function';
 import { MatDialog } from '@angular/material/dialog';
 import { ReagentTransferComponent } from '../reagent-transfer/reagent-transfer.component';
+import { LotAPIService } from '../../services/lot-api.service';
 
 @Component({
   selector: 'app-lots-detail',
@@ -14,14 +15,14 @@ import { ReagentTransferComponent } from '../reagent-transfer/reagent-transfer.c
 })
 export class LotsDetailComponent {
   private bakStateHandlerService = inject(BakStateHandlerService);
+  private lotAPIService = inject(LotAPIService);
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
 
   filterNotBeforeToday = filterNotBeforeToday;
 
   id = this.route.snapshot.paramMap.get('id');
-  lot$ = this.bakStateHandlerService.lots.asObservable().pipe(
-    map(lots => lots.find(lot => lot.id === this.id)),
+  lot$ = this.lotAPIService.getLotById(this.id || "").pipe(
     filter((lot): lot is any => !!lot),
     tap(lot => {
       // populate form
