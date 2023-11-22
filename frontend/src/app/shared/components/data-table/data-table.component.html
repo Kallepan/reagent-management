@@ -1,5 +1,6 @@
 <mat-table matSort [dataSource]="dataSource" multiTemplateDataRows>
-    <ng-container [matColumnDef]="column.key" *ngFor="let column of schema; let i = index;">
+    @for (column of schema; track $index) {
+    <ng-container [matColumnDef]="column.key">
         <mat-header-cell *matHeaderCellDef mat-sort-header>
             {{column.label}}
         </mat-header-cell>
@@ -15,6 +16,7 @@
             </ng-container>
         </mat-cell>
     </ng-container>
+    }
     <ng-container matColumnDef="actions">
         <mat-header-cell *matHeaderCellDef>
             &nbsp;
@@ -25,8 +27,11 @@
             </button>
             <button mat-mini-fab
                 (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
-                <mat-icon *ngIf="expandedElement !== element">keyboard_arrow_down</mat-icon>
-                <mat-icon *ngIf="expandedElement === element">keyboard_arrow_up</mat-icon>
+                @if (expandedElement !== element) {
+                <mat-icon>keyboard_arrow_down</mat-icon>
+                } @else {
+                <mat-icon>keyboard_arrow_up</mat-icon>
+                }
             </button>
         </mat-cell>
     </ng-container>

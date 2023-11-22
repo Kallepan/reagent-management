@@ -53,6 +53,7 @@ export class DataTableComponent<T> implements OnInit, AfterViewInit {
   @Input() schema: ColumnsSchema[] = [];
   @Input() detailRowTemplate: TemplateRef<any> | null = null;
 
+  // static: true is required becuase we use a tempalte to include a row
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
 
@@ -72,5 +73,11 @@ export class DataTableComponent<T> implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+
+    this.dataSource.sortingDataAccessor = (item: any, property: string) => {
+      const fn = this.schema.find((column) => column.key === property)?.fn;
+      if (fn) return fn(item);
+      return item[property];
+    }
   }
 }
