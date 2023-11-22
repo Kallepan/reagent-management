@@ -1,7 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { BakStateHandlerService } from '../../services/bak-state-handler.service';
 import { ActivatedRoute } from '@angular/router';
-import { filter, map, tap } from 'rxjs';
+import { filter, map, pipe, tap } from 'rxjs';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { filterNotBeforeToday, isoDateFormat } from '@app/core/functions/date.function';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,7 +13,7 @@ import { LotAPIService } from '../../services/lot-api.service';
   templateUrl: './lots-detail.component.html',
   styleUrls: ['./lots-detail.component.scss']
 })
-export class LotsDetailComponent {
+export class LotsDetailComponent implements OnInit {
   private bakStateHandlerService = inject(BakStateHandlerService);
   private lotAPIService = inject(LotAPIService);
   private route = inject(ActivatedRoute);
@@ -22,14 +22,12 @@ export class LotsDetailComponent {
   filterNotBeforeToday = filterNotBeforeToday;
 
   id = this.route.snapshot.paramMap.get('id');
-  lot$ = this.lotAPIService.getLotById(this.id || "").pipe(
+  lot$ = this.bakStateHandlerService.activeLot.asObservable().pipe(
     filter((lot): lot is any => !!lot),
-    tap(lot => {
-      // insert lot into bakStateHandlerService
-      this.bakStateHandlerService.lots.next([
-        ...this.bakStateHandlerService.lots.getValue().filter(l => l.id !== lot.id),
-        lot,
-      ]);
+    map((lot) => {
+      // calculate total amount
+      lot.totalAmount = lot.reagents.reduce((acc: number, reagent: any) => acc + reagent.amount, 0);
+      return lot;
     }),
     tap(lot => {
       // populate form
@@ -39,6 +37,7 @@ export class LotsDetailComponent {
     }),
   );
 
+
   formGroup: FormGroup;
   fb = inject(FormBuilder);
 
@@ -47,6 +46,12 @@ export class LotsDetailComponent {
       validFrom: ['',],
       inUseFrom: ['',],
       inUseUntil: ['',],
+    });
+  }
+
+  ngOnInit(): void {
+    this.lotAPIService.getLotById(this.id || "").subscribe({
+      next: (lot) => this.bakStateHandlerService.activeLot.next(lot),
     });
   }
 
@@ -97,7 +102,7 @@ export class LotsDetailComponent {
   }
 
   patchReagent(reagentId: string, amount: number): void {
-    this.bakStateHandlerService.patchReagent(reagentId, amount);
+    this.bakStateHandlerService.patchReagentSingle(reagentId, amount);
   }
 
   deleteLot() {

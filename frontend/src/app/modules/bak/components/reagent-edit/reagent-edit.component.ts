@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { BakReagent } from '../../interfaces/reagents';
+import { BakLotReagent } from '../../interfaces/lot';
 
 @Component({
   selector: 'app-reagent-edit',
@@ -7,7 +8,7 @@ import { BakReagent } from '../../interfaces/reagents';
   styleUrls: ['./reagent-edit.component.scss']
 })
 export class ReagentEditComponent {
-  @Input() reagent: BakReagent;
+  @Input() reagent: BakLotReagent;
 
   @Output() onPatchReagent = new EventEmitter<number>();
 }

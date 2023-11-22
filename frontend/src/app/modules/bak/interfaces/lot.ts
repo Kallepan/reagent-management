@@ -8,14 +8,16 @@ export interface BakLot {
 
     reagents: BakLotReagent[];
 
-    valid_from: string|null;
+    valid_from: string | null;
     valid_until: string;
 
     created_at: string;
     created_by: string;
 
-    in_use_from: string|null;
-    in_use_until: string|null;
+    in_use_from: string | null;
+    in_use_until: string | null;
+
+    totalAmount: number;
 };
 
 export interface BakLotReagent {
@@ -32,9 +34,9 @@ export interface BakLotReagent {
 export interface CreateBakLot {
     name: string;
     created_by: string;
-    valid_from: string|null;
+    valid_from: string | null;
     valid_until: string;
-    in_use_from: string|null;
-    in_use_until: string|null;
+    in_use_from: string | null;
+    in_use_until: string | null;
     type_id: string;
-  }
+}

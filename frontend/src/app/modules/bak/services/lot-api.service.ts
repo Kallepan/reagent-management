@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable, filter, map } from 'rxjs';
 import { BakLot, CreateBakLot } from '../interfaces/lot';
 import { constants } from '@app/core/constants/constants';
 import { CustomResponseType } from '@app/core/interfaces/response';

@@ -1,6 +1,6 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { BakStateHandlerService } from '../../services/bak-state-handler.service';
-import { debounceTime, filter, switchMap, takeUntil, tap } from 'rxjs';
+import { debounceTime, filter, map, switchMap, takeUntil, tap } from 'rxjs';
 import { BakLot } from '../../interfaces/lot';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -37,6 +37,13 @@ export class LotsListComponent implements OnInit {
   bakStateHandlerService = inject(BakStateHandlerService);
   private notificationService = inject(NotificationService);
   lots$ = this.bakStateHandlerService.lots.pipe(
+    map((lots) => {
+      // calculate the total amount of reagents in each lot
+      return lots.map((lot) => {
+        lot.totalAmount = lot.reagents.reduce((acc, reagent) => acc + reagent.amount, 0);
+        return lot;
+      });
+    }),
   );
   columnsSchema: ColumnsSchema[] = [
     {
@@ -68,6 +75,12 @@ export class LotsListComponent implements OnInit {
       label: 'Validiert',
       type: 'color',
       fn: (lot: BakLot) => lot.valid_from ? 'green' : 'red',
+    },
+    {
+      key: 'totalAmounts',
+      label: 'Gesamtmenge',
+      type: 'text',
+      fn: (lot: BakLot) => `${lot.totalAmount}`,
     }
   ];
 
@@ -105,7 +118,7 @@ export class LotsListComponent implements OnInit {
   }
 
   patchReagent(reagentId: string, amount: number): void {
-    this.bakStateHandlerService.patchReagent(reagentId, amount);
+    this.bakStateHandlerService.patchReagentInList(reagentId, amount);
   }
 
   searchLots(searchString: string) {

@@ -28,6 +28,7 @@ export class BakStateHandlerService {
   types = new BehaviorSubject<BakType[]>([]);
 
   lots = new BehaviorSubject<BakLot[]>([]);
+  activeLot = new BehaviorSubject<BakLot | null>(null);
 
   private _finishedLoading = false;
 
@@ -67,7 +68,7 @@ export class BakStateHandlerService {
   }
 
   // Patch the amount of a reagent.
-  patchReagent(reagentId: string, amount: number) {
+  patchReagentInList(reagentId: string, amount: number) {
     this.reagentAPIService.patchReagent(reagentId, amount).subscribe({
       next: (resp) => {
         // update lots
@@ -83,6 +84,22 @@ export class BakStateHandlerService {
 
         lots[lotIndex].reagents[reagentIndex].amount = resp.amount;
         this.lots.next(lots);
+      }
+    });
+  }
+
+  patchReagentSingle(reagentId: string, amount: number) {
+    this.reagentAPIService.patchReagent(reagentId, amount).subscribe({
+      next: (resp) => {
+        // update lots
+        const lot = this.activeLot.value!;
+
+        const reagentIndex = lot.reagents.findIndex(reagent => reagent.id === resp.id);
+        if (reagentIndex === -1)
+          return;
+
+        lot.reagents[reagentIndex].amount = resp.amount;
+        this.activeLot.next(lot);
       }
     });
   }
