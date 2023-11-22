@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
 import { BakStateHandlerService } from './bak-state-handler.service';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TypeAPIService } from './type-api.service';
 import { LotAPIService } from './lot-api.service';
 import { LocationAPIService } from './location-api.service';
@@ -110,7 +109,7 @@ describe('BakStateHandlerService', () => {
 
     reagentAPIService.patchReagent.and.returnValue(of(mockReagent));
 
-    service.patchReagent(mockReagent.id, 123);
+    service.patchReagentInList(mockReagent.id, 123);
   });
 
   it('patch reagent should update value if present in array', () => {
@@ -136,8 +135,54 @@ describe('BakStateHandlerService', () => {
     reagentAPIService.patchReagent.and.returnValue(of(mockResponse));
 
     // The value passed to patchReagent is not important, only the id is used.
-    service.patchReagent(mockResponse.id, -1);
+    service.patchReagentInList(mockResponse.id, -1);
 
     expect(service.lots.value[0].reagents[0].amount).toEqual(mockResponse.amount);
+  });
+
+  it('should handle patching reagent in single lot', () => {
+    const mockLot = {
+      id: "123456",
+      reagents: [
+        {
+          id: "123456",
+          amount: 1000,
+        }
+      ]
+    } as any;
+
+    const mockResponse = {
+      id: "123456",
+      amount: 123,
+      lot: {
+        id: "123456",
+      }
+    } as any;
+
+    service.activeLot.next(mockLot);
+    reagentAPIService.patchReagent.and.returnValue(of(mockResponse));
+
+    // The value passed to patchReagent is not important, only the id is used.
+    service.patchReagentSingle(mockResponse.id, -1);
+
+    expect(service.activeLot.value!.reagents[0].amount).toEqual(mockResponse.amount);
+  });
+
+  it('should handle patching reagent in single lot when active lot is null', () => {
+    const mockResponse = {
+      id: "123456",
+      amount: 123,
+      lot: {
+        id: "123456",
+      }
+    } as any;
+
+    service.activeLot.next(null);
+    reagentAPIService.patchReagent.and.returnValue(of(mockResponse));
+
+    // The value passed to patchReagent is not important, only the id is used.
+    service.patchReagentSingle(mockResponse.id, -1);
+
+    expect(service.activeLot.value).toBeNull();
   });
 });
