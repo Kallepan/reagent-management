@@ -56,6 +56,9 @@ class LotViewSet(
     ]
     search_fields = [
         '^name',
+        '^type__name',
+        '^type__producer',
+        '^reagents__location__name',
     ]
 
     def get_queryset(self):

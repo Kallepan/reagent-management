@@ -50,6 +50,7 @@ export class LotAPIService {
       map(resp => {
         return resp.data as BakLot[];
       }),
+      filter(lots => lots.length > 0),
     )
   }
 
