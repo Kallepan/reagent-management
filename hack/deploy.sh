@@ -1,7 +1,5 @@
 #!/bin/bash
 
-VERSION=v2
-NAMESPACE=reagent-management
 export $(grep -v '^#' .env | xargs)
 
 echo $DOCKER_REGISTRY_PASSWORD | docker login --username $DOCKER_REGISTRY_USERNAME --password-stdin
