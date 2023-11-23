@@ -36,7 +36,7 @@ describe('TypeAPIService', () => {
 
     const req = httpMock.expectOne(constants.APIS.BAK.BASE + '/types');
     expect(req.request.method).toBe('GET');
-    req.flush({ data: mockTypes });
+    req.flush({ data: { results: mockTypes } });
   });
 
   it('should get a type by id', () => {

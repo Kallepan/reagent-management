@@ -28,7 +28,7 @@ export class LotAPIService {
 
     return this.http.get<CustomResponseType>(url, httpOptions).pipe(
       map(resp => {
-        return resp.data as BakLot[];
+        return resp.data.results as BakLot[];
       }),
     )
   }
@@ -48,9 +48,8 @@ export class LotAPIService {
 
     return this.http.get<CustomResponseType>(url, httpOptions).pipe(
       map(resp => {
-        return resp.data as BakLot[];
+        return resp.data.results as BakLot[];
       }),
-      filter(lots => lots.length > 0),
     )
   }
 

@@ -86,7 +86,7 @@ describe('LotsListComponent', () => {
     bakStateHandlerService.searchLots.and.returnValue(of(mockSearchResults as BakLot[]));
     component.queryLot("Test Lot 1");
 
-    expect(bakStateHandlerService.searchLots).toHaveBeenCalledWith("Test Lot 1");
+    expect(bakStateHandlerService.searchLots).toHaveBeenCalledWith("Test Lot 1", true);
     expect(dialogSpy).toHaveBeenCalled();
   });
 
@@ -95,7 +95,7 @@ describe('LotsListComponent', () => {
     bakStateHandlerService.searchLots.and.returnValue(of([]));
     component.queryLot("Test Lot 1");
 
-    expect(bakStateHandlerService.searchLots).toHaveBeenCalledWith("Test Lot 1");
+    expect(bakStateHandlerService.searchLots).toHaveBeenCalledWith("Test Lot 1", true);
     expect(dialogSpy).not.toHaveBeenCalled();
   });
 
@@ -104,7 +104,7 @@ describe('LotsListComponent', () => {
     bakStateHandlerService.searchLots.and.returnValue(of([mockSearchResults[0]] as BakLot[]));
     component.queryLot("Test Lot 1");
 
-    expect(bakStateHandlerService.searchLots).toHaveBeenCalledWith("Test Lot 1");
+    expect(bakStateHandlerService.searchLots).toHaveBeenCalledWith("Test Lot 1", true);
     expect(dialogSpy).not.toHaveBeenCalled();
   });
 });

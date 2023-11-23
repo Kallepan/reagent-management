@@ -24,7 +24,7 @@ export class TypeAPIService {
 
     return this.http.get<CustomResponseType>(url, httpOptions).pipe(
       map(resp => {
-        return resp.data as BakType[];
+        return resp.data.results as BakType[];
       }),
     )
   }

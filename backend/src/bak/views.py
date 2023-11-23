@@ -67,7 +67,7 @@ class LotViewSet(
 
         # WE must filter here because I don't know how to filter on a property in the serializer
         is_empty = self.request.query_params.get('is_empty', None)
-        if is_empty is not None:
+        if is_empty is not  None:        
             if is_empty == 'true':
                 # filter either no reagents or all reagents with amount 0
                 queryset = queryset.complex_filter(

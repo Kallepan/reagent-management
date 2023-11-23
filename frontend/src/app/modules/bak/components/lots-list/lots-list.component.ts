@@ -1,6 +1,6 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { BakStateHandlerService } from '../../services/bak-state-handler.service';
-import { debounceTime, filter, map, switchMap, takeUntil, tap } from 'rxjs';
+import { debounceTime, filter, map, switchMap, tap } from 'rxjs';
 import { BakLot } from '../../interfaces/lot';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';

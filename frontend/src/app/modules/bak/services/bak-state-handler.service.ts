@@ -67,7 +67,6 @@ export class BakStateHandlerService {
     if (!fetchEmpty) {
       params.is_empty = 'false';
     }
-
     return this.lotAPIService.searchLots(params);
   }
 

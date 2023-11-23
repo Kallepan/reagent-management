@@ -21,8 +21,8 @@ export class LocationAPIService {
 
     return this.http.get<CustomResponseType>(constants.APIS.BAK.BASE + '/locations', httpOptions).pipe(
       map(resp => {
-        return resp.data as BakLocation[];
-      })
+        return resp.data.results as BakLocation[];
+      }),
     );
   }
 

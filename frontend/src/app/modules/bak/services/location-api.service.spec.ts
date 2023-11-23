@@ -39,7 +39,7 @@ describe('LocationAPIService', () => {
 
     const req = httpMock.expectOne(constants.APIS.BAK.BASE + '/locations');
     expect(req.request.method).toBe('GET');
-    req.flush({ data: mockLocations });
+    req.flush({ data: { results: mockLocations } });
   });
 
   it('should get a location by id', () => {
@@ -51,6 +51,6 @@ describe('LocationAPIService', () => {
 
     const req = httpMock.expectOne(constants.APIS.BAK.BASE + '/locations/1');
     expect(req.request.method).toBe('GET');
-    req.flush({data: mockLocation});
+    req.flush({ data: mockLocation });
   });
 });

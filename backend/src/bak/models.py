@@ -13,6 +13,7 @@ class Location(models.Model):
 
     class Meta:
         db_table = 'bak"."location'
+        ordering = ['name']
     
     def __str__(self) -> str:
         return self.name 

@@ -100,11 +100,11 @@ DATABASES = {
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "postgres"),
         "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
         "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+
         "TEST": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(BASE_DIR, "test_db.sqlite3"),
+            "NAME": "test_db"
         }
-    }
+    },
 }
 
 # Password validation
@@ -168,6 +168,8 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 100,
+
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 
 # JWT Settings

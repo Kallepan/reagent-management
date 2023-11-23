@@ -1,12 +1,13 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { BakStateHandlerService } from '../../services/bak-state-handler.service';
 import { ActivatedRoute } from '@angular/router';
-import { filter, map, pipe, tap } from 'rxjs';
+import { filter, map, tap } from 'rxjs';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { filterNotBeforeToday, isoDateFormat } from '@app/core/functions/date.function';
 import { MatDialog } from '@angular/material/dialog';
 import { ReagentTransferComponent } from '../reagent-transfer/reagent-transfer.component';
 import { LotAPIService } from '../../services/lot-api.service';
+import { BakLot } from '../../interfaces/lot';
 
 @Component({
   selector: 'app-lots-detail',
@@ -24,6 +25,7 @@ export class LotsDetailComponent implements OnInit {
   id = this.route.snapshot.paramMap.get('id');
   lot$ = this.bakStateHandlerService.activeLot.asObservable().pipe(
     filter((lot): lot is any => !!lot),
+    map(lot => lot as BakLot),
     map((lot) => {
       // calculate total amount
       lot.totalAmount = lot.reagents.reduce((acc: number, reagent: any) => acc + reagent.amount, 0);

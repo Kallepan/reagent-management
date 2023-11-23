@@ -52,7 +52,7 @@ class LotSerializer(serializers.ModelSerializer):
     """
     Serializer for Lot model.
     """
-    reagents = LotReagentSerializer(many=True, read_only=True)
+    reagents = LotReagentSerializer(many=True, read_only=True,)
     type = TypeSerializer(read_only=True)
     type_id = serializers.PrimaryKeyRelatedField(queryset=Type.objects.all(), write_only=True)
 
@@ -119,6 +119,11 @@ class LotSerializer(serializers.ModelSerializer):
   
         return super().validate(*args, **kwargs)
 
+    # sort reagents by location__name   
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['reagents'] = sorted(representation['reagents'], key=lambda x: x['location']['name'])
+        return representation
 
 class ReagentLotSerializer(serializers.ModelSerializer):
 
@@ -126,7 +131,8 @@ class ReagentLotSerializer(serializers.ModelSerializer):
         model = Lot
         fields = ['id', 'name', 'type', 'valid_from', 'valid_until', 'in_use_from', 'in_use_until', 'is_empty']
         read_only_fields = ['id', 'name', 'type', 'valid_from', 'valid_until', 'in_use_from', 'in_use_until', 'is_empty']
-    
+
+
 class ReagentSerializer(serializers.ModelSerializer):
     """
     Serializer for Reagent model.
