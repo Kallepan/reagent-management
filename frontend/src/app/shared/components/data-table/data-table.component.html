@@ -54,4 +54,5 @@
         </td>
     </tr>
 </mat-table>
-<mat-paginator [pageSizeOptions]="pageSizeOptions" showFirstLastButtons></mat-paginator>
+<mat-paginator [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSizeOptions[pageSizeOptions.length - 1]"
+    showFirstLastButtons></mat-paginator>

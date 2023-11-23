@@ -7,7 +7,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router, RouterModule } from '@angular/router';
 import { constants } from '@app/core/constants/constants';
 import { LoginComponent } from '../login/login.component';
-import { StateManagerService } from '@app/core/services/state-manager.service';
 
 @Component({
   selector: 'app-header',
@@ -26,7 +25,6 @@ import { StateManagerService } from '@app/core/services/state-manager.service';
 })
 export class HeaderComponent {
   private _router = inject(Router);
-  stateManager = inject(StateManagerService);
 
   title = constants.TITLE_SHORT;
   @Input() isDark = false;

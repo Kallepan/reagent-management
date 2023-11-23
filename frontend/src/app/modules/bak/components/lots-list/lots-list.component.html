@@ -1,5 +1,5 @@
 <div class="container" *ngIf="bakStateHandlerService.finishedLoading">
-    <app-search-bar [control]="filterControl" (searchSubmit)="searchLots($event)"
+    <app-search-bar [control]="filterControl" (searchSubmit)="queryLot($event)"
         formHint="Durchsucht die Tabelle. Mit Enter kann eine bestimmte Charge gesucht werden."></app-search-bar>
     <ng-container *ngIf="{tableData: lots$ | async } as vm">
         <app-data-table [schema]="columnsSchema" [data]="vm.tableData || []" (editClick)="editLot($event)"

@@ -12,7 +12,7 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 
-const mockSearchResults: {id:string, name:string, type: {name: string, producer: string}}[] = [
+const mockSearchResults: { id: string, name: string, type: { name: string, producer: string } }[] = [
   {
     id: "1",
     name: "Test Lot 1",
@@ -44,9 +44,9 @@ describe('LotsListComponent', () => {
   let fixture: ComponentFixture<LotsListComponent>;
   let bakStateHandlerService: jasmine.SpyObj<BakStateHandlerService>;
   let loader: HarnessLoader;
-  
+
   beforeEach(async () => {
-    bakStateHandlerService = jasmine.createSpyObj('BakStateHandlerService', ['getTypes', 'getLots', 'getLocations', 'getReagents', 'searchLots', 'refreshData'], {lots: new BehaviorSubject([])});
+    bakStateHandlerService = jasmine.createSpyObj('BakStateHandlerService', ['getTypes', 'getLots', 'getLocations', 'getReagents', 'searchLots', 'refreshData'], { lots: new BehaviorSubject([]) });
 
     await TestBed.configureTestingModule({
       imports: [
@@ -55,7 +55,7 @@ describe('LotsListComponent', () => {
         MatSnackBarModule,
         BrowserAnimationsModule,
         RouterTestingModule.withRoutes([
-          {path: 'bak/lots/detail/:id', redirectTo: ''},
+          { path: 'bak/lots/detail/:id', redirectTo: '' },
         ]),
       ],
       providers: [
@@ -84,7 +84,7 @@ describe('LotsListComponent', () => {
   it('should open search dialog for multiple results', () => {
     const dialogSpy = spyOn(component.dialog, 'open').and.callThrough();
     bakStateHandlerService.searchLots.and.returnValue(of(mockSearchResults as BakLot[]));
-    component.searchLots("Test Lot 1");
+    component.queryLot("Test Lot 1");
 
     expect(bakStateHandlerService.searchLots).toHaveBeenCalledWith("Test Lot 1");
     expect(dialogSpy).toHaveBeenCalled();
@@ -93,7 +93,7 @@ describe('LotsListComponent', () => {
   it('should not open search dialog if no results', () => {
     const dialogSpy = spyOn(component.dialog, 'open').and.callThrough();
     bakStateHandlerService.searchLots.and.returnValue(of([]));
-    component.searchLots("Test Lot 1");
+    component.queryLot("Test Lot 1");
 
     expect(bakStateHandlerService.searchLots).toHaveBeenCalledWith("Test Lot 1");
     expect(dialogSpy).not.toHaveBeenCalled();
@@ -102,7 +102,7 @@ describe('LotsListComponent', () => {
   it('should not open search dialog if one result', () => {
     const dialogSpy = spyOn(component.dialog, 'open').and.callThrough();
     bakStateHandlerService.searchLots.and.returnValue(of([mockSearchResults[0]] as BakLot[]));
-    component.searchLots("Test Lot 1");
+    component.queryLot("Test Lot 1");
 
     expect(bakStateHandlerService.searchLots).toHaveBeenCalledWith("Test Lot 1");
     expect(dialogSpy).not.toHaveBeenCalled();

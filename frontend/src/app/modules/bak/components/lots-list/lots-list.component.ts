@@ -28,7 +28,7 @@ export class LotsListComponent implements OnInit {
     takeUntilDestroyed(this.destroyRef),
     filter((contents): contents is string => typeof contents === 'string'),
     debounceTime(200),
-    switchMap(searchString => this.bakStateHandlerService.searchLots(searchString)),
+    switchMap(searchString => this.bakStateHandlerService.searchLots(searchString, false)),
   ).subscribe(lots => {
     this.bakStateHandlerService.lots.next(lots);
   });
@@ -121,8 +121,8 @@ export class LotsListComponent implements OnInit {
     this.bakStateHandlerService.patchReagentInList(reagentId, amount);
   }
 
-  searchLots(searchString: string) {
-    this.bakStateHandlerService.searchLots(searchString).pipe(
+  queryLot(searchString: string) {
+    this.bakStateHandlerService.searchLots(searchString, true).pipe(
       tap(lots => {
         if (lots.length === 1) {
           this.router.navigate(['bak', 'lots', 'detail', lots[0].id]);
@@ -132,20 +132,19 @@ export class LotsListComponent implements OnInit {
         if (lots.length === 0) this.notificationService.infoMessage(messages.BAK.NO_LOT_FOUND);
       }),
       filter(lots => lots.length > 1),
-    ).subscribe(lots => {
-      // Open lots choice dialog
-      const dialogRef = this.dialog.open(ChoiceDialogComponent, {
-        data: {
-          title: 'Mehrere Lots gefunden',
-          choices: lots.map(lot => ({ id: lot.id, name: `${lot.name} (${lot.type.name} - ${lot.type.producer})` })),
-        }
-      });
+      switchMap(lots => {
+        const dialogRef = this.dialog.open(ChoiceDialogComponent, {
+          data: {
+            title: 'Mehrere Lots gefunden',
+            choices: lots.map(lot => ({ id: lot.id, name: `${lot.name} (${lot.type.name} - ${lot.type.producer})` })),
+          }
+        });
 
-      dialogRef.afterClosed().subscribe(result => {
-        if (!result) return;
-
-        this.router.navigate(['bak', 'lots', 'detail', result.id]);
-      });
+        return dialogRef.afterClosed();
+      }),
+      filter(result => !!result),
+    ).subscribe(result => {
+      this.router.navigate(['bak', 'lots', 'detail', result.id]);
     });
   }
 

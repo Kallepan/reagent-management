@@ -59,10 +59,14 @@ export class BakStateHandlerService {
   }
 
   // search for a lot
-  searchLots(searchString: string) {
+  searchLots(searchString: string, fetchEmpty: boolean = true) {
     const params = {
       search: searchString,
+      is_empty: 'true',
     };
+    if (!fetchEmpty) {
+      params.is_empty = 'false';
+    }
 
     return this.lotAPIService.searchLots(params);
   }
