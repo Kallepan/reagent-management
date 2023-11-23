@@ -14,7 +14,7 @@ export type ColumnsSchema = {
   key: string,
   label: string,
   type: 'text' | 'color',
-  fn: (row: any) => string,
+  fn: (row: any) => string | number,
 };
 
 @Component({

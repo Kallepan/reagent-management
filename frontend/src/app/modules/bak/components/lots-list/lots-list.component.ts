@@ -80,7 +80,7 @@ export class LotsListComponent implements OnInit {
       key: 'totalAmounts',
       label: 'Gesamtmenge',
       type: 'text',
-      fn: (lot: BakLot) => `${lot.totalAmount}`,
+      fn: (lot: BakLot) => lot.totalAmount,
     }
   ];
 
