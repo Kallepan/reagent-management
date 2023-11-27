@@ -1,9 +1,14 @@
 import { Component, DestroyRef, Inject, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { combineLatest, filter, map, tap } from 'rxjs';
 import { BakLotReagent } from '../../interfaces/lot';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { CommonModule } from '@angular/common';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
 
 export interface DialogData {
   reagents: BakLotReagent[]
@@ -12,7 +17,18 @@ export interface DialogData {
 @Component({
   selector: 'app-reagent-transfer',
   templateUrl: './reagent-transfer.component.html',
-  styleUrls: ['./reagent-transfer.component.scss']
+  styleUrls: ['./reagent-transfer.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+
+    MatInputModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatIconModule,
+    MatDialogModule,
+  ],
 })
 export class ReagentTransferComponent implements OnInit {
   private _destroyRef = inject(DestroyRef);
@@ -32,7 +48,7 @@ export class ReagentTransferComponent implements OnInit {
   );
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
-  ) {  }
+  ) { }
 
   ngOnInit(): void {
     combineLatest([
@@ -43,10 +59,10 @@ export class ReagentTransferComponent implements OnInit {
       map(([sourceReagent, targetReagent]) => [sourceReagent, targetReagent] as [string, string]),
       tap(() => this.formGroup.get('transferAmount')!.setValue(0)),
       filter(([sourceReagent, targetReagent]) => sourceReagent === targetReagent),
-      ).subscribe(([sourceReagent, _]) => {
-        const otherReagent = this.data.reagents.find(r => r.id !== sourceReagent)?.id;
-        this.formGroup.get('targetReagent')!.setValue(otherReagent);
-      });
+    ).subscribe(([sourceReagent, _]) => {
+      const otherReagent = this.data.reagents.find(r => r.id !== sourceReagent)?.id;
+      this.formGroup.get('targetReagent')!.setValue(otherReagent);
+    });
   }
 
   onAbort(): void {

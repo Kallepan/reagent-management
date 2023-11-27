@@ -1,24 +1,27 @@
-<button *ngIf="!authService.isLoggedIn()" mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>account_circle</mat-icon></button>
+<button *ngIf="!authService.isLoggedIn()" mat-icon-button
+    [matMenuTriggerFor]="menu"><mat-icon>account_circle</mat-icon></button>
 <div *ngIf="authService.isLoggedIn()" class="info">
     {{authService.authData()?.department|titlecase}}
     <button mat-icon-button (click)="authService.logout()"><mat-icon>logout</mat-icon></button>
 </div>
 <mat-menu #menu="matMenu">
-    <form action="submit" [formGroup]="loginForm" class="mat-app-background menu" (click)="stopPropagation($event)" (keydown.tab)="stopPropagation($event)">
+    <form action="submit" [formGroup]="loginForm" class="mat-app-background menu" (click)="stopPropagation($event)"
+        (keydown.tab)="stopPropagation($event)">
         <mat-form-field appearance="fill">
             <mat-label>Identifier</mat-label>
             <input matInput placeholder="Identifier" formControlName="identifier" type="text" autocomplete="off">
-            <mat-error *ngIf="loginForm.controls['identifier'].hasError('required')">
+            <mat-error *ngIf="loginForm.get('identifier')?.hasError('required')">
                 Pflichtfeld
             </mat-error>
         </mat-form-field>
         <mat-form-field appearance="fill">
             <mat-label>Passwort</mat-label>
             <input matInput placeholder="Password" formControlName="password" type="password" autocomplete="off">
-            <mat-error *ngIf="loginForm.controls['password'].hasError('required')">
+            <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
                 Pflichtfeld
             </mat-error>
         </mat-form-field>
-        <button id="login-confirm" mat-raised-button color="accent" (click)="onSubmitLogin()" [disabled]="loginForm.invalid">Login</button>
+        <button id="login-confirm" mat-raised-button color="accent" (click)="onSubmitLogin()"
+            [disabled]="loginForm.invalid">Login</button>
     </form>
 </mat-menu>

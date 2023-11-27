@@ -13,7 +13,6 @@ export const featureFlagGuard: CanActivateFn = (
     state: RouterStateSnapshot
 ) => {
     const router = inject(Router);
-    const notificationService = inject(NotificationService);
     const http = inject(HttpClient);
 
     const httpOptions = {

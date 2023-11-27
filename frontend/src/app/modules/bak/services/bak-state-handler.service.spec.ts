@@ -7,16 +7,22 @@ import { LocationAPIService } from './location-api.service';
 import { ReagentAPIService } from './reagent-api.service';
 import { of } from 'rxjs';
 import { NotificationService } from '@app/core/services/notification.service';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
 describe('BakStateHandlerService', () => {
   let service: BakStateHandlerService;
+  let httpMock: HttpTestingController;
+
   let typeAPIService: jasmine.SpyObj<TypeAPIService>;
   let lotAPIService: jasmine.SpyObj<LotAPIService>;
   let locationAPIService: jasmine.SpyObj<LocationAPIService>;
   let reagentAPIService: jasmine.SpyObj<ReagentAPIService>;
 
+
+  const mockLot = { id: 123 } as any;
 
   beforeEach(() => {
     typeAPIService = jasmine.createSpyObj('TypeAPIService', ['getTypes']);
@@ -24,9 +30,12 @@ describe('BakStateHandlerService', () => {
     locationAPIService = jasmine.createSpyObj('LocationAPIService', ['getLocations']);
     reagentAPIService = jasmine.createSpyObj('ReagentAPIService', ['getReagents', 'patchReagent']);
 
-    locationAPIService.getLocations.and.returnValue(of([]));
     typeAPIService.getTypes.and.returnValue(of([]));
     lotAPIService.getLots.and.returnValue(of([]));
+    locationAPIService.getLocations.and.returnValue(of([]));
+
+    lotAPIService.postLot.and.returnValue(of(mockLot));
+    lotAPIService.deleteLot.and.returnValue(of({} as any));
 
     TestBed.configureTestingModule({
       imports: [
@@ -49,15 +58,18 @@ describe('BakStateHandlerService', () => {
         {
           provide: ReagentAPIService,
           useValue: reagentAPIService,
-        }
+        },
+        provideHttpClientTesting(),
       ]
     });
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
   beforeEach(() => {
     TestBed.runInInjectionContext(() => {
       service = new BakStateHandlerService();
     });
+
   });
 
   it('should be created', () => {
@@ -65,16 +77,11 @@ describe('BakStateHandlerService', () => {
   });
 
   it('created lot should be added to lots', () => {
-    const mockLot = { id: 123 } as any;
-    lotAPIService.postLot.and.returnValue(of(mockLot));
     service.createLot(mockLot);
     expect(service.lots.value).toContain(mockLot);
   });
 
   it('should navigate to /lots/detail/:id', () => {
-    const mockLot = { id: 123 } as any;
-    lotAPIService.postLot.and.returnValue(of(mockLot));
-
     const router = TestBed.inject(Router);
     const navigateSpy = spyOn(router, 'navigate');
     service.createLot(mockLot);
@@ -83,12 +90,6 @@ describe('BakStateHandlerService', () => {
   });
 
   it('should delete lot', () => {
-    const mockLot = { id: 123 } as any;
-    lotAPIService.postLot.and.returnValue(of(mockLot));
-    lotAPIService.deleteLot.and.returnValue(of(
-      {} as any
-    ));
-
     service.createLot(mockLot);
     expect(service.lots.value).toContain(mockLot);
 

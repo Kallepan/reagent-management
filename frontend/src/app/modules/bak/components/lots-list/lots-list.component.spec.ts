@@ -57,6 +57,7 @@ describe('LotsListComponent', () => {
         RouterTestingModule.withRoutes([
           { path: 'bak/lots/detail/:id', redirectTo: '' },
         ]),
+        LotsListComponent,
       ],
       providers: [
         {
@@ -64,7 +65,6 @@ describe('LotsListComponent', () => {
           useValue: bakStateHandlerService
         },
       ],
-      declarations: [LotsListComponent]
     }).compileComponents();
   });
 

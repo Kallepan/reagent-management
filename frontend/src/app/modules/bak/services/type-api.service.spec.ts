@@ -13,6 +13,7 @@ describe('TypeAPIService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
+      providers: [TypeAPIService],
     });
     service = TestBed.inject(TypeAPIService);
     httpMock = TestBed.inject(HttpTestingController);

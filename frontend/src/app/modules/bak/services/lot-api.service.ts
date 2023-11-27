@@ -6,7 +6,7 @@ import { constants } from '@app/core/constants/constants';
 import { CustomResponseType } from '@app/core/interfaces/response';
 
 @Injectable({
-  providedIn: 'any'
+  providedIn: null,
 })
 export class LotAPIService {
   private http = inject(HttpClient);

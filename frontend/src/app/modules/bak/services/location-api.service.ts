@@ -6,7 +6,7 @@ import { BakLocation } from '../interfaces/location';
 import { CustomResponseType } from '@app/core/interfaces/response';
 
 @Injectable({
-  providedIn: 'any'
+  providedIn: null,
 })
 export class LocationAPIService {
   private http = inject(HttpClient);

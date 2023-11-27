@@ -2,17 +2,41 @@ import { Component, OnInit, inject } from '@angular/core';
 import { BakStateHandlerService } from '../../services/bak-state-handler.service';
 import { ActivatedRoute } from '@angular/router';
 import { filter, map, tap } from 'rxjs';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { filterNotBeforeToday, isoDateFormat } from '@app/core/functions/date.function';
 import { MatDialog } from '@angular/material/dialog';
 import { ReagentTransferComponent } from '../reagent-transfer/reagent-transfer.component';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatListModule } from '@angular/material/list';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { ReagentEditComponent } from '../reagent-edit/reagent-edit.component';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatNativeDateModule } from '@angular/material/core';
 import { LotAPIService } from '../../services/lot-api.service';
 import { BakLot } from '../../interfaces/lot';
 
 @Component({
   selector: 'app-lots-detail',
   templateUrl: './lots-detail.component.html',
-  styleUrls: ['./lots-detail.component.scss']
+  styleUrls: ['./lots-detail.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+
+    MatCardModule,
+    MatListModule,
+    MatFormFieldModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatInputModule,
+    MatButtonModule,
+
+    ReagentEditComponent,
+  ],
 })
 export class LotsDetailComponent implements OnInit {
   private bakStateHandlerService = inject(BakStateHandlerService);

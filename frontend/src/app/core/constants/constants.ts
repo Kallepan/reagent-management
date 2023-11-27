@@ -21,9 +21,9 @@ export class constants {
     public static VERSION = '1.0.0';
 
     public static ROUTES = [
-        { path: '', title: 'Home', },
-        { path: 'bak', title: 'BAK', },
-        { path: 'pcr', title: 'PCR', },
+        { path: '', title: 'Home', tooltip: 'Home' },
+        { path: 'bak', title: 'BAK', tooltip: 'Verwaltung von Reagenzien für die BAK' },
+        { path: 'pcr/batch/', title: 'PCR', tooltip: 'Verwaltung von InGe Reagenzien für die PCR' },
     ]
 
     public static IS_PRODUCTION = environment.production;

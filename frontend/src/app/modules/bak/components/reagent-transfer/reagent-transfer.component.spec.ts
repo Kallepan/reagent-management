@@ -69,8 +69,9 @@ describe('ReagentTransferComponent', () => {
         BrowserAnimationsModule,
         MatSelectModule,
         ReactiveFormsModule,
+
+        ReagentTransferComponent,
       ],
-      declarations: [ReagentTransferComponent],
       providers: [
         {
           provide: MatDialogRef,

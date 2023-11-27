@@ -12,7 +12,9 @@ import { CanResponsiveDirective } from './can-responsive.directive';
 
 // Create Dummy Component for testing
 @Component({
-  template: '<div canResponsive></div>'
+  template: '<div canResponsive></div>',
+  standalone: true,
+  imports: [CanResponsiveDirective],
 })
 class TestCanResponsiveComponent { }
 
@@ -23,11 +25,9 @@ describe('CanResponsiveDirective', () => {
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        TestCanResponsiveComponent
-      ],
       imports: [
         CanResponsiveDirective,
+        TestCanResponsiveComponent
       ],
     }).compileComponents();
 

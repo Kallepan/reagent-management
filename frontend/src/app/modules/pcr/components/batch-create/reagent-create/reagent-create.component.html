@@ -1,0 +1,20 @@
+<ng-container formArrayName="reagents">
+    @for (reagentForm of reagents.controls; track $index) {
+    <fieldset [formGroup]="getReagent($index)" class="row">
+        <mat-form-field appearance="fill">
+            <mat-label>Reagenz</mat-label>
+            <input matInput formControlName="id" placeholder="RTS150ING|U0623-017|250131|230626882" required>
+            <mat-hint>Bitte geben Sie die Reagenz-ID ein.</mat-hint>
+        </mat-form-field>
+        <button mat-mini-fab color="warn" (click)="deleteReagent($index)">
+            <mat-icon>
+                delete_forever
+            </mat-icon>
+        </button>
+    </fieldset>
+    }
+</ng-container>
+
+<button mat-mini-fab color="accent" (click)="addReagent()">
+    <mat-icon>add</mat-icon>
+</button>

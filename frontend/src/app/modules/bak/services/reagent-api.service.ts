@@ -5,7 +5,7 @@ import { constants } from '@app/core/constants/constants';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: null,
 })
 export class ReagentAPIService {
   private http = inject(HttpClient);
