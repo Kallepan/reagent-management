@@ -6,10 +6,10 @@ from django.db import migrations
 def populate_locations(apps, schema_editor):
     Location = apps.get_model('bak', 'Location')
     Location.objects.create(
-        name='Kuehlhaus 1. Ob.',
+        name='Kuehlhaus 1. OG.',
     )
     Location.objects.create(
-        name='Kuehlhaus 3. Ob.',
+        name='Kuehlhaus 3. OGß.',
     )
 
 def reverse_populate_locations(apps, schema_editor):
