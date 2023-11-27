@@ -7,6 +7,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router, RouterModule } from '@angular/router';
 import { constants } from '@app/core/constants/constants';
 import { LoginComponent } from '../login/login.component';
+import { HeaderGlobalSearchComponent } from '../header-global-search/header-global-search.component';
 
 @Component({
   selector: 'app-header',
@@ -21,6 +22,7 @@ import { LoginComponent } from '../login/login.component';
     MatButtonModule,
     RouterModule,
     LoginComponent,
+    HeaderGlobalSearchComponent,
   ],
 })
 export class HeaderComponent {
