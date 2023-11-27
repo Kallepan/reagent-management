@@ -1,7 +1,11 @@
 <div class="container">
     <mat-form-field appearance="fill">
-        <input matInput type="text" placeholder="Search" [formControl]="control" autocomplete="off" (keydown.enter)="searchSubmit.emit(control.value)" (keydown.tab)="searchSubmit.emit(control.value)">
-        <mat-icon matSuffix>search</mat-icon>
+        <input matInput type="text" placeholder="Search" [formControl]="control" autocomplete="off"
+            (keydown.enter)="searchSubmit.emit(control.value)" (keydown.tab)="searchSubmit.emit(control.value)"
+            [placeholder]="placeholder">
+        <button mat-icon-button matSuffix (click)="searchSubmit.emit(control.value)">
+            <mat-icon>search</mat-icon>
+        </button>
         <mat-hint>{{formHint}}</mat-hint>
     </mat-form-field>
 </div>

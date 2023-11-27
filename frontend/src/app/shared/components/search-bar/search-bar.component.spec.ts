@@ -26,4 +26,8 @@ describe('SearchBarComponent', () => {
   it('should have form control', () => {
     expect(component.control).toBeTruthy();
   });
+
+  it('should have placeholder', () => {
+    expect(component.placeholder).toBeTruthy();
+  });
 });

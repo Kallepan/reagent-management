@@ -22,5 +22,7 @@ export class messages {
         UPDATE_FAILED: 'Update fehlgeschlagen',
         SERVER_ERROR: 'An error occured on the server',
         FEATURE_FLAG_DISABLED: 'Diese Funktion ist fuer Sie nicht verfügbar',
+        FEATURE_NOT_IMPLEMENTED: 'Diese Funktion ist noch nicht implementiert',
+        NO_RESULTS_FOUND: 'Keine Ergebnisse gefunden',
     };
 }

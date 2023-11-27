@@ -1,3 +1,6 @@
-@if(activatedRoute$ | async; as featureFlag) {
-{{featureFlag}}
-}
+<div class="container">
+    @if(activatedRoute$ | async; as featureFlag) {
+    <app-search-bar [control]="control" formHint="" (searchSubmit)="onSearch(featureFlag, $event)"
+        placeholder="Suche nach Lot"></app-search-bar>
+    }
+</div>
