@@ -7,7 +7,7 @@ import { LocationAPIService } from './location-api.service';
 import { ReagentAPIService } from './reagent-api.service';
 import { of } from 'rxjs';
 import { NotificationService } from '@app/core/services/notification.service';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
@@ -42,6 +42,7 @@ describe('BakStateHandlerService', () => {
         MatSnackBarModule,
       ],
       providers: [
+        provideNoopAnimations(),
         NotificationService,
         {
           provide: TypeAPIService,

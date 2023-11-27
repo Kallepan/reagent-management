@@ -127,6 +127,10 @@ export class BakStateHandlerService {
         // navigate to the new lot
         this.router.navigate(['bak', 'lots', 'detail', resp.id]);
       },
+      complete: () => {
+        // notify user
+        this.notificationService.infoMessage(messages.BAK.LOT_CREATE_SUCCESS);
+      },
     });
   }
 
@@ -160,8 +164,11 @@ export class BakStateHandlerService {
         this.lots.next(lots);
       },
       complete: () => {
-        this.router.navigate(['bak', 'lots']);
-      }
+        this.notificationService.infoMessage(messages.BAK.LOT_UPDATE_SUCCESS);
+
+        // navigate to lots page
+        this.router.navigate(['bak']);
+      },
     });
   }
 

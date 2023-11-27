@@ -11,6 +11,9 @@ export class messages {
     public static BAK = {
         REAGENT_TRANSFER_SUCCESS: 'Die Reagenz wurde erfolgreich aktualisiert',
         NO_LOT_FOUND: 'Keine Lotnummer gefunden',
+
+        LOT_UPDATE_SUCCESS: 'Die Lot wurde erfolgreich aktualisiert',
+        LOT_CREATE_SUCCESS: 'Die Lot wurde erfolgreich erstellt',
     };
 
     public static GENERAL = {
