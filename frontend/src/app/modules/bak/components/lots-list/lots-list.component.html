@@ -5,7 +5,6 @@
         <app-data-table [schema]="columnsSchema" [data]="vm.tableData || []" (editClick)="editLot($event)"
             [detailRowTemplate]="detailRowTemplate"></app-data-table>
     </ng-container>
-    <button mat-raised-button color="accent" routerLink="/bak/lots/create">Anlegen</button>
 </div>
 
 <ng-template #detailRowTemplate let-element>

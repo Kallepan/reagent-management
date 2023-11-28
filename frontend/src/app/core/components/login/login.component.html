@@ -1,9 +1,6 @@
-<button *ngIf="!authService.isLoggedIn()" mat-icon-button
-    [matMenuTriggerFor]="menu"><mat-icon>account_circle</mat-icon></button>
-<div *ngIf="authService.isLoggedIn()" class="info">
-    {{authService.authData()?.department|titlecase}}
-    <button mat-icon-button (click)="authService.logout()"><mat-icon>logout</mat-icon></button>
-</div>
+@defer (when authService.initialized()) {
+@if (!authService.isLoggedIn()) {
+<button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>account_circle</mat-icon></button>
 <mat-menu #menu="matMenu">
     <form action="submit" [formGroup]="loginForm" class="mat-app-background menu" (click)="stopPropagation($event)"
         (keydown.tab)="stopPropagation($event)">
@@ -25,3 +22,14 @@
             [disabled]="loginForm.invalid">Login</button>
     </form>
 </mat-menu>
+} @else {
+<div class="info">
+    {{authService.authData()?.department|titlecase}}
+    <button mat-icon-button (click)="authService.logout()"><mat-icon>logout</mat-icon></button>
+</div>
+}
+} @placeholder {
+<mat-spinner color="accent" class="spinner"></mat-spinner>
+}
+
+<p>TEST</p>

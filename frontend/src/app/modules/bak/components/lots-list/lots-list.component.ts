@@ -28,7 +28,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     SearchBarComponent,
     DataTableComponent,
     MatButtonModule,
-    RouterModule,
   ],
 })
 export class LotsListComponent implements OnInit {

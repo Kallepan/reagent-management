@@ -14,7 +14,6 @@ export const routes: Route[] = [
         loadComponent: () => import('./components/lots-create/lots-create.component').then(m => m.LotsCreateComponent),
         canActivate: [featureFlagGuard],
         data: { featureFlag: 'BAK' },
-
     },
     {
         path: 'lots/detail/:id',

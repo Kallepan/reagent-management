@@ -10,7 +10,6 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       let errorMessage = messages.GENERAL.UNKNOWN_ERROR;
-
       // The user does not care about backend errors, therefore we only show general error messages
       switch (error.status) {
         case 400:

@@ -13,6 +13,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-lots-create',
@@ -24,6 +25,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatFormFieldModule,
     MatDatepickerModule,
     MatAutocompleteModule,
+    MatNativeDateModule,
     MatInputModule,
     MatButtonModule,
 

@@ -1,9 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { NotificationService } from './notification.service';
 import { Router } from '@angular/router';
 import { constants } from '../constants/constants';
-import { catchError, map } from 'rxjs';
+import { catchError, map, of, tap } from 'rxjs';
 import { messages } from '../constants/messages';
 
 type AuthData = {
@@ -18,9 +18,13 @@ export class AuthService {
   private _notificationService = inject(NotificationService);
   private _router = inject(Router);
 
-  private _authData = signal<AuthData | null>(null);
+  private _authData = signal<AuthData | null | undefined>(undefined);
+
+  initialized = computed(() => {
+    return this._authData() !== undefined;
+  });
   isLoggedIn = computed(() => {
-    return this._authData() !== null;
+    return this._authData() !== null && this._authData() !== undefined;
   });
 
   verifyLogin() {
@@ -40,7 +44,7 @@ export class AuthService {
       }),
       catchError(() => {
         // DO NOTHING
-        return [];
+        return of(null);
       }),
     ).subscribe({
       next: data => {

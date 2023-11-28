@@ -30,7 +30,7 @@ describe('AuthService', () => {
   });
 
   it('authData should return null', () => {
-    expect(service.authData()).toBeNull();
+    expect(service.authData()).toBeUndefined();
   });
 
   it('logout should set authData to null', () => {

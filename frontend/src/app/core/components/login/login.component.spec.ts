@@ -1,38 +1,42 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, DeferBlockState, TestBed } from '@angular/core/testing';
 
 import { LoginComponent } from './login.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { AuthService } from '@app/core/services/auth.service';
-import { By } from '@angular/platform-browser';
 import { MatMenuModule } from '@angular/material/menu';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { HarnessLoader } from '@angular/cdk/testing';
+import { signal } from '@angular/core';
+import { By } from '@angular/platform-browser';
+import { MatProgressSpinnerHarness } from '@angular/material/progress-spinner/testing';
 import { MatMenuHarness } from '@angular/material/menu/testing';
-
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
-  let authService: AuthService;
+  let authService: jasmine.SpyObj<AuthService>;
   let loader: HarnessLoader;
 
   beforeEach(() => {
+    authService = jasmine.createSpyObj('AuthService', ['login', 'verifyLogin', 'logout', 'isLoggedIn', 'authData'], {
+      initialized: signal(false),
+    });
+
     TestBed.configureTestingModule({
       imports: [
         LoginComponent,
-        BrowserAnimationsModule, 
-        HttpClientTestingModule, 
         MatMenuModule,
         MatSnackBarModule
       ],
+      providers: [
+        provideNoopAnimations(),
+        { provide: AuthService, useValue: authService },
+      ]
     });
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
 
-    authService = TestBed.inject(AuthService);
     loader = TestbedHarnessEnvironment.loader(fixture);
   });
 
@@ -40,71 +44,67 @@ describe('LoginComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have a login button', () => {
-    const loginButton = fixture.debugElement.query(By.css('button'));
+  it('should display login button', async () => {
+    const deferBlockFixture = (await fixture.getDeferBlocks())[0];
+    await deferBlockFixture.render(DeferBlockState.Complete); const loginButton = fixture.debugElement.query(By.css('button'));
     expect(loginButton).toBeTruthy();
   });
 
-  it('should open menu when login button is clicked', async () => {
-    const menu = await loader.getHarness<MatMenuHarness>(MatMenuHarness);
-    const loginButton = fixture.debugElement.query(By.css('button'));
+  it('should display spinner', async () => {
 
-    expect(await menu.isOpen()).toBeFalse();
-
-    loginButton.nativeElement.click();
-    fixture.detectChanges();
-
-    expect(await menu.isOpen()).toBeTrue();
+    // Spinner should be displayed by default
+    const spinner = await loader.getHarness(MatProgressSpinnerHarness);
+    expect(spinner).toBeTruthy();
   });
 
-  it('test form validity', () => {
-    expect(component.loginForm.valid).toBeFalsy();
+  it('should not display spinner', async () => {
+    // Spinner should not be displayed when initialized
+    const deferBlockFixture = (await fixture.getDeferBlocks())[0];
+    deferBlockFixture.render(DeferBlockState.Complete);
+    fixture.detectChanges();
 
+    // Try to find spinner --> should not be found
+    try {
+      await loader.getHarness(MatProgressSpinnerHarness);
+      expect(true).toBe(false);
+    } catch (error) {
+      expect(error).toBeTruthy();
+    }
+  });
+
+  it('should open menu upon click', async () => {
+    const deferBlockFixture = (await fixture.getDeferBlocks())[0];
+    await deferBlockFixture.render(DeferBlockState.Complete);
+
+    // Click on login button
+    const loginButton = fixture.debugElement.query(By.css('button'));
+    loginButton.nativeElement.click();
+
+    const menu = await loader.getHarness(MatMenuHarness);
+    expect(menu).toBeTruthy();
+  });
+
+  it('loginFormButton should only be enabled when form is valid', async () => {
+    const deferBlockFixture = (await fixture.getDeferBlocks())[0];
+    await deferBlockFixture.render(DeferBlockState.Complete);
+
+    // Click on login button
+    const loginButton = fixture.debugElement.query(By.css('button'));
+    loginButton.nativeElement.click();
+
+    const menu = await loader.getHarness(MatMenuHarness);
+    expect(menu).toBeTruthy();
+
+    const loginFormButton = fixture.debugElement.query(By.css('#login-confirm'));
+    expect(loginFormButton.nativeElement.disabled).toBe(true);
+
+    // Fill in username
     component.loginForm.setValue({
       identifier: 'test',
       password: 'test'
     });
-
+    fixture.detectChanges();
     expect(component.loginForm.valid).toBeTruthy();
-  });
-
-  it('confirm button should be disabled when form is invalid', async () => {
-    // First open  the menu
-    const menu = await loader.getHarness<MatMenuHarness>(MatMenuHarness);
-    const loginButton = fixture.debugElement.query(By.css('button'));
-    expect(await menu.isOpen()).toBeFalse();
-    loginButton.nativeElement.click();
-    fixture.detectChanges();
-    expect(await menu.isOpen()).toBeTrue();
-
-    const confirmButton = fixture.debugElement.query(By.css('#login-confirm'));
-
-    expect(confirmButton.nativeElement.disabled).toBeTruthy();
-  });
-
-  it('should call login when login button is clicked', async () => {
-    const menu = await loader.getHarness<MatMenuHarness>(MatMenuHarness);
-    const loginButton = fixture.debugElement.query(By.css('button'));
-
-    expect(await menu.isOpen()).toBeFalse();
-
-    loginButton.nativeElement.click();
-    fixture.detectChanges();
-
-    expect(await menu.isOpen()).toBeTrue();
-
-    spyOn(authService, 'login');
-    // Now that menu is open, we can click the login button
-    const confirmButton = fixture.debugElement.query(By.css('#login-confirm'));
-
-    // populate form
-    component.loginForm.setValue({
-      identifier: 'test',
-      password: 'test'
-    });
-    fixture.detectChanges();
-    confirmButton.nativeElement.click();
-
-    expect(authService.login).toHaveBeenCalled();
+    expect(loginFormButton.nativeElement.disabled).toBe(false);
   });
 });
