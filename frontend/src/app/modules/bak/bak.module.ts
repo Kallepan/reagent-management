@@ -12,7 +12,6 @@ import { ReagentAPIService } from './services/reagent-api.service';
         BakStateHandlerService,
         LocationAPIService,
         TypeAPIService,
-        LotAPIService,
         ReagentAPIService,
         {
             provide: MAT_DATE_LOCALE,

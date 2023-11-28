@@ -2,15 +2,16 @@
  * Dynamic component which depending on the activated route displays a search bar 
  * or nothing.
 **/
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 import { filter, map, of, switchMap, tap } from 'rxjs';
 import { SearchBarComponent } from '@app/shared/components/search-bar/search-bar.component';
 import { FormControl } from '@angular/forms';
 import { NotificationService } from '@app/core/services/notification.service';
 import { messages } from '@app/core/constants/messages';
 import { LotAPIService } from '@app/modules/bak/services/lot-api.service';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-header-global-search',
@@ -18,6 +19,8 @@ import { LotAPIService } from '@app/modules/bak/services/lot-api.service';
   imports: [
     CommonModule,
     SearchBarComponent,
+    MatButtonModule,
+    RouterLink,
   ],
   templateUrl: './header-global-search.component.html',
   styleUrl: './header-global-search.component.scss',
