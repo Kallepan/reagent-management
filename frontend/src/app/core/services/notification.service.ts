@@ -47,6 +47,7 @@ export class NotificationService {
         duration: 3000,
         horizontalPosition: this._horizontalPosition,
         verticalPosition: this._verticalPosition,
+        panelClass: `${res.type}-snackbar`,
       });
     }); // This is technically a memory leak, but it's a singleton service so it's fine
   }
