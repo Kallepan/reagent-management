@@ -52,6 +52,7 @@ INSTALLED_APPS = [
 
     # Apps:
     "bak",
+    "pcr",
 ]
 
 MIDDLEWARE = [

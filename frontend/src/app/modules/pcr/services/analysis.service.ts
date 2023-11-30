@@ -1,33 +1,43 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { Observable, map, of } from 'rxjs';
 import { Analysis } from '../interfaces/simple';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { CustomResponseType } from '@app/core/interfaces/response';
+import { constants } from '@app/core/constants/constants';
 
-const mockAnalyses: Analysis[] = [
-  {
-    id: "1",
-    name: "Analysis 1",
-  },
-  {
-    id: "2",
-    name: "Analysis 2",
-  },
-  {
-    id: "3",
-    name: "Analysis 3",
-  }
-];
 @Injectable({
-  providedIn: 'root'
+  providedIn: null
 })
 export class AnalysisService {
+  private http = inject(HttpClient);
 
-  constructor() { }
+  getAnalysisByID(id: string): Observable<Analysis> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      withCredentials: true,
+    };
 
-  getAnalysis(id: string): Observable<Analysis> {
-    return of(mockAnalyses.find(analysis => analysis.id === id)!);
+    return this.http.get<CustomResponseType>(constants.APIS.PCR.BASE + '/analyses/' + id, httpOptions).pipe(
+      map(resp => {
+        return resp.data as Analysis;
+      })
+    );
   }
 
   getAnalyses(): Observable<Analysis[]> {
-    return of(mockAnalyses);
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      withCredentials: true,
+    };
+
+    return this.http.get<CustomResponseType>(constants.APIS.PCR.BASE + '/analyses', httpOptions).pipe(
+      map(resp => {
+        return resp.data.results as Analysis[];
+      })
+    );
   }
 }

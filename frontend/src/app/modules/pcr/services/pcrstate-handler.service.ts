@@ -10,7 +10,7 @@ import { Analysis, Device, Kind } from '../interfaces/simple';
 import { Reagent } from '../interfaces/reagent';
 
 @Injectable({
-  providedIn: 'any'
+  providedIn: null
 })
 export class PCRStateHandlerService {
   // system-wide loading state

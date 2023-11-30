@@ -21,4 +21,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/token/", include("tokenization.urls")),
     path("api/v1/bak/", include("bak.urls")),
+    path("api/v1/pcr/", include("pcr.urls")),
 ]

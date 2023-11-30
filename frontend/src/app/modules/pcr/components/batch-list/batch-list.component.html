@@ -1,5 +1,4 @@
 <div class="container">
-    <app-search-bar [control]="filterControl" (searchSubmit)="searchReagents($event)"
-        formHint="Durchsucht die Tabelle. Mit Enter kann eine bestimmte Charge gesucht werden."></app-search-bar>
+    <app-search-bar [control]="filterControl" (searchSubmit)="searchReagents($event)"></app-search-bar>
     <button mat-raised-button color="accent" routerLink="/pcr/batch/create">Anlegen</button>
 </div>

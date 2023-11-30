@@ -3,7 +3,7 @@ import { CreateRemoval } from '../interfaces/removal';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: null
 })
 export class RemovalService {
 

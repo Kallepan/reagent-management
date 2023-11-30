@@ -7,6 +7,9 @@ export class constants {
         BAK: {
             BASE: environment.apiUrl + '/bak',
         },
+        PCR: {
+            BASE: environment.apiUrl + '/pcr',
+        },
     };
 
     public static JWT = {
