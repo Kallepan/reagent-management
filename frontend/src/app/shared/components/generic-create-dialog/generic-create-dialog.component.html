@@ -1,0 +1,22 @@
+<h3 mat-dialog-title class="title">{{title}}</h3>
+<form class="form" action="submit" [formGroup]="formGroup" mat-dialog-content>
+    @for (control of formControlInfos; track $index) {
+    <mat-form-field>
+        <mat-label>{{ control.label }}</mat-label>
+        <input matInput [formControlName]="control.controlName" [placeholder]="control.placeholder || ''"
+            [type]="control.type">
+
+        <!-- Error Messages, this can be refactored to be its own component or something!!-->
+        @if(getErrorMessage(control); as errorMessage) {
+        <mat-error class="error-warning">
+            {{ errorMessage }}
+        </mat-error>
+        }
+        <mat-hint>{{control.hint}}</mat-hint>
+    </mat-form-field>
+    }
+</form>
+<div class="actions" mat-dialog-content>
+    <button mat-raised-button class="btn" color="accent" [mat-dialog-close]="formGroup.value">OK</button>
+    <button mat-raised-button class="btn" color="warn" [mat-dialog-close]="null">Abbruch</button>
+</div>
