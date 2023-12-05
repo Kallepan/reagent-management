@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                         serialize=False,
                     ),
                 ),
-                ("name", models.CharField(db_index=True, max_length=5)),
+                ("name", models.CharField(db_index=True, max_length=20)),
             ],
             options={
                 "verbose_name_plural": "Analyses",
@@ -61,6 +61,7 @@ class Migration(migrations.Migration):
             options={
                 "db_table": 'pcr"."batch',
                 "ordering": ["kind", "analysis", "device"],
+                "verbose_name_plural": "Batches",
             },
         ),
         migrations.CreateModel(
