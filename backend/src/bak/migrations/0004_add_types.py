@@ -6,7 +6,10 @@ import os
 
 from django.db import migrations
 
+import logging
+
 def populate_types(apps, schema_editor):
+    """ Populates the tables with data """
     with open(os.path.join(os.path.dirname(__file__), '0004_types.csv'), 'r') as f:
         reader = csv.reader(f)
         
@@ -18,12 +21,15 @@ def populate_types(apps, schema_editor):
                 article_number=row[2]
             )
         
-        print('Types populated.')
+    logging.info("Types populated.")
 
 def reverse_populate_types(apps, schema_editor):
+    """ Empties the tables """
     Type = apps.get_model('bak', 'Type')
+
     Type.objects.all().delete()
-    print('Types deleted.')
+
+    logging.info("Types emptied.")
 
 class Migration(migrations.Migration):
     dependencies = [
