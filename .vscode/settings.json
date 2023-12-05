@@ -1,5 +1,12 @@
 {
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
-    }
+    },
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true,
+    },
+    "eslint.validate": [
+        "javascript",
+        "typescript",
+    ],
 }
