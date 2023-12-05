@@ -1,4 +1,6 @@
 <div class="container">
-    <button mat-raised-button color="accent" *ngFor="let route of routes" [routerLink]="route.path"
+    @for(route of routes; track route) {
+    <button mat-raised-button color="accent" [routerLink]="route.path"
         (click)="closeSidenav.emit()">{{route.title}}</button>
+    }
 </div>

@@ -1,60 +1,46 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HeaderComponent } from './header.component';
-import { Router } from '@angular/router';
-import { By } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { LoginComponent } from '../login/login.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { HarnessLoader } from '@angular/cdk/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { MatSlideToggleHarness } from '@angular/material/slide-toggle/testing';
+import { By } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
+import { HeaderComponent } from './header.component';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
-  let router: Router;
   let loader: HarnessLoader;
+  let httpMock: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         HeaderComponent,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        LoginComponent,
-        MatSnackBarModule,
-        BrowserAnimationsModule,
       ],
       providers: [
-        Router,
+        { provide: ActivatedRoute, useValue: { snapshot: { data: { title: 'Test' } } } },
+        provideHttpClientTesting(),
+        provideHttpClient(),
       ]
     });
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
-    router = TestBed.inject(Router);
     fixture.detectChanges();
 
     loader = TestbedHarnessEnvironment.loader(fixture);
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('title should be visible', () => { 
+  it('title should be visible', () => {
     const node = fixture.debugElement.query(By.css('.header-title'));
     expect(node.nativeElement.textContent).toContain(component.title);
-  });
-
-  it('routes should be rendered correctly', () => {
-    // Fetch by 'a' tag
-    const nodes = fixture.debugElement.nativeElement.querySelectorAll('a');
-
-    const router = TestBed.inject(Router);
-    expect(nodes.length).toEqual(router.config.filter(r => !!r.data).map(r => r.data!).length);
   });
 
   it('should emit open sidenav event', () => {

@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { Router, RouterModule } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { constants } from '@app/core/constants/constants';
-import { LoginComponent } from '../login/login.component';
 import { HeaderGlobalSearchComponent } from '../header-global-search/header-global-search.component';
+import { LoginComponent } from '../login/login.component';
 
 @Component({
   selector: 'app-header',
@@ -20,27 +20,16 @@ import { HeaderGlobalSearchComponent } from '../header-global-search/header-glob
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
-    RouterModule,
     LoginComponent,
     HeaderGlobalSearchComponent,
+    RouterLink,
   ],
 })
 export class HeaderComponent {
-  private _router = inject(Router);
-
   title = constants.TITLE_SHORT;
   @Input() isDark = false;
   @Output() onToggleTheme = new EventEmitter<void>();
   @Output() onToggleSidenav = new EventEmitter<void>();
-
-  // Fetch the routes from the router config
-  routes = this._router.config.map((route) => {
-    const data = route.data || {};
-    return {
-      path: route.path,
-      label: data['label'],
-    }
-  }).filter((route) => !!route.label); // Filter out the routes without labels
 
   toggleTheme() {
     this.onToggleTheme.emit();

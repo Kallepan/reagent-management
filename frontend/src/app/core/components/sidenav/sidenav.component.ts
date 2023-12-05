@@ -1,8 +1,8 @@
-import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { constants } from '@app/core/constants/constants';
-import { RouterModule } from '@angular/router';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { RouterLink, RouterModule } from '@angular/router';
+import { constants } from '@app/core/constants/constants';
 
 @Component({
   selector: 'app-sidenav',
@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
     CommonModule,
     RouterModule,
     MatButtonModule,
+    RouterLink
   ],
   templateUrl: './sidenav.component.html',
   styleUrls: ['./sidenav.component.scss']
