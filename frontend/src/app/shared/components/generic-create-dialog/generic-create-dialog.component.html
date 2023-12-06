@@ -17,6 +17,7 @@
     }
 </form>
 <div class="actions" mat-dialog-content>
-    <button mat-raised-button class="btn" color="accent" [mat-dialog-close]="formGroup.value">OK</button>
+    <button mat-raised-button class="btn" color="accent" [mat-dialog-close]="formGroup.value"
+        [disabled]="formGroup.invalid">OK</button>
     <button mat-raised-button class="btn" color="warn" [mat-dialog-close]="null">Abbruch</button>
 </div>
