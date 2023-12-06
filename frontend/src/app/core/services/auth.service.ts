@@ -91,7 +91,6 @@ export class AuthService {
       withCredentials: true,
     };
 
-    // TODO - call the logout API
     this.http.post<any>(`${constants.APIS.AUTH}/logout/`, {}, httpOptions).subscribe({
       next: () => {
         this._authData.set(null);
