@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rms-frontend
+  namespace: reagent-management
+  labels:
+    app: rms-angular
+    tier: frontend
+spec:
+  selector:
+    matchLabels:
+      app: rms-angular
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rms-angular
+        tier: frontend
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+        - name: rms-angular
+          image: kallepan/reagent-management-frontend
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/usr/bin/nginx", "-s", "quit"]
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+          readinessProbe:
+            httpGet:
+              port: 80
+              path: /
+            initialDelaySeconds: 30
+            timeoutSeconds: 60
+          resources:
+            limits:
+              memory: "1Gi"
+            requests:
+              memory: "512Mi"
+          securityContext:
+            allowPrivilegeEscalation: false
