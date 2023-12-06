@@ -1,7 +1,7 @@
-import { Component, Inject, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-choice-dialog',
@@ -26,6 +26,6 @@ export class ChoiceDialogComponent<T extends { id: string, name: string }> {
   }
 
   onAbort(): void {
-    this.dialogRef.close();
+    this.dialogRef.close(null);
   }
 }

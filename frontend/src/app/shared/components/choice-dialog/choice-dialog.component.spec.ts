@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ChoiceDialogComponent } from './choice-dialog.component';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { ChoiceDialogComponent } from './choice-dialog.component';
 
 describe('ChoiceDialogComponent', () => {
   let component: ChoiceDialogComponent<any>;
@@ -47,7 +47,7 @@ describe('ChoiceDialogComponent', () => {
 
   it('#onAbort should close the dialog', () => {
     component.onAbort();
-    expect(component.dialogRef.close).toHaveBeenCalled();
+    expect(component.dialogRef.close).toHaveBeenCalledWith(null);
   });
 
   it('should have as many buttons as choices', () => {
