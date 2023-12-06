@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 
-import { BakStateHandlerService } from './bak-state-handler.service';
-import { TypeAPIService } from './type-api.service';
-import { LotAPIService } from './lot-api.service';
-import { LocationAPIService } from './location-api.service';
-import { ReagentAPIService } from './reagent-api.service';
-import { of } from 'rxjs';
-import { NotificationService } from '@app/core/services/notification.service';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { Router } from '@angular/router';
+import { NotificationService } from '@app/core/services/notification.service';
+import { of } from 'rxjs';
+import { BakStateHandlerService } from './bak-state-handler.service';
+import { LocationAPIService } from './location-api.service';
+import { LotAPIService } from './lot-api.service';
+import { ReagentAPIService } from './reagent-api.service';
+import { TypeAPIService } from './type-api.service';
 
 describe('BakStateHandlerService', () => {
   let service: BakStateHandlerService;
@@ -21,6 +21,7 @@ describe('BakStateHandlerService', () => {
   let locationAPIService: jasmine.SpyObj<LocationAPIService>;
   let reagentAPIService: jasmine.SpyObj<ReagentAPIService>;
 
+  let router: jasmine.SpyObj<Router>;
 
   const mockLot = { id: 123 } as any;
 
@@ -36,6 +37,8 @@ describe('BakStateHandlerService', () => {
 
     lotAPIService.postLot.and.returnValue(of(mockLot));
     lotAPIService.deleteLot.and.returnValue(of({} as any));
+
+    router = jasmine.createSpyObj('Router', ['navigate']);
 
     TestBed.configureTestingModule({
       imports: [
@@ -60,6 +63,10 @@ describe('BakStateHandlerService', () => {
           provide: ReagentAPIService,
           useValue: reagentAPIService,
         },
+        {
+          provide: Router,
+          useValue: router,
+        },
         provideHttpClientTesting(),
       ]
     });
@@ -83,11 +90,9 @@ describe('BakStateHandlerService', () => {
   });
 
   it('should navigate to /lots/detail/:id', () => {
-    const router = TestBed.inject(Router);
-    const navigateSpy = spyOn(router, 'navigate');
     service.createLot(mockLot);
 
-    expect(navigateSpy).toHaveBeenCalledWith(['bak', 'lots', 'detail', mockLot.id]);
+    expect(router.navigate).toHaveBeenCalledWith(['bak', 'lots', 'detail', mockLot.id]);
   });
 
   it('should delete lot', () => {
