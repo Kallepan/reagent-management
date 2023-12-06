@@ -81,7 +81,7 @@ class RemovalSerializerTest(TestCase):
             reagent=self.reagent,
         ))
         data = serializer.data
-        self.assertEqual(set(data.keys()), set(['id', 'amount', 'created_at', 'created_by']))
+        self.assertEqual(set(data.keys()), set(['id', 'amount', 'created_at', 'created_by', "comment"]))
     
     def test_reagent_id_should_be_invalid(self):
         serializer = RemovalSerializer(data={
@@ -147,7 +147,7 @@ class ReagentSerializerTest(TestCase):
         serializer = ReagentSerializer(data={
             'batch_id': 999,
             'initial_amount': 1,
-            'name': 'Reagent 1',
+            'id': 'Reagent 1',
             'created_by': "TEST",
         })
         self.assertFalse(serializer.is_valid())
@@ -156,7 +156,7 @@ class ReagentSerializerTest(TestCase):
         serializer = ReagentSerializer(data={
             'initial_amount': 1,
             'batch_id': self.batch.id,
-            'name': 'Reagent 1',
+            'id': 'Reagent 1',
             'created_by': "TEST",
             })
         self.assertTrue(serializer.is_valid())
@@ -165,7 +165,7 @@ class ReagentSerializerTest(TestCase):
         serializer = ReagentSerializer(data={
             'initial_amount': -1,
             'batch_id': self.batch.id,
-            'name': 'Reagent 1',
+            'id': 'Reagent 1',
             'created_by': "TEST",
         })
         self.assertFalse(serializer.is_valid())
@@ -174,7 +174,7 @@ class ReagentSerializerTest(TestCase):
         serializer = ReagentSerializer(data={
             'initial_amount': 1,
             'batch_id': self.batch.id,
-            'name': 'Reagent 1',
+            'id': 'Reagent 1',
             'created_by': "TEST",
         })
         self.assertTrue(serializer.is_valid())

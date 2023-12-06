@@ -3,9 +3,9 @@ import logging
 
 def populate_table(apps, schema_editor):
     """ Populates the tables with data """
-    analyses = [ "CMV", "EBV", "HEV", "MTB", "CLOS", "HSV+VZV"]
+    analyses = [ "CMV", "EBV", "HEV", "MTB", "CLOS", "HSV+VZV", "IC", "CPE500", "RB", "PNJI", "MTB", "MDR"]
     devices = ["InGe01", "InGe02" , "InGe03", "InGe04"]
-    kinds = ["Mastermix", "Standard", "Kontrolle"]
+    kinds = ["Mastermix", "Standard", "Kontrolle", "Interne Kontrolle"]
 
     logging.info("Tables populated.")
 

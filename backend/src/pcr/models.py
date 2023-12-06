@@ -88,8 +88,6 @@ class Reagent(models.Model):
     def save(self, *args, **kwargs):
         if self.current_amount == 0:
             self.is_empty = True
-        else:
-            self.is_empty = False
 
         super(Reagent, self).save(*args, **kwargs)
 
@@ -97,6 +95,7 @@ class Removal(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     reagent = models.ForeignKey(Reagent, on_delete=models.CASCADE, related_name='removals')
     amount = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    comment = models.TextField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.CharField(max_length=100)
@@ -111,11 +110,12 @@ class Removal(models.Model):
     def delete(self, *args, **kwargs):
         # Automatically sets the is_empty field to False if the reagent is not empty.
         # Deletion of a removal means that the associated reagent is not empty anymore.
-        if self.reagent.is_empty:
+        super(Removal, self).delete(*args, **kwargs)
+
+        if self.reagent.current_amount != 0:
             self.reagent.is_empty = False
             self.reagent.save()
         
-        super(Removal, self).delete(*args, **kwargs)
     
     def save(self, *args, **kwargs):
         # Automatically sets the is_empty field to True if the reagent is empty.

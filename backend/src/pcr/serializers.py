@@ -53,7 +53,7 @@ class RemovalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Removal
-        fields = ['id', 'amount', 'created_at', 'created_by', 'reagent_id']
+        fields = ['id', 'amount', 'comment', 'created_at', 'created_by', 'reagent_id']
         read_only_fields = ['id', 'created_at']
     
     def create(self, validated_data):

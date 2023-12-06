@@ -153,6 +153,7 @@ class Migration(migrations.Migration):
                         validators=[django.core.validators.MinValueValidator(0)],
                     ),
                 ),
+                ("comment", models.TextField(blank=True, null=True)),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 ("created_by", models.CharField(max_length=100)),
                 (

@@ -59,7 +59,7 @@ class ReagentViewSet(
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrPcr]
     renderer_classes = [ResponseRenderer]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
-    filterset_fields = ['batch', 'batch__kind', 'is_empty','batch__analysis', 'batch__device']
+    filterset_fields = ['batch', 'batch__kind', 'is_empty', 'batch__analysis', 'batch__device']
     search_fields = ['batch__kind__name', 'batch__analysis__name', 'batch__device__name']
 
 class BatchViewSet(
@@ -76,7 +76,7 @@ class BatchViewSet(
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrPcr]
     renderer_classes = [ResponseRenderer]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
-    filterset_fields = ['kind', 'analysis', 'device']
+    filterset_fields = ['kind', 'analysis', 'device', 'reagents__is_empty']
     search_fields = ['kind__name', 'analysis__name', 'device__name', 'reagents__id']
 
 class RemovalViewSet(
