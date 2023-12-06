@@ -108,7 +108,7 @@ class Migration(migrations.Migration):
                 (
                     "id",
                     models.CharField(
-                        editable=False, max_length=50, primary_key=True, serialize=False
+                        max_length=50, primary_key=True, serialize=False
                     ),
                 ),
                 (

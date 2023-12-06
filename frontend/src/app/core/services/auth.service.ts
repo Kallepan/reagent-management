@@ -1,10 +1,10 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable, computed, effect, inject, signal } from '@angular/core';
-import { NotificationService } from './notification.service';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { map } from 'rxjs';
 import { constants } from '../constants/constants';
-import { catchError, map, of, tap } from 'rxjs';
 import { messages } from '../constants/messages';
+import { NotificationService } from './notification.service';
 
 type AuthData = {
   department: string;
@@ -42,14 +42,13 @@ export class AuthService {
           department: resp.identifier,
         };
       }),
-      catchError(() => {
-        // DO NOTHING
-        return of(null);
-      }),
     ).subscribe({
       next: data => {
         this._authData.set(data);
         this._notificationService.infoMessage(messages.AUTH.LOGGED_IN);
+      },
+      error: () => {
+        this._authData.set(null);
       },
     });
   }
@@ -68,7 +67,7 @@ export class AuthService {
     };
 
     this.http.post<any>(`${constants.APIS.AUTH}/`, data, httpOptions).pipe(
-      map(resp => {
+      map(() => {
         return {
           department: data.identifier!
         };
