@@ -1,12 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { PCRStateHandlerService } from './pcrstate-handler.service';
-import { RemovalService } from './removal.service';
+import { of } from 'rxjs';
+import { Kind } from '../interfaces/simple';
+import { AnalysisService } from './analysis.service';
+import { BatchAPIService } from './batch-api.service';
 import { DeviceService } from './device.service';
 import { KindService } from './kind.service';
-import { AnalysisService } from './analysis.service';
-import { Kind } from '../interfaces/simple';
-import { of } from 'rxjs';
+import { PCRStateHandlerService } from './pcrstate-handler.service';
+import { RemovalService } from './removal.service';
 
 const mockKinds: Kind[] = [
   { name: 'kind1', id: '1' },
@@ -29,12 +30,14 @@ describe('PCRStateHandlerService', () => {
   let kindService: jasmine.SpyObj<KindService>;
   let deviceService: jasmine.SpyObj<DeviceService>;
   let analysisService: jasmine.SpyObj<AnalysisService>;
+  let batchAPIService: jasmine.SpyObj<BatchAPIService>;
 
   beforeEach(() => {
     removalService = jasmine.createSpyObj('RemovalService', ['remove']);
     kindService = jasmine.createSpyObj('KindService', ['getKinds']);
     deviceService = jasmine.createSpyObj('DeviceService', ['getDevices']);
     analysisService = jasmine.createSpyObj('AnalysisService', ['getAnalyses']);
+    batchAPIService = jasmine.createSpyObj('BatchAPIService', ['searchBatch']);
 
     kindService.getKinds.and.returnValue(of(mockKinds));
     deviceService.getDevices.and.returnValue(of(mockDevices));
@@ -47,6 +50,7 @@ describe('PCRStateHandlerService', () => {
         { provide: KindService, useValue: kindService, },
         { provide: DeviceService, useValue: deviceService, },
         { provide: AnalysisService, useValue: analysisService, },
+        { provide: BatchAPIService, useValue: batchAPIService, },
       ]
     });
     service = TestBed.inject(PCRStateHandlerService);

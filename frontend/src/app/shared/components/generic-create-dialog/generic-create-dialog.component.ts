@@ -19,7 +19,7 @@ type FormControlInfo = {
 
   // Form control metadata
   label: string;
-  type: 'text' | 'number';
+  type: 'text' | 'number' | 'textarea';
   placeholder?: string;
   hint?: string;
 
@@ -31,6 +31,7 @@ type FormControlInfo = {
     pattern?: string;
     min?: string;
     max?: string;
+
   };
 }
 

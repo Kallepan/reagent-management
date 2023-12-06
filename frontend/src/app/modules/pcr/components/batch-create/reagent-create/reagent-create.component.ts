@@ -1,10 +1,11 @@
-import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, DestroyRef, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import { ControlContainer, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { cleanQuery } from '@app/modules/pcr/functions/query-cleaner.function';
 
 @Component({
   selector: 'app-reagent-create',
@@ -28,24 +29,29 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: './reagent-create.component.scss'
 })
 export class ReagentCreateComponent implements OnInit, OnDestroy {
+  // Emit the submit event to the parent
+  @Output() onSubmit = new EventEmitter<void>();
+
+  // Inject the destroyRef to unsubscribe from observables
+  private detroyRef = inject(DestroyRef);
+
+  // Inject the parent container and formBuilder
   @Input({ required: true }) controlKey = 'reagents';
-
   parentContainer = inject(ControlContainer);
-
   private _formBuilder = inject(FormBuilder);
-
+  // Functions to get the formGroup and formArray of the reagents
   get parentFormGroup(): FormGroup {
     return this.parentContainer.control as FormGroup;
   }
-
   get reagents(): FormArray {
-    return this.parentFormGroup.get(this.controlKey)! as FormArray;
+    return this.parentFormGroup.get(this.controlKey) as FormArray;
   }
 
-  addReagent() {
+  addReagentForm() {
     const reagentForm = this._formBuilder.group({
-      id: ['', [Validators.required]],
+      id: ['', [Validators.required, Validators.pattern(/^[A-Z0-9]{9}\|U[0-9]{4}-[0-9]{3}\|[0-9]{6}\|[0-9]{9}$/)]],
     });
+
     this.reagents.push(reagentForm);
   }
 
@@ -53,19 +59,30 @@ export class ReagentCreateComponent implements OnInit, OnDestroy {
     return this.reagents.at(index) as FormGroup;
   }
 
-  deleteReagent(index: number) {
+  removeReagentForm(index: number) {
     this.reagents.removeAt(index);
   }
 
+  cleanInput(index: number) {
+    // Get the value of the input
+    const value = this.reagents.controls[index].value;
+    if (!value && typeof value !== 'string') return;
+
+    // Clean the query
+    this.reagents.controls[index].patchValue({ id: cleanQuery(value.id) }, { emitEvent: false });
+    if (this.reagents.controls[index].valid) {
+      // disable the input
+      this.reagents.controls[index].disable({ emitEvent: false });
+    }
+  }
+
   ngOnInit(): void {
-    // Initialize the formGroup of the reagents from parent
-    this.parentFormGroup.addControl(this.controlKey, this._formBuilder.array([]));
-    this.addReagent();
+    // Add a default reagent form
+    this.addReagentForm();
   }
 
   ngOnDestroy(): void {
-    // Cleanup the formGroup of the reagents from parent
+    // clean the reagents array
     this.reagents.clear();
-    this.parentFormGroup.removeControl(this.controlKey);
   }
 }

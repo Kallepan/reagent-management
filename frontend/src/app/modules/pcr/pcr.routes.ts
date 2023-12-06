@@ -13,12 +13,12 @@ export const routes: Route[] = [
         loadComponent: () => import('./components/batch-create/batch-create.component').then(m => m.BatchCreateComponent),
     },
     {
-        path: 'batch/manage/:id',
+        path: 'batch/:batchId',
         title: 'Manage Batch',
         loadComponent: () => import('./components/batch-manage/batch-manage.component').then(m => m.BatchManageComponent),
     },
     {
-        path: 'reagent/manage/:id',
+        path: 'reagent/:id',
         title: 'Manage Reagent',
         loadComponent: () => import('./components/reagent-manage/reagent-manage.component').then(m => m.ReagentManageComponent),
     },

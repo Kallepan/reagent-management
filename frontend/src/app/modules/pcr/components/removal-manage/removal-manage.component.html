@@ -1,0 +1,20 @@
+<h3 class="text-start">Entnahmen</h3>
+<p class="text-start small">Auf die Mülleimer klicken um Entnahmen zu entfernen</p>
+@if (reagent === null) {
+<p class="text-start">
+    Bitte waehlen Sie eine Reagenzie aus.
+</p>
+} @else {
+<mat-list @appearInOut @increaseOpacity class="list">
+    @for (removal of reagent.removals; track $index) {
+    <mat-list-item>
+        <mat-icon class="item" (click)="onDelete.emit(removal)" matListItemIcon>delete_forever</mat-icon>
+        <div matListItemTitle>{{removal.created_at | date: "dd.MM.yyyy"}} - {{removal.created_by | titlecase}}</div>
+        <div matListItemLine>Entfernte Menge(n): {{removal.amount}}</div>
+        <small matListItemLine>{{removal.comment}}</small>
+    </mat-list-item>
+    }
+</mat-list>
+<button mat-raised-button (click)="onCreate.emit(reagent)" [disabled]="reagent.current_amount === 0">Reagenzie
+    entnehmen</button>
+}

@@ -1,1 +1,9 @@
-<p>reagent-manage works!</p>
+<h3 class="text-start">Reagenzien in diesem Batch</h3>
+<mat-chip-listbox class="reagents" [multiple]="false">
+    @for (reagent of reagents; track reagent) {
+    <mat-chip-option color="accent" (selectionChange)="selectionChange.emit($event)" [value]="reagent"
+        [selected]="selected">
+        {{reagent.id}} ({{reagent.current_amount}}/{{reagent.initial_amount}})
+    </mat-chip-option>
+    }
+</mat-chip-listbox>

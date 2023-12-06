@@ -1,11 +1,21 @@
-fieldset {
+.reagent-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
     .row {
         display: flex;
+        flex-direction: row;
         align-items: baseline;
-        justify-content: space-between;
+        justify-content: flex-start;
+    }
 
-        mat-form-field {
-            width: 100%;
-        }
+    mat-form-field {
+        width: 100%;
+        margin-right: 1rem;
+    }
+
+    button+button {
+        margin-left: 1rem;
     }
 }

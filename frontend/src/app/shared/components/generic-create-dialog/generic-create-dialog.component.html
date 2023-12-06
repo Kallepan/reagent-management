@@ -1,10 +1,11 @@
 <h3 mat-dialog-title class="title">{{title}}</h3>
 <form class="form" action="submit" [formGroup]="formGroup" mat-dialog-content>
     @for (control of formControlInfos; track $index) {
+    @switch (control.type) {
+    @case ('text') {
     <mat-form-field>
         <mat-label>{{ control.label }}</mat-label>
-        <input matInput [formControlName]="control.controlName" [placeholder]="control.placeholder || ''"
-            [type]="control.type">
+        <input matInput [formControlName]="control.controlName" [placeholder]="control.placeholder || ''" type="text">
 
         <!-- Error Messages, this can be refactored to be its own component or something!!-->
         @if(getErrorMessage(control); as errorMessage) {
@@ -14,6 +15,37 @@
         }
         <mat-hint>{{control.hint}}</mat-hint>
     </mat-form-field>
+    }
+    @case ('number') {
+    <mat-form-field>
+        <mat-label>{{ control.label }}</mat-label>
+        <input matInput [formControlName]="control.controlName" [placeholder]="control.placeholder || ''" type="number">
+
+        <!-- Error Messages, this can be refactored to be its own component or something!!-->
+        @if(getErrorMessage(control); as errorMessage) {
+        <mat-error class="error-warning">
+            {{ errorMessage }}
+        </mat-error>
+        }
+        <mat-hint>{{control.hint}}</mat-hint>
+    </mat-form-field>
+    }
+    @case ('textarea') {
+    <mat-form-field>
+        <mat-label>{{ control.label }}</mat-label>
+        <textarea matInput [formControlName]="control.controlName" [placeholder]="control.placeholder || ''"
+            type="text"></textarea>
+
+        <!-- Error Messages, this can be refactored to be its own component or something!!-->
+        @if(getErrorMessage(control); as errorMessage) {
+        <mat-error class="error-warning">
+            {{ errorMessage }}
+        </mat-error>
+        }
+        <mat-hint>{{control.hint}}</mat-hint>
+    </mat-form-field>
+    }
+    }
     }
 </form>
 <div class="actions" mat-dialog-content>

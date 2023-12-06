@@ -20,11 +20,18 @@ export class messages {
         SEARCH_ERROR: 'Fehler beim Suchen der Reagenz',
         NO_BATCHES_FOUND: 'Keinen Batch gefunden',
         MULTIPLE_BATCHES_FOUND: 'Mehrere Batch gefunden',
+
         REMOVAL_CREATE_SUCCESS: 'Die Reagenz wurde erfolgreich entnommen',
         REMOVAL_CREATE_FAILED: 'Die Reagenz konnte nicht entnommen werden',
 
         REMOVAL_DELETE_SUCCESS: 'Die Entnahme wurde erfolgreich gelöscht',
         REMOVAL_DELETE_FAILED: 'Die Entnahme konnte nicht gelöscht werden',
+
+        REAGENT_CREATE_SUCCESS: 'Die Reagenz wurde erfolgreich erstellt',
+        REAGENT_CREATE_ERROR: 'Die Reagenz konnte nicht erstellt werden',
+
+        BATCH_DELETE_SUCCESS: 'Der Batch wurde erfolgreich gelöscht',
+        BATCH_DELETE_FAILED: 'Der Batch konnte nicht gelöscht werden',
     }
 
     public static GENERAL = {

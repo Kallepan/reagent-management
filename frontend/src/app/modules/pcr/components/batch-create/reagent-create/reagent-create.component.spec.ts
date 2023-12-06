@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReagentCreateComponent } from './reagent-create.component';
-import { AbstractControl, ControlContainer, FormArray, FormGroup, FormGroupDirective } from '@angular/forms';
+import { ControlContainer, FormArray, FormGroup, FormGroupDirective } from '@angular/forms';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { ReagentCreateComponent } from './reagent-create.component';
 
 describe('ReagentCreateComponent', () => {
   let component: ReagentCreateComponent;
@@ -34,5 +34,80 @@ describe('ReagentCreateComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+    expect(component.parentFormGroup).toBe(fg);
+  });
+
+  it('should add reagent', () => {
+    component.addReagentForm();
+    // one form is added by default
+    expect(component.reagents.length).toBe(2);
+  });
+
+  it('should remove reagent', () => {
+    component.addReagentForm();
+    component.removeReagentForm(0);
+
+    // one form is added by default
+    expect(component.reagents.length).toBe(1);
+  });
+
+  it('addButton should call addReagentForm', () => {
+    spyOn(component, 'addReagentForm');
+    const addButton = fixture.debugElement.nativeElement.querySelector('.add-button');
+    addButton.click();
+    expect(component.addReagentForm).toHaveBeenCalled();
+  });
+
+  it('submitButton should call submitEventEmitter', () => {
+    spyOn(component.onSubmit, 'emit');
+    const submitButton = fixture.debugElement.nativeElement.querySelector('.submit-button');
+    submitButton.click();
+    expect(component.onSubmit.emit).toHaveBeenCalled();
+  });
+
+  it('removeButton should call removeReagentForm', () => {
+    spyOn(component, 'removeReagentForm');
+    const removeButton = fixture.debugElement.nativeElement.querySelector('.remove-button');
+    removeButton.click();
+    expect(component.removeReagentForm).toHaveBeenCalled();
+  });
+
+  it('form should be valid if input', () => {
+    const input = "RTS000ING|U0000-000|000000|000000000";
+
+    component.addReagentForm();
+    const reagent = component.getReagent(0);
+    reagent.controls["id"].setValue(input);
+
+    expect(reagent.valid).toBeTruthy();
+  });
+
+  it('form should be invalid if input is empty', () => {
+    const input = "";
+
+    // set value via html input
+    const inputElement = fixture.debugElement.nativeElement.querySelector('.input-element');
+    inputElement.value = input;
+    inputElement.dispatchEvent(new Event('input'));
+
+
+    expect(component.reagents.controls[0].valid).toBeFalsy();
+    expect(component.reagents.controls[0].value).toEqual({ id: input });
+    expect(component.reagents.controls[0].disabled).toBeFalsy();
+  });
+
+  it('should disable input if input is valid', () => {
+    const input = "RTS000ING|U0000-000|000000|000000000";
+
+    expect(component.reagents.controls[0].enabled).toBeTruthy();
+
+    // set value via html input
+    const inputElement = fixture.debugElement.nativeElement.querySelector('.input-element');
+    inputElement.value = input;
+    inputElement.dispatchEvent(new Event('input'));
+
+    expect(component.reagents.controls[0].disabled).toBeTruthy();
+    expect(component.reagents.controls[0].value).toEqual({ id: input });
+    expect(component.reagents.controls[0].valid).toBeFalsy();
   });
 });

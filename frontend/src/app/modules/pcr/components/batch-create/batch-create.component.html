@@ -1,12 +1,24 @@
 <div class="container">
     <mat-stepper #stepper [animationDuration]="'1000'" [linear]="true">
         <mat-step [stepControl]="groupForm">
-            <form [formGroup]="groupForm">
+            <form [formGroup]="groupForm" class="form">
                 <ng-template matStepLabel>Gruppe anlegen</ng-template>
                 <div class="form-group">
                     @for (formControlInfo of shownFormControls; track formControlInfo) {
-                    @if (!formControlInfo.autcomplete) {
-                    <!-- Default case no autocomplete -->
+                    @switch (formControlInfo.type) {
+                    @case('textarea') {
+                    <!-- Textarea case -->
+                    <mat-form-field class="wide-form textarea">
+                        <mat-label>{{formControlInfo.label}}</mat-label>
+                        <textarea matInput [placeholder]="formControlInfo.placeholder || ''"
+                            [formControlName]="formControlInfo.key"></textarea>
+                        <mat-hint>{{formControlInfo.hint}}</mat-hint>
+                        @if (groupForm.get(formControlInfo.key)?.hasError('maxLength')) {
+                        <mat-error>Bitte geben Sie maximal {{formControlInfo.maxLength || 255}} Zeichen ein.</mat-error>
+                        }
+                    </mat-form-field>
+                    }
+                    @case ('text') {
                     <mat-form-field class="wide-form">
                         <mat-label>{{formControlInfo.label}}</mat-label>
                         <input matInput [type]="formControlInfo.type" [placeholder]="formControlInfo.placeholder || ''"
@@ -15,8 +27,31 @@
                         @if (groupForm.get(formControlInfo.key)?.hasError('required')) {
                         <mat-error>Bitte füllen Sie dieses Feld aus.</mat-error>
                         }
+                        @if(groupForm.get(formControlInfo.key)?.hasError('maxLength')) {
+                        <mat-error>Bitte geben Sie maximal {{formControlInfo.maxLength || 255}} Zeichen ein.</mat-error>
+                        }
+                        @if(groupForm.get(formControlInfo.key)?.hasError('minLength')) {
+                        <mat-error>Bitte geben Sie mindestens {{formControlInfo.minLength || 1}} Zeichen
+                            ein.</mat-error>
+                        }
+                        @if (groupForm.get(formControlInfo.key)?.hasError('pattern')) {
+                        <mat-error>Bitte geben Sie einen gültigen Wert ein.</mat-error>
+                        }
                     </mat-form-field>
-                    } @else {
+                    }
+                    @case('number') {
+                    <!-- Number case -->
+                    <mat-form-field class="wide-form">
+                        <mat-label>{{formControlInfo.label}}</mat-label>
+                        <input matInput type="number" [placeholder]="formControlInfo.placeholder || ''"
+                            [formControlName]="formControlInfo.key" required>
+                        <mat-hint>{{formControlInfo.hint}}</mat-hint>
+                        @if (groupForm.get(formControlInfo.key)?.hasError('required')) {
+                        <mat-error>Bitte füllen Sie dieses Feld aus.</mat-error>
+                        }
+                    </mat-form-field>
+                    }
+                    @case('autocomplete') {
                     <!-- Autocomplete case -->
                     <mat-form-field class="wide-form">
                         <mat-label>{{formControlInfo.label}}</mat-label>
@@ -27,7 +62,7 @@
                         <mat-error>Bitte füllen Sie dieses Feld aus.</mat-error>
                         }
 
-                        <mat-autocomplete #auto>
+                        <mat-autocomplete #auto [displayWith]="formControlInfo.displayFn!">
                             @if (formControlInfo.data | async; as data){
                             @for (option of data; track $index) {
                             <mat-option [value]="option">{{option.name}}</mat-option>
@@ -37,18 +72,18 @@
                     </mat-form-field>
                     }
                     }
+
+                    }
                 </div>
-                <div>
-                    <button mat-raised-button color="accent" id="firstContinueButton" matStepperNext
-                        [disabled]="groupForm.invalid">Fortfahren</button>
-                </div>
+                <button mat-raised-button color="accent" id="firstContinueButton" matStepperNext
+                    [disabled]="groupForm.invalid">Fortfahren</button>
             </form>
         </mat-step>
         <mat-step [stepControl]="reagentsFormGroup">
             <ng-template matStepLabel>Reagenzien anlegen</ng-template>
             <!-- this is necessary for the provider resolution to correctly find the formGroup! -->
             <div [formGroup]="reagentsFormGroup">
-                <app-reagent-create controlKey="reagents"></app-reagent-create>
+                <app-reagent-create controlKey="reagents" (onSubmit)="submit()"></app-reagent-create>
             </div>
         </mat-step>
     </mat-stepper>

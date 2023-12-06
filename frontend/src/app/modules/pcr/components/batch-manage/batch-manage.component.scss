@@ -1,0 +1,28 @@
+.container {
+    display: flex;
+    margin: auto;
+    justify-content: center;
+    text-align: center;
+}
+
+.card {
+    width: 50%;
+
+    .card-header {
+        text-align: left;
+    }
+
+    .card-content {
+        display: grid;
+        grid-template-columns: 1fr .5fr;
+
+        height: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .card-footer {
+        display: flex;
+        justify-content: center;
+        margin: 1rem 0;
+    }
+}
