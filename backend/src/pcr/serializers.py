@@ -101,7 +101,7 @@ class ReagentSerializer(serializers.ModelSerializer):
             'created_at', 
             'created_by', 
         ]
-        read_only_fields = ['id', 'created_at', 'is_empty']
+        read_only_fields = ['created_at', 'is_empty']
     
     def get_current_amount(self, obj):
         # get the current amount by summing up all removals

@@ -114,8 +114,8 @@ class Migration(migrations.Migration):
                 (
                     "initial_amount",
                     models.IntegerField(
-                        default=0,
-                        validators=[django.core.validators.MinValueValidator(0)],
+                        default=1,
+                        validators=[django.core.validators.MinValueValidator(1)],
                     ),
                 ),
                 ("created_at", models.DateTimeField(auto_now_add=True)),

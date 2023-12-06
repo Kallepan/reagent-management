@@ -1,3 +1,4 @@
+from typing import Any
 from django.db import models
 from django.core.validators import MinValueValidator
 
@@ -64,7 +65,7 @@ class Reagent(models.Model):
     # This id is present on the reagent itself and is used to identify it.
     id = models.CharField(primary_key=True, max_length=50)
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE, related_name='reagents')
-    initial_amount = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    initial_amount = models.IntegerField(default=1, validators=[MinValueValidator(1)])
 
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.CharField(max_length=100)
@@ -87,6 +88,8 @@ class Reagent(models.Model):
     def save(self, *args, **kwargs):
         if self.current_amount == 0:
             self.is_empty = True
+        else:
+            self.is_empty = False
 
         super(Reagent, self).save(*args, **kwargs)
 
@@ -104,6 +107,15 @@ class Removal(models.Model):
     
     def __str__(self) -> str:
         return f'{self.reagent} ({self.amount})'
+    
+    def delete(self, *args, **kwargs):
+        # Automatically sets the is_empty field to False if the reagent is not empty.
+        # Deletion of a removal means that the associated reagent is not empty anymore.
+        if self.reagent.is_empty:
+            self.reagent.is_empty = False
+            self.reagent.save()
+        
+        super(Removal, self).delete(*args, **kwargs)
     
     def save(self, *args, **kwargs):
         # Automatically sets the is_empty field to True if the reagent is empty.
