@@ -141,7 +141,7 @@ class ReagentSerializerTest(TestCase):
             created_by='Test User',
         ))
         data = serializer.data
-        self.assertEqual(set(data.keys()), set(['id', 'initial_amount', 'created_at', 'created_by', 'is_empty', 'removals']))
+        self.assertEqual(set(data.keys()), set(['id', 'initial_amount', 'created_at', 'created_by', 'is_empty', 'removals', 'current_amount']))
     
     def test_batch_id_should_be_invalid(self):
         serializer = ReagentSerializer(data={
@@ -191,6 +191,40 @@ class BatchSerializerTest(TestCase):
             name='Device 1',
         )
 
+    def test_should_return_correct_amounts(self):
+        batch = Batch.objects.create(
+            kind=self.kind,
+            analysis=self.analysis,
+            device=self.device,
+            created_by='Test User',
+        )
+        reagent_one = Reagent.objects.create(
+            id='Reagent 1',
+            batch=batch,
+            created_by='Test User',
+            initial_amount=20,
+        )
+        reagent_two = Reagent.objects.create(
+            id='Reagent 2',
+            batch=batch,
+            created_by='Test User',
+            initial_amount=10,
+        )
+        Removal.objects.create(
+            amount=10,
+            created_by='Test User',
+            reagent=reagent_one,
+        )
+        Removal.objects.create(
+            amount=5,
+            created_by='Test User',
+            reagent=reagent_two,
+        )
+        serializer = BatchSerializer(instance=batch)
+        data = serializer.data
+        self.assertEqual(data['current_amount'], 15)
+        self.assertEqual(data['initial_amount'], 30)
+
     def test_contains_expected_fields(self):
         serializer = BatchSerializer(instance=Batch.objects.create(
             kind=self.kind,
@@ -199,7 +233,7 @@ class BatchSerializerTest(TestCase):
             created_by='Test User',
         ))
         data = serializer.data
-        self.assertEqual(set(data.keys()), set(['id', 'kind', 'analysis', 'device', 'comment', 'reagents', 'created_at', 'created_by']))
+        self.assertEqual(set(data.keys()), set(['id', 'kind', 'analysis', 'device', 'comment', 'reagents', 'created_at', 'current_amount', 'initial_amount', 'created_by']))
     
     def test_kind_id_should_be_invalid(self):
         serializer = BatchSerializer(data={

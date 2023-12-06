@@ -1,6 +1,5 @@
 from django.db import models
 from django.core.validators import MinValueValidator
-from django.core.exceptions import ValidationError
 
 import uuid
 
@@ -18,7 +17,7 @@ class Kind(models.Model):
 
 class Analysis(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=5, db_index=True)
+    name = models.CharField(max_length=20, db_index=True)
 
     class Meta:
         db_table = 'pcr"."analysis'
@@ -54,6 +53,7 @@ class Batch(models.Model):
     class Meta:
         db_table = 'pcr"."batch'
         ordering = ['kind', 'analysis', 'device']
+        verbose_name_plural = 'Batches'
     
     def __str__(self) -> str:
         return f'{self.kind}-{self.analysis}-{self.device}'
@@ -62,7 +62,7 @@ class Batch(models.Model):
 class Reagent(models.Model):
     # Here we use a predetermined ID instead of a UUID.
     # This id is present on the reagent itself and is used to identify it.
-    id = models.CharField(primary_key=True, max_length=50, editable=False)
+    id = models.CharField(primary_key=True, max_length=50)
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE, related_name='reagents')
     initial_amount = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
@@ -82,12 +82,13 @@ class Reagent(models.Model):
     @property
     def current_amount(self):
         # Returns the current amount of the reagent. i.e. the initial amount minus the sum of all removals.
-        return self.initial_amount - (self.removals.aggregate(models.Sum('amount'))['amount__sum'] or 0)
+        return self.initial_amount - (self.removals.aggregate(amount__sum=models.Sum('amount'))['amount__sum'] or 0)
 
     def save(self, *args, **kwargs):
         if self.current_amount == 0:
             self.is_empty = True
-        super().save(*args, **kwargs)
+
+        super(Reagent, self).save(*args, **kwargs)
 
 class Removal(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -110,4 +111,4 @@ class Removal(models.Model):
             self.reagent.is_empty = True
             self.reagent.save()
             
-        super().save(*args, **kwargs)
+        super(Removal, self).save(*args, **kwargs)

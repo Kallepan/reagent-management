@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from .models import Kind, Analysis, Device, Batch, Reagent, Removal
 
 admin.site.register(Kind)

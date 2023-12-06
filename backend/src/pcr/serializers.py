@@ -2,6 +2,8 @@ from rest_framework import serializers
 
 from .models import Kind, Analysis, Device, Batch, Reagent, Removal
 
+from django.db.models import Sum
+
 class KindSerializer(serializers.ModelSerializer):
     """
     Serializer for Kind model.
@@ -85,6 +87,7 @@ class ReagentSerializer(serializers.ModelSerializer):
     """
     batch_id = serializers.PrimaryKeyRelatedField(queryset=Batch.objects.all(), write_only=True)
     removals = RemovalSerializer(many=True, read_only=True)
+    current_amount = serializers.SerializerMethodField()
 
     class Meta:
         model = Reagent
@@ -93,12 +96,17 @@ class ReagentSerializer(serializers.ModelSerializer):
             'batch_id',
             'is_empty',
             'removals',
-            'initial_amount', 
+            'initial_amount',
+            'current_amount',
             'created_at', 
             'created_by', 
         ]
         read_only_fields = ['id', 'created_at', 'is_empty']
     
+    def get_current_amount(self, obj):
+        # get the current amount by summing up all removals
+        return obj.initial_amount - (obj.removals.aggregate(amount_sum=Sum('amount') )['amount_sum'] or 0)
+
     def create(self, validated_data):
         # we need to get the batch_id from the request data
         batch_id = validated_data.pop('batch_id')
@@ -124,6 +132,9 @@ class BatchSerializer(serializers.ModelSerializer):
     kind_id = serializers.PrimaryKeyRelatedField(queryset=Kind.objects.all(), write_only=True)
     reagents = ReagentSerializer(many=True, read_only=True)
 
+    current_amount = serializers.SerializerMethodField()
+    initial_amount = serializers.SerializerMethodField()
+
     class Meta:
         model = Batch
         fields = [
@@ -134,13 +145,25 @@ class BatchSerializer(serializers.ModelSerializer):
             'device_id', 
             'kind', 
             'kind_id', 
-            'comment', 
+            'comment',
+            'current_amount',
+            'initial_amount',
             'created_at', 
             'created_by', 
             'reagents',
         ]
         read_only_fields = ['id', 'created_at']
     
+    def get_initial_amount(self, obj):
+        # get the initial amount by summing up all reagents
+        return obj.reagents.aggregate(amount_sum=Sum('initial_amount'))['amount_sum']
+
+    def get_current_amount(self, obj):
+        # get the current amount by summing up all reagents
+        removed_amount = obj.reagents.aggregate(removed_amount=Sum('removals__amount'))["removed_amount"] or 0
+        initial_amount = obj.reagents.aggregate(initial_amount=Sum('initial_amount'))["initial_amount"] or 0
+        return initial_amount - removed_amount
+
     def create(self, validated_data):
         # we need to manually pop the analysis_id, device_id and kind_id from validated_data and create the batch with it
         analysis = validated_data.pop('analysis_id')
