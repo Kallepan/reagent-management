@@ -77,4 +77,21 @@ class BatchViewSet(
     renderer_classes = [ResponseRenderer]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ['kind', 'analysis', 'device']
-    search_fields = ['kind__name', 'analysis__name', 'device__name']
+    search_fields = ['kind__name', 'analysis__name', 'device__name', 'reagents__id']
+
+class RemovalViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet):
+    """
+    ViewSet for Removal model.
+    """
+    queryset = Removal.objects.all()
+    serializer_class = RemovalSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrPcr]
+    renderer_classes = [ResponseRenderer]
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    
