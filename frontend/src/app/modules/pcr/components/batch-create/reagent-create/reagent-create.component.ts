@@ -1,11 +1,30 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
-import { ControlContainer, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  Component,
+  DestroyRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  inject,
+} from '@angular/core';
+import {
+  ControlContainer,
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { cleanQuery } from '@app/modules/pcr/functions/query-cleaner.function';
+import { BatchAPIService } from '@app/modules/pcr/services/batch-api.service';
+import { PCRStateHandlerService } from '@app/modules/pcr/services/pcrstate-handler.service';
+import { ReagentValidator } from '@app/modules/pcr/validators/reagent-validator';
 
 @Component({
   selector: 'app-reagent-create',
@@ -26,14 +45,14 @@ import { cleanQuery } from '@app/modules/pcr/functions/query-cleaner.function';
     },
   ],
   templateUrl: './reagent-create.component.html',
-  styleUrl: './reagent-create.component.scss'
+  styleUrl: './reagent-create.component.scss',
 })
 export class ReagentCreateComponent implements OnInit, OnDestroy {
+  // Inject the batchAPIService
+  private batchAPIService = inject(BatchAPIService);
+
   // Emit the submit event to the parent
   @Output() onSubmit = new EventEmitter<void>();
-
-  // Inject the destroyRef to unsubscribe from observables
-  private detroyRef = inject(DestroyRef);
 
   // Inject the parent container and formBuilder
   @Input({ required: true }) controlKey = 'reagents';
@@ -49,7 +68,16 @@ export class ReagentCreateComponent implements OnInit, OnDestroy {
 
   addReagentForm() {
     const reagentForm = this._formBuilder.group({
-      id: ['', [Validators.required, Validators.pattern(/^[A-Z0-9]{9}\|U[0-9]{4}-[0-9]{3}\|[0-9]{6}\|[0-9]{9}$/)]],
+      id: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(
+            /^[A-Z0-9]{9}\|U[0-9]{4}-[0-9]{3}\|[0-9]{6}\|[0-9]{9}$/
+          ),
+        ],
+        [ReagentValidator.createValidator(this.batchAPIService)],
+      ],
     });
 
     this.reagents.push(reagentForm);
@@ -69,11 +97,10 @@ export class ReagentCreateComponent implements OnInit, OnDestroy {
     if (!value && typeof value !== 'string') return;
 
     // Clean the query
-    this.reagents.controls[index].patchValue({ id: cleanQuery(value.id) }, { emitEvent: false });
-    if (this.reagents.controls[index].valid) {
-      // disable the input
-      this.reagents.controls[index].disable({ emitEvent: false });
-    }
+    this.reagents.controls[index].patchValue(
+      { id: cleanQuery(value.id) },
+      { emitEvent: false }
+    );
   }
 
   ngOnInit(): void {
