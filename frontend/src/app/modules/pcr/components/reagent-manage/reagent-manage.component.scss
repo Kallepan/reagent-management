@@ -8,7 +8,10 @@
 .mat-mdc-standard-chip.empty {
   background-color: #b92c28;
 }
-// change chip-color only when selected:
-.mat-mdc-chip-selected.partial {
+.mat-mdc-standard-chip.partial {
   background-color: #d19b3d;
+}
+
+.reagents {
+  max-width: 50%;
 }
