@@ -57,7 +57,7 @@ class Batch(models.Model):
         verbose_name_plural = 'Batches'
     
     def __str__(self) -> str:
-        return f'{self.kind}-{self.analysis}-{self.device}'
+        return f'{self.id} ({self.kind}-{self.analysis}-{self.device})'
     
 
 class Reagent(models.Model):
