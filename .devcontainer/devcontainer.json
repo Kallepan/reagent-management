@@ -34,13 +34,23 @@
 				"ms-python.vscode-pylance",
 				"eamodio.gitlens",
 				"DavidAnson.vscode-markdownlint",
-				"mechatroner.rainbow-csv"
+				"mechatroner.rainbow-csv",
+				"ms-azuretools.vscode-docker",
+				"ms-python.black-formatter"
 			],
 			"settings": {
 				"editor.codeActionsOnSave": {
 					"source.organizeImports": true
 				},
 				"editor.defaultFormatter": "ms-python.black-formatter",
+				"[python]": {
+					"diffEditor.ignoreTrimWhitespace": false,
+					"gitlens.codeLens.symbolScopes": [
+						"!Module"
+					],
+					"editor.formatOnSave": true,
+					"editor.wordBasedSuggestions": false
+				},
 				"editor.formatOnSave": true,
 				"eslint.validate": [
 					"javascript",
