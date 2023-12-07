@@ -36,14 +36,12 @@
 				"DavidAnson.vscode-markdownlint",
 				"mechatroner.rainbow-csv",
 				"ms-azuretools.vscode-docker",
-				"ms-python.black-formatter"
+				"ms-python.black-formatter",
+				"esbenp.prettier-vscode"
 			],
 			"settings": {
-				"editor.codeActionsOnSave": {
-					"source.organizeImports": true
-				},
-				"editor.defaultFormatter": "ms-python.black-formatter",
 				"[python]": {
+					"editor.defaultFormatter": "ms-python.black-formatter",
 					"diffEditor.ignoreTrimWhitespace": false,
 					"gitlens.codeLens.symbolScopes": [
 						"!Module"
@@ -51,11 +49,14 @@
 					"editor.formatOnSave": true,
 					"editor.wordBasedSuggestions": false
 				},
-				"editor.formatOnSave": true,
-				"eslint.validate": [
-					"javascript",
-					"typescript"
-				]
+				"[typescript]": {
+					"editor.defaultFormatter": "esbenp.prettier-vscode",
+					"editor.formatOnSave": true
+				},
+				"[scss]": {
+					"editor.defaultFormatter": "esbenp.prettier-vscode",
+					"editor.formatOnSave": true
+				}
 			}
 		}
 	}

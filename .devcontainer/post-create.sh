@@ -4,7 +4,7 @@
 npm install -g @angular/cli@17.0.0
 
 # Install Node Modules
-export NODE_MODULES="eslint typescript"
+export NODE_MODULES="typescript"
 npm install -g ${NODE_MODULES} \
     && npm cache clean --force > /dev/null 2>&1
 
