@@ -132,11 +132,16 @@ export class BatchManageComponent implements OnInit {
     };
 
     this.dialog.open(GenericCreateDialogComponent, matDialogConfig).afterClosed().pipe(
+      // set default comment to empty string
       filter((result): result is { amount: number, user: string, comment: string } => result !== undefined && result !== null),
+      map(result => {
+        if (result.comment === undefined || result.comment === null) result.comment = '';
+        return result;
+      }),
       tap(result => localStorage.setItem('pcr_current_user', result.user)),
       map(result => ({ amount: result.amount, user: result.user.trim().toLowerCase(), comment: result.comment.trim() })),
       switchMap(result => this.pcrStateHandlerService.postRemoval(reagent.id, result.user, result.amount, result.comment).pipe(
-        catchError(err => throwError(() => err))
+        catchError(err => throwError(() => err)),
       )),
     ).subscribe({
       next: () => {
@@ -180,7 +185,7 @@ export class BatchManageComponent implements OnInit {
   deleteBatch() {
     const matDialogConfig: MatDialogConfig = {
       data: {
-        title: 'Möchten Sie diesen Batch wirklich löschen?',
+        title: 'Möchten Sie diesen Batch wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden!',
         choices: [
           { id: 'yes', name: 'Ja' },
         ],

@@ -32,11 +32,14 @@ describe('RemovalManageComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display message if reagent is null', () => {
+  it('should display "selection" message if reagent is null', () => {
+    // Ensure that reagent is null
     component.reagent = null;
     fixture.detectChanges();
-    const message = fixture.nativeElement.querySelector('p');
-    expect(message.textContent.trim()).toEqual('Bitte waehlen Sie eine Reagenzie aus.');
+
+    // Ensure that message is displayed
+    const el = fixture.nativeElement.querySelector('small');
+    expect(el.textContent).toContain('Bitte waehlen Sie eine Reagenzie aus.');
   });
 
   it('should display removals if reagent is not null', async () => {

@@ -1,9 +1,10 @@
 <h3 class="text-start">Entnahmen</h3>
-<p class="text-start small">Auf die Mülleimer klicken um Entnahmen zu entfernen</p>
 @if (reagent === null) {
-<p class="text-start">
-    Bitte waehlen Sie eine Reagenzie aus.
-</p>
+<small>
+    <p class="text-start">
+        Bitte waehlen Sie eine Reagenzie aus.
+    </p>
+</small>
 } @else {
 <mat-list @appearInOut @increaseOpacity class="list">
     @for (removal of reagent.removals; track $index) {

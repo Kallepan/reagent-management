@@ -16,6 +16,11 @@
 .list {
     .item:hover {
         background-color: #a9a9a9;
+        border-radius: 100px;
         cursor: pointer;
+    }
+
+    .item {
+        color: red;
     }
 }

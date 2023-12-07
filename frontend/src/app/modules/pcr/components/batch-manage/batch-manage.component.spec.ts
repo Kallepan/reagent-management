@@ -106,6 +106,7 @@ describe('BatchManageComponent', () => {
       afterClosed: () => of({
         amount: 1,
         user: 'testUser',
+        comment: '',
       }),
     } as any);
     // set active reagent
@@ -118,5 +119,50 @@ describe('BatchManageComponent', () => {
     // expect the dialog to be opened
     expect(spy).toHaveBeenCalled();
     expect(pcrStateHandlerService.postRemoval).toHaveBeenCalled();
+    expect(notificationService.infoMessage).toHaveBeenCalled();
+  });
+
+  it('should handle creation of removal of reagents with null comment', () => {
+    pcrStateHandlerService.postRemoval.and.returnValue(of(null) as any);
+    const spy = spyOn(component.dialog, 'open').and.returnValue({
+      afterClosed: () => of({
+        amount: 1,
+        user: 'testUser',
+        comment: null,
+      }),
+    } as any);
+    // set active reagent
+    component.activeReagent.set(DUMMY_BATCH.reagents[0]);
+    fixture.detectChanges();
+
+    // call the method
+    component.handleRemovalCreation(DUMMY_BATCH.reagents[0]);
+
+    // expect the dialog to be opened
+    expect(spy).toHaveBeenCalled();
+    expect(pcrStateHandlerService.postRemoval).toHaveBeenCalled();
+    expect(notificationService.infoMessage).toHaveBeenCalled();
+  });
+
+  it('should handle creation of removal of reagents with error in postRemoval', () => {
+    pcrStateHandlerService.postRemoval.and.returnValue(new Error('testError') as any);
+    const spy = spyOn(component.dialog, 'open').and.returnValue({
+      afterClosed: () => of({
+        amount: 1,
+        user: 'testUser',
+        comment: null,
+      }),
+    } as any);
+    // set active reagent
+    component.activeReagent.set(DUMMY_BATCH.reagents[0]);
+    fixture.detectChanges();
+
+    // call the method
+    component.handleRemovalCreation(DUMMY_BATCH.reagents[0]);
+
+    // expect the dialog to be opened
+    expect(spy).toHaveBeenCalled();
+    expect(pcrStateHandlerService.postRemoval).toHaveBeenCalled();
+    expect(notificationService.warnMessage).toHaveBeenCalled();
   });
 });
