@@ -5,7 +5,7 @@
       [class]="getStyle($index)"
       (selectionChange)="selectionChange.emit($event)"
       [value]="reagent"
-      [selected]="selected">
+      [selected]="reagent.id === activeReagent?.id">
       {{ reagent.id }} ({{ reagent.current_amount }}/{{ reagent.initial_amount }})
     </mat-chip-option>
   }

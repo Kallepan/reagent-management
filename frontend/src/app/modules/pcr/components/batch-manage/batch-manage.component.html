@@ -1,3 +1,4 @@
+
 <div class="container">
     @defer(when batch()) {
     @if (batch(); as batch) {
@@ -9,7 +10,7 @@
         </mat-card-header>
         <mat-divider></mat-divider>
         <mat-card-content class="card-content">
-            <app-reagent-manage [reagents]="batch.reagents" (selectionChange)="handleReagentSelectionChange($event)">
+            <app-reagent-manage [reagents]="batch.reagents" (selectionChange)="handleReagentSelectionChange($event)" [activeReagent]="activeReagent()">
             </app-reagent-manage>
             <app-removal-manage [reagent]="activeReagent()" (onCreate)="handleRemovalCreation($event)"
                 (onDelete)="handleRemovalDeletion($event)"></app-removal-manage>
@@ -17,6 +18,9 @@
         <mat-divider></mat-divider>
         <mat-card-footer class="card-footer">
             Restmenge: {{batch.current_amount}}/{{batch.initial_amount}}
+            @if (loading()) {
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            }
         </mat-card-footer>
         <mat-card-actions class="card-actions">
             <button mat-raised-button (click)="deleteBatch()" color="warn">Löschen</button>
