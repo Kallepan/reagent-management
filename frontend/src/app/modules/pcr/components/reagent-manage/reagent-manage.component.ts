@@ -17,4 +17,17 @@ export class ReagentManageComponent {
 
   // Emits a boolean value when the user clicks on the remove button.
   @Output() selectionChange = new EventEmitter<MatChipSelectionChange>();
+
+  // returns a CSS-Class depending on current_amount of reagent at index.
+  protected getStyle(index: number) {
+    const reagent = this.reagents[index];
+    switch (reagent.current_amount) {
+      case reagent.initial_amount:
+        return 'full';
+      case 0:
+        return 'empty';
+      default:
+        return 'partial';
+    }
+  }
 }

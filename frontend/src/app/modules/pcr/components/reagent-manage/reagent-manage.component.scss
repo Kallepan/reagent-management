@@ -1,3 +1,14 @@
 .text-start {
     text-align: start;
 }
+// change chip-color regardless of selection:
+.mat-mdc-standard-chip.full {
+  background-color: #3e8f3e;
+}
+.mat-mdc-standard-chip.empty {
+  background-color: #b92c28;
+}
+// change chip-color only when selected:
+.mat-mdc-chip-selected.partial {
+  background-color: #d19b3d;
+}
