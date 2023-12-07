@@ -123,4 +123,20 @@ describe('RemovalManageComponent', () => {
     // Expect delete event emitter to have been called
     expect(component.onDelete.emit).toHaveBeenCalled();
   });
+
+  it('should display "Keine Entnahmen vorhanden" if reagent.removals is empty', async () => {
+    // set reagent
+    component.reagent = { ...DUMMY_REAGENT, current_amount: 1, removals: [] };
+    fixture.detectChanges();
+
+    // fetch mat list items using MatListItemHarness
+    const listItems = await loader.getAllHarnesses(MatListItemHarness);
+
+    // Compare list items with removals
+    expect(listItems.length).toEqual(1);
+
+    // Compare list items with removals
+    const text = await listItems[0].getFullText();
+    expect(text).toContain('Keine Entnahmen vorhanden');
+  });
 });

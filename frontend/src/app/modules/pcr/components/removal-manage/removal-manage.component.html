@@ -14,6 +14,10 @@
         <div matListItemLine>Entfernte Menge(n): {{removal.amount}}</div>
         <small matListItemLine>{{removal.comment}}</small>
     </mat-list-item>
+    } @empty {
+    <mat-list-item>
+        <div matListItemTitle>Keine Entnahmen vorhanden.</div>
+    </mat-list-item>
     }
 </mat-list>
 <button mat-raised-button (click)="onCreate.emit(reagent)" [disabled]="reagent.current_amount === 0">Reagenzie
