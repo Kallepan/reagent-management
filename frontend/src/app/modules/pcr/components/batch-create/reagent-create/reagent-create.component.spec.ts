@@ -1,14 +1,11 @@
-import {
-  type ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   ControlContainer,
   FormArray,
   FormControl,
   FormGroup,
   FormGroupDirective,
-  Validators
+  Validators,
 } from '@angular/forms';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ReagentCreateComponent } from './reagent-create.component';
@@ -25,11 +22,11 @@ describe('ReagentCreateComponent', () => {
 
   beforeEach(async () => {
     batchAPIService = jasmine.createSpyObj('BatchAPIService', [
-      'checkIfReagentExists'
+      'checkIfReagentExists',
     ]);
 
     fg = new FormGroup({
-      reagents: new FormArray([])
+      reagents: new FormArray([]),
     });
     fgd = new FormGroupDirective([], []);
     fgd.form = fg;
@@ -40,13 +37,13 @@ describe('ReagentCreateComponent', () => {
         provideNoopAnimations(),
         {
           provide: ControlContainer,
-          useValue: fgd
+          useValue: fgd,
         },
         {
           provide: BatchAPIService,
-          useValue: batchAPIService
-        }
-      ]
+          useValue: batchAPIService,
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReagentCreateComponent);
@@ -133,7 +130,8 @@ describe('ReagentCreateComponent', () => {
     const input = '';
 
     // set value via html input
-    const inputElement = fixture.debugElement.nativeElement.querySelector('.input-element');
+    const inputElement =
+      fixture.debugElement.nativeElement.querySelector('.input-element');
     inputElement.value = input;
     inputElement.dispatchEvent(new Event('input'));
 
@@ -144,15 +142,17 @@ describe('ReagentCreateComponent', () => {
 
   it('reagentForm should validate input', () => {
     const strings = [
-      "RTS000ING|U0000-000|000000|000000000",
-      "STD015PLD-5|U1222-017|241130|220020887",
-      "RTS150ING|U0623-017|250131|230626882",
-
-    ]
-    const dummyForm = new FormControl('', Validators.pattern(constants.PCR.REAGENT_REGEX));
+      'RTS000ING|U0000-000|000000|000000000',
+      'STD015PLD-5|U1222-017|241130|220020887',
+      'RTS150ING|U0623-017|250131|230626882',
+    ];
+    const dummyForm = new FormControl(
+      '',
+      Validators.pattern(constants.PCR.REAGENT_REGEX)
+    );
     expect(dummyForm.value).toBe('');
 
-    strings.forEach(input => {
+    strings.forEach((input) => {
       dummyForm.setValue(input);
       expect(dummyForm.valid).toBeTrue();
       dummyForm.reset();

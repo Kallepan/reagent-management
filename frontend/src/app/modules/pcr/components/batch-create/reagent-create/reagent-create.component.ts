@@ -7,7 +7,7 @@ import {
   type OnInit,
   Output,
   inject,
-  DestroyRef
+  DestroyRef,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -16,7 +16,7 @@ import {
   FormBuilder,
   type FormGroup,
   ReactiveFormsModule,
-  Validators
+  Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -26,7 +26,8 @@ import { constants } from '@app/core/constants/constants';
 import { cleanQuery } from '@app/modules/pcr/functions/query-cleaner.function';
 import { BatchAPIService } from '@app/modules/pcr/services/batch-api.service';
 import { createValidator } from '@app/modules/pcr/validators/reagent-validator';
-import { debounceTime, map, tap } from 'rxjs';
+import { debounceTime, filter, map, tap } from 'rxjs';
+import { __values } from 'tslib';
 
 @Component({
   selector: 'app-reagent-create',
@@ -38,16 +39,16 @@ import { debounceTime, map, tap } from 'rxjs';
     MatInputModule,
     MatFormFieldModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
   ],
   viewProviders: [
     {
       provide: ControlContainer,
-      useFactory: () => inject(ControlContainer, { skipSelf: true })
-    }
+      useFactory: () => inject(ControlContainer, { skipSelf: true }),
+    },
   ],
   templateUrl: './reagent-create.component.html',
-  styleUrl: './reagent-create.component.scss'
+  styleUrl: './reagent-create.component.scss',
 })
 export class ReagentCreateComponent implements OnInit, OnDestroy {
   // Destroy reference
@@ -76,22 +77,36 @@ export class ReagentCreateComponent implements OnInit, OnDestroy {
     const reagentForm = this._formBuilder.group({
       id: [
         '',
-        [
-          Validators.required,
-          Validators.pattern(constants.PCR.REAGENT_REGEX),
-        ],
-        [createValidator(this.batchAPIService)]
-      ]
+        [Validators.required, Validators.pattern(constants.PCR.REAGENT_REGEX)],
+        [createValidator(this.batchAPIService)],
+      ],
     });
 
-    reagentForm.statusChanges.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe((status) => {
-      // we only need to check if the form is valid since pending and invalid are handled by the validator
-      if (status === 'VALID') {
-        reagentForm.disable({ emitEvent: false });
-      }
-    });
+    reagentForm.valueChanges
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        debounceTime(200),
+        // cleanInput
+        filter((value): value is { id: string } => value.id !== null),
+        map((value) => {
+          return { id: cleanQuery(value.id) };
+        }),
+        tap((value) => {
+          reagentForm.patchValue(value, { emitEvent: false });
+        })
+      )
+      .subscribe(() => {
+        // Do nothing
+      });
+
+    reagentForm.statusChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((status) => {
+        // we only need to check if the form is valid since pending and invalid are handled by the validator
+        if (status === 'VALID') {
+          reagentForm.disable({ emitEvent: false });
+        }
+      });
 
     this.reagents.push(reagentForm);
   }
@@ -105,21 +120,6 @@ export class ReagentCreateComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // subscribe to the valueChanges of the reagents
-    this.reagents.valueChanges.pipe(
-      takeUntilDestroyed(this.destroyRef),
-      debounceTime(200),
-      // cleanInput
-      map((values) => {
-        return values.map((reagent) => {
-          return { id: cleanQuery(reagent.id) };
-        });
-      }),
-      tap((values) => { this.reagents.patchValue(values, { emitEvent: false }); })
-    ).subscribe(() => {
-      // Do nothing
-    });
-
     // Add a default reagent form
     this.addReagentForm();
   }
