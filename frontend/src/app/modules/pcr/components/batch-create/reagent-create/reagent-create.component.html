@@ -7,9 +7,16 @@
                 <input matInput formControlName="id" placeholder="RTS150ING|U0623-017|250131|230626882"
                     class="input-element">
                 <mat-hint>Bitte geben Sie die Reagenz-ID ein.</mat-hint>
-                <mat-error *ngIf="getReagent($index).controls['id'].hasError('reagentAlreadyExists')">
+                @if (getReagent($index).controls['id'].hasError('reagentAlreadyExists')) {
+                <mat-error>
                     Reagenz mit dieser ID existiert bereits.
                 </mat-error>
+                }
+                @if (getReagent($index).controls['id'].hasError('pattern')) {
+                <mat-error>
+                    Das Format der Reagenz-ID ist ungültig.
+                </mat-error>
+                }
             </mat-form-field>
             <button mat-mini-fab color="warn" (click)="removeReagentForm($index)" class="remove-button">
                 <mat-icon>
