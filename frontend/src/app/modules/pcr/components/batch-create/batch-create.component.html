@@ -51,28 +51,22 @@
                         }
                     </mat-form-field>
                     }
-                    @case('autocomplete') {
-                    <!-- Autocomplete case -->
+                    @case ('select') {
+                    <!-- Select case -->
                     <mat-form-field class="wide-form">
                         <mat-label>{{formControlInfo.label}}</mat-label>
-                        <input matInput [type]="formControlInfo.type" [placeholder]="formControlInfo.placeholder || ''"
-                            [formControlName]="formControlInfo.key" [matAutocomplete]="auto" required>
                         <mat-hint>{{formControlInfo.hint}}</mat-hint>
+                        <mat-select [formControlName]="formControlInfo.key">
+                            @for (option of formControlInfo.data | async; track $index) {
+                                <mat-option [value]="option">{{option.name}}</mat-option>
+                            }
+                        </mat-select>
                         @if (groupForm.get(formControlInfo.key)?.hasError('required')) {
-                        <mat-error>Bitte füllen Sie dieses Feld aus.</mat-error>
-                        }
-
-                        <mat-autocomplete #auto [displayWith]="formControlInfo.displayFn!">
-                            @if (formControlInfo.data | async; as data){
-                            @for (option of data; track $index) {
-                            <mat-option [value]="option">{{option.name}}</mat-option>
+                            <mat-error>Bitte füllen Sie dieses Feld aus.</mat-error>
                             }
-                            }
-                        </mat-autocomplete>
                     </mat-form-field>
                     }
                     }
-
                     }
                 </div>
                 <button mat-raised-button color="accent" id="firstContinueButton" matStepperNext

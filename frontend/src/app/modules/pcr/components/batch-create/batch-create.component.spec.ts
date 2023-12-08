@@ -1,11 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { provideHttpClient } from '@angular/common/http';
 import { MatDialogModule } from '@angular/material/dialog';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { NotificationService } from '@app/core/services/notification.service';
 import { BehaviorSubject, of } from 'rxjs';
-import { Analysis, Device, Kind } from '../../interfaces/simple';
+import { type Analysis, type Device, type Kind } from '../../interfaces/simple';
 import { PCRStateHandlerService } from '../../services/pcrstate-handler.service';
 import { BatchCreateComponent } from './batch-create.component';
 import { BatchAPIService } from '../../services/batch-api.service';
@@ -25,7 +25,7 @@ describe('BatchCreateComponent', () => {
     batchAPIService = jasmine.createSpyObj('BatchAPIService', [
       'deleteBatch',
       'getBatch',
-      'searchBatch',
+      'searchBatch'
     ]);
 
     pcrStateHandlerService = jasmine.createSpyObj(
@@ -34,11 +34,11 @@ describe('BatchCreateComponent', () => {
       {
         analyses: new BehaviorSubject(mockAnalyses),
         devices: new BehaviorSubject(mockDevices),
-        kinds: new BehaviorSubject(mockKinds),
+        kinds: new BehaviorSubject(mockKinds)
       }
     );
     notificationService = jasmine.createSpyObj('NotificationService', [
-      'warnMessage',
+      'warnMessage'
     ]);
 
     await TestBed.configureTestingModule({
@@ -48,8 +48,8 @@ describe('BatchCreateComponent', () => {
         provideNoopAnimations(),
         { provide: PCRStateHandlerService, useValue: pcrStateHandlerService },
         { provide: NotificationService, useValue: notificationService },
-        { provide: BatchAPIService, useValue: batchAPIService },
-      ],
+        { provide: BatchAPIService, useValue: batchAPIService }
+      ]
     }).compileComponents();
     fixture = TestBed.createComponent(BatchCreateComponent);
     component = fixture.componentInstance;
@@ -100,7 +100,7 @@ describe('BatchCreateComponent', () => {
   it('submit should not warn if form is valid', () => {
     // create dialogSpy
     const dialogSpy = spyOn(component.dialog, 'open').and.returnValue({
-      afterClosed: () => of(null),
+      afterClosed: () => of(null)
     } as any);
 
     // only fill groupForm
@@ -123,7 +123,7 @@ describe('BatchCreateComponent', () => {
   it('should not submit if no reagents are present', () => {
     // create dialogSpy
     const dialogSpy = spyOn(component.dialog, 'open').and.returnValue({
-      afterClosed: () => of(null),
+      afterClosed: () => of(null)
     } as any);
 
     // only fill groupForm
@@ -143,7 +143,7 @@ describe('BatchCreateComponent', () => {
   it('should not submit if reagentForm is not disabled', () => {
     // create dialogSpy
     const dialogSpy = spyOn(component.dialog, 'open').and.returnValue({
-      afterClosed: () => of(null),
+      afterClosed: () => of(null)
     } as any);
 
     // fill groupForm

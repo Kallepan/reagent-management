@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, type OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { type AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
@@ -17,11 +16,12 @@ import { type BaseType } from '../../interfaces/base';
 import { type Analysis, type Device, type Kind } from '../../interfaces/simple';
 import { PCRStateHandlerService } from '../../services/pcrstate-handler.service';
 import { ReagentCreateComponent } from './reagent-create/reagent-create.component';
+import { MatSelectModule } from '@angular/material/select';
 
 export interface FormControlInfo {
   label: string
   key: string
-  type: 'text' | 'number' | 'textarea' | 'autocomplete'
+  type: 'text' | 'number' | 'textarea' | 'select'
   hint: string
 
   // autocomplete fields
@@ -29,7 +29,6 @@ export interface FormControlInfo {
   data?: Observable<BaseType[]>
   maxLength?: number
   minLength?: number
-  displayFn?: (value: BaseType) => string
 }
 
 @Component({
@@ -42,7 +41,7 @@ export interface FormControlInfo {
     MatStepperModule,
     MatInputModule,
     MatButtonModule,
-    MatAutocompleteModule,
+    MatSelectModule,
     MatTooltipModule,
 
     ReagentCreateComponent,
@@ -84,29 +83,26 @@ export class BatchCreateComponent implements OnInit {
     {
       label: 'Gerät',
       key: 'device',
-      type: 'autocomplete',
+      type: 'select',
       placeholder: 'z.B. InGe01',
       data: this.devices,
-      hint: 'Name des Geräts',
-      displayFn: (value: Device) => value.name ?? ''
+      hint: 'Name des Geräts'
     },
     {
       label: 'Analyse',
       key: 'analysis',
-      type: 'autocomplete',
+      type: 'select',
       placeholder: 'z.B. CLO',
       data: this.analyses,
-      hint: 'Name der Analyse',
-      displayFn: (value: Analysis) => value.name ?? ''
+      hint: 'Name der Analyse'
     },
     {
       label: 'Typ',
       key: 'kind',
-      type: 'autocomplete',
+      type: 'select',
       placeholder: 'z.B. Kontrolle',
       data: this.kinds,
-      hint: 'Art der Reagenz',
-      displayFn: (value: Kind) => value.name ?? ''
+      hint: 'Art der Reagenz'
     },
     {
       label: 'Menge',
