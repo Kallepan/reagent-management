@@ -13,6 +13,7 @@ import { SearchBarComponent } from '@app/shared/components/search-bar/search-bar
 import { debounceTime, filter, map, switchMap, tap } from 'rxjs';
 import { cleanQuery } from '../../functions/query-cleaner.function';
 import { PCRStateHandlerService } from '../../services/pcrstate-handler.service';
+import { Batch } from '../../interfaces/reagent';
 
 @Component({
   selector: 'app-batch-list',
@@ -82,7 +83,7 @@ export class BatchListComponent implements OnInit {
             message: messages.PCR.MULTIPLE_BATCHES_FOUND,
             choices: batches.map(batch => ({
               id: batch.id,
-              name: batch.reagents.map(reagent => reagent.id).join(', '),
+              name: this._getFormattingString(batch),
             })),
           }
         }
@@ -97,5 +98,9 @@ export class BatchListComponent implements OnInit {
         this.router.navigate(['pcr', 'batch', batchId]);
       },
     })
+  }
+
+  protected _getFormattingString(batch: Batch): string {
+    return `${batch.kind.name}: ${batch.reagents.map(reagent => reagent.id.split('|').pop() ?? 'NA').join(', ')}`
   }
 }

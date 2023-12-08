@@ -104,4 +104,9 @@ describe('BatchListComponent', () => {
     // check if the router was called
     expect(router.navigate).not.toHaveBeenCalled();
   });
+
+  it('test get formatting string', () => {
+    const formattingString = component['_getFormattingString'](DUMMY_BATCH);
+    expect(formattingString).toEqual('Standard: 230626882, 230626883');
+  });
 });
