@@ -30,4 +30,8 @@ export class constants {
     ]
 
     public static IS_PRODUCTION = environment.production;
+
+    public static PCR = {
+        REAGENT_REGEX: /^[A-Z0-9\-]{9,11}\|U[0-9]{4}-[0-9]{3}\|[0-9]{6}\|[0-9]{9}$/
+    }
 }
