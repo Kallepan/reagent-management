@@ -21,7 +21,6 @@ kubectl create secret docker-registry -n $NAMESPACE \
 # Delete deployments
 kubectl delete deployment rms-backend -n $NAMESPACE --kubeconfig=$KUBECONFIG
 kubectl delete deployment rms-frontend -n $NAMESPACE --kubeconfig=$KUBECONFIG
-kubectl delete deployment rms-db -n $NAMESPACE --kubeconfig=$KUBECONFIG
 
 cd backend
 docker build -t $DOCKER_REGISTRY_USERNAME/$DOCKER_REGISTRY_REPOSITORY-backend:${VERSION} .
