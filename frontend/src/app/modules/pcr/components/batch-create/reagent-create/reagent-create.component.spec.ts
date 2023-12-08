@@ -5,13 +5,16 @@ import {
 import {
   ControlContainer,
   FormArray,
+  FormControl,
   FormGroup,
-  FormGroupDirective
+  FormGroupDirective,
+  Validators
 } from '@angular/forms';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ReagentCreateComponent } from './reagent-create.component';
 import { BatchAPIService } from '@app/modules/pcr/services/batch-api.service';
 import { of } from 'rxjs';
+import { constants } from '@app/core/constants/constants';
 
 describe('ReagentCreateComponent', () => {
   let component: ReagentCreateComponent;
@@ -137,5 +140,22 @@ describe('ReagentCreateComponent', () => {
     expect(component.reagents.controls[0].valid).toBeFalse();
     expect(component.reagents.controls[0].value).toEqual({ id: input });
     expect(component.reagents.controls[0].disabled).toBeFalse();
+  });
+
+  it('reagentForm should validate input', () => {
+    const strings = [
+      "RTS000ING|U0000-000|000000|000000000",
+      "STD015PLD-5|U1222-017|241130|220020887",
+      "RTS150ING|U0623-017|250131|230626882",
+
+    ]
+    const dummyForm = new FormControl('', Validators.pattern(constants.PCR.REAGENT_REGEX));
+    expect(dummyForm.value).toBe('');
+
+    strings.forEach(input => {
+      dummyForm.setValue(input);
+      expect(dummyForm.valid).toBeTrue();
+      dummyForm.reset();
+    });
   });
 });
