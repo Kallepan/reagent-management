@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { AuthService } from './auth.service';
-import { HttpClientTestingModule, HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { NotificationService } from './notification.service';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { constants } from '../constants/constants';
@@ -11,14 +11,17 @@ import { provideHttpClient } from '@angular/common/http';
 describe('AuthService', () => {
   let service: AuthService;
   let httpMock: HttpTestingController;
+  let notificationService: jasmine.SpyObj<NotificationService>;
 
   beforeEach(() => {
+    notificationService = jasmine.createSpyObj('NotificationService', ['infoMessage', 'errorMessage']);
+
     TestBed.configureTestingModule({
       imports: [MatSnackBarModule, BrowserAnimationsModule],
       providers: [
-        NotificationService,
+        { provide: NotificationService, useValue: notificationService },
         provideHttpClient(),
-        provideHttpClientTesting(),
+        provideHttpClientTesting()
       ]
     });
     service = TestBed.inject(AuthService);

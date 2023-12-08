@@ -22,20 +22,12 @@ import { LoginComponent } from '../login/login.component';
     MatButtonModule,
     LoginComponent,
     HeaderGlobalSearchComponent,
-    RouterLink,
-  ],
+    RouterLink
+  ]
 })
 export class HeaderComponent {
   title = constants.TITLE_SHORT;
   @Input() isDark = false;
   @Output() onToggleTheme = new EventEmitter<void>();
   @Output() onToggleSidenav = new EventEmitter<void>();
-
-  toggleTheme() {
-    this.onToggleTheme.emit();
-  }
-
-  toggleSidenav() {
-    this.onToggleSidenav.emit();
-  }
 }

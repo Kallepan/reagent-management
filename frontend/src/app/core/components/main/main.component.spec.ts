@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, flush } from '@angular/core/testing';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MainComponent } from './main.component';
 import { OverlayContainer } from '@angular/cdk/overlay';
@@ -8,10 +8,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { HarnessLoader } from '@angular/cdk/testing';
+import { type HarnessLoader } from '@angular/cdk/testing';
 
 describe('MainComponent', () => {
-  let component: MainComponent;
   let fixture: ComponentFixture<MainComponent>;
   let overlayContainer: OverlayContainer;
   let loader: HarnessLoader;
@@ -23,14 +22,13 @@ describe('MainComponent', () => {
         BrowserAnimationsModule,
         RouterTestingModule,
         HttpClientTestingModule,
-        MatSnackBarModule,
+        MatSnackBarModule
       ],
       providers: [
-        OverlayContainer,
+        OverlayContainer
       ]
     });
     fixture = TestBed.createComponent(MainComponent);
-    component = fixture.componentInstance;
     overlayContainer = TestBed.inject(OverlayContainer);
     fixture.detectChanges();
     loader = TestbedHarnessEnvironment.loader(fixture);
@@ -58,10 +56,10 @@ describe('MainComponent', () => {
   });
 
   // Check overlay container
-  it('theme should match boolean', fakeAsync(() => {
+  it('theme should match boolean', () => {
     const fixture = TestBed.createComponent(MainComponent);
-    fixture.detectChanges();
     const app = fixture.componentInstance;
+    fixture.detectChanges();
 
     expect(overlayContainer.getContainerElement().classList).toContain('theme-dark');
 
@@ -69,19 +67,12 @@ describe('MainComponent', () => {
     app.toggleTheme();
     fixture.detectChanges();
 
-    // Wait for the animation to finish
-    flush();
-
     // Check if the theme is now light
     expect(overlayContainer.getContainerElement().classList).toContain('theme-light');
+  });
 
-  }));
-  
   // Sidenav testing
   it('should open and close sidenav', async () => {
-    const fixture = TestBed.createComponent(MainComponent);
-    const app = fixture.componentInstance;
-
     // Fetch the sidenav element
     const sidenav = await loader.getHarness(MatSidenavHarness);
 

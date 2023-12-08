@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, type OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -27,22 +27,22 @@ import { AuthService } from '@app/core/services/auth.service';
 })
 export class LoginComponent implements OnInit {
   authService = inject(AuthService);
-  private _fb = inject(FormBuilder);
+  private readonly _fb = inject(FormBuilder);
 
   loginForm = this._fb.group({
     identifier: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(5)]],
     password: ['', [Validators.required]]
   });
 
-  stopPropagation(event: Event) {
+  stopPropagation (event: Event): void {
     event.stopPropagation();
   }
 
-  ngOnInit(): void {
+  ngOnInit (): void {
     this.authService.verifyLogin();
   }
 
-  onSubmitLogin() {
-    this.authService.login(this.loginForm.controls['identifier'].value, this.loginForm.controls['password'].value);
+  onSubmitLogin (): void {
+    this.authService.login(this.loginForm.controls.identifier.value, this.loginForm.controls.password.value);
   }
 }

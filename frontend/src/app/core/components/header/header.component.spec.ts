@@ -1,9 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HarnessLoader } from '@angular/cdk/testing';
+import { type HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { MatSlideToggleHarness } from '@angular/material/slide-toggle/testing';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
@@ -13,17 +13,16 @@ describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
   let loader: HarnessLoader;
-  let httpMock: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HeaderComponent,
+        HeaderComponent
       ],
       providers: [
         { provide: ActivatedRoute, useValue: { snapshot: { data: { title: 'Test' } } } },
         provideHttpClientTesting(),
-        provideHttpClient(),
+        provideHttpClient()
       ]
     });
     fixture = TestBed.createComponent(HeaderComponent);
@@ -31,7 +30,6 @@ describe('HeaderComponent', () => {
     fixture.detectChanges();
 
     loader = TestbedHarnessEnvironment.loader(fixture);
-    httpMock = TestBed.inject(HttpTestingController);
   });
 
   it('should create', () => {
@@ -55,8 +53,10 @@ describe('HeaderComponent', () => {
   it('should emit toggle theme event', async () => {
     spyOn(component.onToggleTheme, 'emit');
 
-    const toggle = await loader.getHarness(MatSlideToggleHarness);
-    await toggle.toggle();
+    const matSlideToggle = await loader.getHarness(MatSlideToggleHarness);
+    expect(await matSlideToggle.isChecked()).toBe(false);
+
+    await matSlideToggle.toggle();
 
     expect(component.onToggleTheme.emit).toHaveBeenCalled();
   });
