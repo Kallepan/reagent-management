@@ -3,29 +3,39 @@ import { Component, Inject, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 
+export interface Choice {
+  id: string
+  name: string
+}
+
+export interface ChoiceDialogData {
+  title: string
+  choices: Choice[]
+}
+
 @Component({
   selector: 'app-choice-dialog',
   standalone: true,
   imports: [
     CommonModule,
     MatButtonModule,
-    MatDialogModule,
+    MatDialogModule
   ],
   templateUrl: './choice-dialog.component.html',
   styleUrls: ['./choice-dialog.component.scss']
 })
-export class ChoiceDialogComponent<T extends { id: string, name: string }> {
+export class ChoiceDialogComponent {
   title = '';
-  choices: T[] = [];
+  choices: Choice[] = [];
 
-  dialogRef = inject(MatDialogRef<ChoiceDialogComponent<T>>);
+  dialogRef = inject(MatDialogRef<ChoiceDialogComponent>);
 
-  constructor(@Inject(MAT_DIALOG_DATA) data: { title: string, choices: T[] }) {
+  constructor (@Inject(MAT_DIALOG_DATA) data: ChoiceDialogData) {
     this.title = data.title;
     this.choices = data.choices;
   }
 
-  onAbort(): void {
+  onAbort (): void {
     this.dialogRef.close(null);
   }
 }

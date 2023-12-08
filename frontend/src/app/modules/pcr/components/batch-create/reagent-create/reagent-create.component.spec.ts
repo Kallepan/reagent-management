@@ -1,15 +1,12 @@
 import {
-  ComponentFixture,
-  TestBed,
-  fakeAsync,
-  flush,
-  tick,
+  type ComponentFixture,
+  TestBed
 } from '@angular/core/testing';
 import {
   ControlContainer,
   FormArray,
   FormGroup,
-  FormGroupDirective,
+  FormGroupDirective
 } from '@angular/forms';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ReagentCreateComponent } from './reagent-create.component';
@@ -25,11 +22,11 @@ describe('ReagentCreateComponent', () => {
 
   beforeEach(async () => {
     batchAPIService = jasmine.createSpyObj('BatchAPIService', [
-      'checkIfReagentExists',
+      'checkIfReagentExists'
     ]);
 
     fg = new FormGroup({
-      reagents: new FormArray([]),
+      reagents: new FormArray([])
     });
     fgd = new FormGroupDirective([], []);
     fgd.form = fg;
@@ -40,13 +37,13 @@ describe('ReagentCreateComponent', () => {
         provideNoopAnimations(),
         {
           provide: ControlContainer,
-          useValue: fgd,
+          useValue: fgd
         },
         {
           provide: BatchAPIService,
-          useValue: batchAPIService,
-        },
-      ],
+          useValue: batchAPIService
+        }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReagentCreateComponent);
@@ -97,6 +94,21 @@ describe('ReagentCreateComponent', () => {
     expect(component.removeReagentForm).toHaveBeenCalled();
   });
 
+  it('form should not be disabled if async validation is pending or fails', () => {
+    const input = 'RTS000ING|U0000-000|000000|000000000';
+    batchAPIService.checkIfReagentExists.and.returnValue(of(true));
+
+    // add form and reagent
+    const reagent = component.getReagent(0);
+
+    // set value via html input
+    reagent.controls['id'].setValue(input, { emitEvent: true });
+
+    expect(reagent.disabled).toBeFalse();
+    expect(reagent.errors).toBeNull();
+    expect(reagent.valid).toBeFalse();
+  });
+
   it('form should be disabled if input is correct and validation passes', () => {
     const input = 'RTS000ING|U0000-000|000000|000000000';
     batchAPIService.checkIfReagentExists.and.returnValue(of(false));
@@ -106,10 +118,10 @@ describe('ReagentCreateComponent', () => {
 
     // set value via html input
     reagent.controls['id'].setValue(input, { emitEvent: true });
-    component.cleanInput(0);
 
     expect(reagent.disabled).toBeTrue();
     expect(reagent.errors).toBeNull();
+    expect(reagent.valid).toBeFalse();
   });
 
   it('form should be invalid if input is empty', () => {
@@ -118,13 +130,12 @@ describe('ReagentCreateComponent', () => {
     const input = '';
 
     // set value via html input
-    const inputElement =
-      fixture.debugElement.nativeElement.querySelector('.input-element');
+    const inputElement = fixture.debugElement.nativeElement.querySelector('.input-element');
     inputElement.value = input;
     inputElement.dispatchEvent(new Event('input'));
 
-    expect(component.reagents.controls[0].valid).toBeFalsy();
+    expect(component.reagents.controls[0].valid).toBeFalse();
     expect(component.reagents.controls[0].value).toEqual({ id: input });
-    expect(component.reagents.controls[0].disabled).toBeFalsy();
+    expect(component.reagents.controls[0].disabled).toBeFalse();
   });
 });

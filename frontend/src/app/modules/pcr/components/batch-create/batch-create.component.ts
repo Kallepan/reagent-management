@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, type OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { type AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -11,26 +11,26 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { messages } from '@app/core/constants/messages';
 import { NotificationService } from '@app/core/services/notification.service';
-import { ChoiceDialogComponent } from '@app/shared/components/choice-dialog/choice-dialog.component';
-import { Observable, catchError, filter, map, switchMap, throwError } from 'rxjs';
-import { BaseType } from '../../interfaces/base';
-import { Analysis, Device, Kind } from '../../interfaces/simple';
+import { ChoiceDialogComponent, type ChoiceDialogData } from '@app/shared/components/choice-dialog/choice-dialog.component';
+import { type Observable, catchError, filter, map, switchMap, throwError, from } from 'rxjs';
+import { type BaseType } from '../../interfaces/base';
+import { type Analysis, type Device, type Kind } from '../../interfaces/simple';
 import { PCRStateHandlerService } from '../../services/pcrstate-handler.service';
 import { ReagentCreateComponent } from './reagent-create/reagent-create.component';
 
-export type FormControlInfo = {
-  label: string;
-  key: string;
-  type: 'text' | 'number' | 'textarea' | 'autocomplete';
-  hint: string;
+export interface FormControlInfo {
+  label: string
+  key: string
+  type: 'text' | 'number' | 'textarea' | 'autocomplete'
+  hint: string
 
   // autocomplete fields
-  placeholder?: string;
-  data?: Observable<BaseType[]>;
-  maxLength?: number;
-  minLength?: number;
-  displayFn?: (value: BaseType) => string;
-};
+  placeholder?: string
+  data?: Observable<BaseType[]>
+  maxLength?: number
+  minLength?: number
+  displayFn?: (value: BaseType) => string
+}
 
 @Component({
   selector: 'app-batch-create',
@@ -47,39 +47,37 @@ export type FormControlInfo = {
 
     ReagentCreateComponent,
 
-    ChoiceDialogComponent,
+    ChoiceDialogComponent
   ],
   templateUrl: './batch-create.component.html',
-  styleUrl: './batch-create.component.scss',
+  styleUrl: './batch-create.component.scss'
 })
 export class BatchCreateComponent implements OnInit {
   // Confirmation dialog
   dialog = inject(MatDialog);
-  private destroyRef = inject(DestroyRef);
-  private notificationService = inject(NotificationService);
-  private router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly notificationService = inject(NotificationService);
+  private readonly router = inject(Router);
   // Forms
-  private _formBuilder = inject(FormBuilder);
+  private readonly _formBuilder = inject(FormBuilder);
   groupForm = this._formBuilder.group({
     device: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(5)]],
     analysis: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(5)]],
     kind: ['', [Validators.required, Validators.minLength(3)]],
     amount: [1, [Validators.required, Validators.min(1)]],
     comment: ['', [Validators.maxLength(255)]],
-    created_by: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(4), Validators.pattern(/^[a-z]*$/)]],
+    created_by: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(4), Validators.pattern(/^[a-z]*$/)]]
   });
 
   reagentsFormGroup = this._formBuilder.group({
-    reagents: this._formBuilder.array([]), // TODO async validator
+    reagents: this._formBuilder.array([]) // TODO async validator
   });
 
   // pcrStateHandlerService keeps track of the state of the pcr module and all data necessary for the forms
-  private _pcrStateHandlerService = inject(PCRStateHandlerService);
+  private readonly _pcrStateHandlerService = inject(PCRStateHandlerService);
   analyses: Observable<Analysis[]> = this._pcrStateHandlerService.analyses.asObservable();
   devices: Observable<Device[]> = this._pcrStateHandlerService.devices.asObservable();
   kinds: Observable<Kind[]> = this._pcrStateHandlerService.kinds.asObservable();
-
-  
 
   // used to display the forms:
   shownFormControls: FormControlInfo[] = [
@@ -90,7 +88,7 @@ export class BatchCreateComponent implements OnInit {
       placeholder: 'z.B. InGe01',
       data: this.devices,
       hint: 'Name des Geräts',
-      displayFn: (value: Device) => value?.name || '',
+      displayFn: (value: Device) => value.name ?? ''
     },
     {
       label: 'Analyse',
@@ -99,7 +97,7 @@ export class BatchCreateComponent implements OnInit {
       placeholder: 'z.B. CLO',
       data: this.analyses,
       hint: 'Name der Analyse',
-      displayFn: (value: Analysis) => value?.name || '',
+      displayFn: (value: Analysis) => value.name ?? ''
     },
     {
       label: 'Typ',
@@ -108,7 +106,7 @@ export class BatchCreateComponent implements OnInit {
       placeholder: 'z.B. Kontrolle',
       data: this.kinds,
       hint: 'Art der Reagenz',
-      displayFn: (value: Kind) => value?.name || '',
+      displayFn: (value: Kind) => value.name ?? ''
     },
     {
       label: 'Menge',
@@ -121,7 +119,7 @@ export class BatchCreateComponent implements OnInit {
       key: 'comment',
       type: 'textarea',
       hint: 'Kommentar',
-      maxLength: 255,
+      maxLength: 255
     },
     {
       label: 'Erstellt von',
@@ -130,26 +128,25 @@ export class BatchCreateComponent implements OnInit {
       hint: 'Ersteller der Reagenzien',
       maxLength: 4,
       minLength: 2,
-      placeholder: 'gaze',
+      placeholder: 'gaze'
     }
   ];
 
-  ngOnInit(): void {
+  ngOnInit (): void {
     this.groupForm.get('amount')?.valueChanges.pipe(
-      filter((value) => typeof value === 'number' && !isNaN(value)),
-      filter((value) => value! > 0),
+      filter((value) => typeof value === 'number' && !isNaN(value) && value > 0)
     );
 
-    this.groupForm.get("created_by")?.valueChanges.pipe(
+    this.groupForm.get('created_by')?.valueChanges.pipe(
       filter((value): value is string => typeof value === 'string'),
       takeUntilDestroyed(this.destroyRef),
-      map((value) => value.toLowerCase()),
+      map((value) => value.toLowerCase())
     ).subscribe((value) => {
       this.groupForm.controls.created_by.setValue(value, { emitEvent: false });
     });
   }
 
-  isValid(): boolean {
+  isValid (): boolean {
     // check if all forms are valid
     // for reagents form, check if each control is valid or disabled
     const reagentsFormIsValid = Object.values<AbstractControl>(this.reagentsFormGroup.controls).reduce((acc, curr) => acc && (curr.valid || curr.disabled), true);
@@ -160,41 +157,43 @@ export class BatchCreateComponent implements OnInit {
     return reagentsFormIsValid && groupFormIsValid;
   }
 
-  submit() {
+  submit (): void {
     // Validate form
     if (!this.isValid()) {
       this.notificationService.warnMessage('Bitte füllen Sie alle Felder aus!');
       return;
     }
-    if (!this.reagentsFormGroup.controls.reagents.value.length) {
+    if (this.reagentsFormGroup.controls.reagents.value.length === 0) {
       this.notificationService.warnMessage('Bitte fügen Sie mindestens ein Reagenz hinzu!');
       return;
     }
 
-    const dialogRef = this.dialog.open(ChoiceDialogComponent, {
+    const dialogRef = this.dialog.open<ChoiceDialogComponent, ChoiceDialogData, { id: string } | undefined>(ChoiceDialogComponent, {
       data: {
         title: 'Sind sie sich sicher, dass Sie die Reagenzien erstellen wollen?',
         choices: [
           {
             id: 'OK',
-            name: 'Erstellen',
-          },
-        ],
+            name: 'Erstellen'
+          }
+        ]
       }
     });
 
     dialogRef.afterClosed().pipe(
-      filter((result) => !!result),
-      filter((result) => result.id === "OK"),
-      switchMap(() => this._pcrStateHandlerService.createReagents(this.groupForm.value, this.reagentsFormGroup.value.reagents as { id: string }[]).pipe(
-        catchError((err) => throwError(() => err)),
+      filter((result) => result?.id !== undefined),
+      map((result) => result?.id ?? 'ABORT'),
+      filter((choice) => choice === 'OK'),
+      switchMap(() => this._pcrStateHandlerService.createReagents(this.groupForm.value, this.reagentsFormGroup.value.reagents as Array<{ id: string }>).pipe(
+        catchError((err) => throwError(() => err))
       )),
+      switchMap((batchID) => from(this.router.navigate(['/pcr', 'batch', batchID])))
     ).subscribe({
-      next: (batchID) => {
+      next: () => {
         this.notificationService.infoMessage(messages.PCR.REAGENT_CREATE_SUCCESS);
         this.groupForm.reset();
-        this.router.navigate(['/pcr', 'batch', batchID]);
-      }, error: (err) => {
+      },
+      error: () => {
         this.notificationService.warnMessage(messages.PCR.REAGENT_CREATE_ERROR);
       }
     });

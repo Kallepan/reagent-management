@@ -3,18 +3,20 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnDestroy,
-  OnInit,
+  type OnDestroy,
+  type OnInit,
   Output,
   inject,
+  DestroyRef
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   ControlContainer,
-  FormArray,
+  type FormArray,
   FormBuilder,
-  FormGroup,
+  type FormGroup,
   ReactiveFormsModule,
-  Validators,
+  Validators
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,7 +24,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { cleanQuery } from '@app/modules/pcr/functions/query-cleaner.function';
 import { BatchAPIService } from '@app/modules/pcr/services/batch-api.service';
-import { ReagentValidator } from '@app/modules/pcr/validators/reagent-validator';
+import { createValidator } from '@app/modules/pcr/validators/reagent-validator';
+import { debounceTime, map, tap } from 'rxjs';
 
 @Component({
   selector: 'app-reagent-create',
@@ -34,20 +37,23 @@ import { ReagentValidator } from '@app/modules/pcr/validators/reagent-validator'
     MatInputModule,
     MatFormFieldModule,
     MatIconModule,
-    MatButtonModule,
+    MatButtonModule
   ],
   viewProviders: [
     {
       provide: ControlContainer,
-      useFactory: () => inject(ControlContainer, { skipSelf: true }),
-    },
+      useFactory: () => inject(ControlContainer, { skipSelf: true })
+    }
   ],
   templateUrl: './reagent-create.component.html',
-  styleUrl: './reagent-create.component.scss',
+  styleUrl: './reagent-create.component.scss'
 })
 export class ReagentCreateComponent implements OnInit, OnDestroy {
+  // Destroy reference
+  private readonly destroyRef = inject(DestroyRef);
+
   // Inject the batchAPIService
-  private batchAPIService = inject(BatchAPIService);
+  private readonly batchAPIService = inject(BatchAPIService);
 
   // Emit the submit event to the parent
   @Output() onSubmit = new EventEmitter<void>();
@@ -55,64 +61,69 @@ export class ReagentCreateComponent implements OnInit, OnDestroy {
   // Inject the parent container and formBuilder
   @Input({ required: true }) controlKey = 'reagents';
   parentContainer = inject(ControlContainer);
-  private _formBuilder = inject(FormBuilder);
+  private readonly _formBuilder = inject(FormBuilder);
   // Functions to get the formGroup and formArray of the reagents
-  get parentFormGroup(): FormGroup {
+  get parentFormGroup (): FormGroup {
     return this.parentContainer.control as FormGroup;
   }
-  get reagents(): FormArray {
+
+  get reagents (): FormArray<FormGroup> {
     return this.parentFormGroup.get(this.controlKey) as FormArray;
   }
 
-  addReagentForm() {
+  addReagentForm (): void {
     const reagentForm = this._formBuilder.group({
       id: [
         '',
         [
           Validators.required,
-          Validators.pattern(
-            /^[A-Z0-9]{9}\|U[0-9]{4}-[0-9]{3}\|[0-9]{6}\|[0-9]{9}$/
-          ),
+          Validators.pattern(/^[A-Z0-9]{9}\|U[0-9]{4}-[0-9]{3}\|[0-9]{6}\|[0-9]{9}$/)
         ],
-        [ReagentValidator.createValidator(this.batchAPIService)],
-      ],
+        [createValidator(this.batchAPIService)]
+      ]
+    });
+
+    reagentForm.statusChanges.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe((status) => {
+      // we only need to check if the form is valid since pending and invalid are handled by the validator
+      if (status === 'VALID') {
+        reagentForm.disable({ emitEvent: false });
+      }
     });
 
     this.reagents.push(reagentForm);
   }
 
-  getReagent(index: number): FormGroup {
-    return this.reagents.at(index) as FormGroup;
+  getReagent (index: number): FormGroup {
+    return this.reagents.at(index);
   }
 
-  removeReagentForm(index: number) {
+  removeReagentForm (index: number): void {
     this.reagents.removeAt(index);
   }
 
-  cleanInput(index: number) {
-    // Get the value of the input
-    const value = this.reagents.controls[index].value;
-    if (!value && typeof value !== 'string') return;
+  ngOnInit (): void {
+    // subscribe to the valueChanges of the reagents
+    this.reagents.valueChanges.pipe(
+      takeUntilDestroyed(this.destroyRef),
+      debounceTime(200),
+      // cleanInput
+      map((values) => {
+        return values.map((reagent) => {
+          return { id: cleanQuery(reagent.id) };
+        });
+      }),
+      tap((values) => { this.reagents.patchValue(values, { emitEvent: false }); })
+    ).subscribe(() => {
+      // Do nothing
+    });
 
-    // Clean the query
-    this.reagents.controls[index].patchValue(
-      { id: cleanQuery(value.id) },
-      { emitEvent: false }
-    );
-
-    if (this.reagents.controls[index].invalid) {
-      this.reagents.controls[index].enable({ emitEvent: false });
-    } else {
-      this.reagents.controls[index].disable({ emitEvent: false });
-    }
-  }
-
-  ngOnInit(): void {
     // Add a default reagent form
     this.addReagentForm();
   }
 
-  ngOnDestroy(): void {
+  ngOnDestroy (): void {
     // clean the reagents array
     this.reagents.clear();
   }

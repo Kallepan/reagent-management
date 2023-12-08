@@ -5,7 +5,7 @@
             <mat-form-field appearance="fill">
                 <mat-label>Reagenz</mat-label>
                 <input matInput formControlName="id" placeholder="RTS150ING|U0623-017|250131|230626882"
-                    (input)="cleanInput($index)" class="input-element">
+                    class="input-element">
                 <mat-hint>Bitte geben Sie die Reagenz-ID ein.</mat-hint>
                 <mat-error *ngIf="getReagent($index).controls['id'].hasError('reagentAlreadyExists')">
                     Reagenz mit dieser ID existiert bereits.

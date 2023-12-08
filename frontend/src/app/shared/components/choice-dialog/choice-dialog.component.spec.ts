@@ -1,16 +1,16 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ChoiceDialogComponent } from './choice-dialog.component';
 
 describe('ChoiceDialogComponent', () => {
-  let component: ChoiceDialogComponent<any>;
-  let fixture: ComponentFixture<ChoiceDialogComponent<any>>;
-  let mockDialogRef: jasmine.SpyObj<MatDialogRef<ChoiceDialogComponent<any>>>;
+  let component: ChoiceDialogComponent;
+  let fixture: ComponentFixture<ChoiceDialogComponent>;
+  let mockDialogRef: jasmine.SpyObj<MatDialogRef<ChoiceDialogComponent>>;
   let mockData: { title: string, choices: any[] };
 
   beforeEach(() => {
-    mockDialogRef = jasmine.createSpyObj<MatDialogRef<ChoiceDialogComponent<any>>>(['close']);
+    mockDialogRef = jasmine.createSpyObj<MatDialogRef<ChoiceDialogComponent>>(['close']);
     mockData = {
       title: 'TEST',
       choices: [

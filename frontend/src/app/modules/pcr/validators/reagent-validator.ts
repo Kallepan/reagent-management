@@ -1,22 +1,17 @@
 import {
-  AbstractControl,
-  AsyncValidatorFn,
-  ValidationErrors,
+  type AbstractControl,
+  type AsyncValidatorFn,
+  type ValidationErrors
 } from '@angular/forms';
-import { BatchAPIService } from '../services/batch-api.service';
-import { Observable, map, tap } from 'rxjs';
+import { type BatchAPIService } from '../services/batch-api.service';
+import { type Observable, map } from 'rxjs';
 
-export class ReagentValidator {
-  static createValidator(batchAPIService: BatchAPIService): AsyncValidatorFn {
-    return (control: AbstractControl): Observable<ValidationErrors | null> => {
-      return batchAPIService.checkIfReagentExists(control.value).pipe(
-        map((res) => {
-          return res ? { reagentAlreadyExists: true } : null;
-        }),
-        tap((res) => {
-          if (!res) control.disable({ emitEvent: false });
-        })
-      );
-    };
-  }
-}
+export const createValidator = (batchAPIService: BatchAPIService): AsyncValidatorFn => {
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
+    return batchAPIService.checkIfReagentExists(control.value).pipe(
+      map((res) => {
+        return res ? { reagentAlreadyExists: true } : null;
+      })
+    );
+  };
+};
