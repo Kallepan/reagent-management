@@ -1,4 +1,10 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  flush,
+  tick,
+} from '@angular/core/testing';
 import {
   ControlContainer,
   FormArray,
@@ -91,16 +97,19 @@ describe('ReagentCreateComponent', () => {
     expect(component.removeReagentForm).toHaveBeenCalled();
   });
 
-  it('form should be valid if input is correct', () => {
-    batchAPIService.checkIfReagentExists.and.returnValue(of(true));
-
+  it('form should be disabled if input is correct and validation passes', () => {
     const input = 'RTS000ING|U0000-000|000000|000000000';
+    batchAPIService.checkIfReagentExists.and.returnValue(of(false));
 
-    component.addReagentForm();
+    // add form and reagent
     const reagent = component.getReagent(0);
-    reagent.controls['id'].setValue(input);
 
-    expect(reagent.valid).toBeTruthy();
+    // set value via html input
+    reagent.controls['id'].setValue(input, { emitEvent: true });
+    component.cleanInput(0);
+
+    expect(reagent.disabled).toBeTrue();
+    expect(reagent.errors).toBeNull();
   });
 
   it('form should be invalid if input is empty', () => {
@@ -117,47 +126,5 @@ describe('ReagentCreateComponent', () => {
     expect(component.reagents.controls[0].valid).toBeFalsy();
     expect(component.reagents.controls[0].value).toEqual({ id: input });
     expect(component.reagents.controls[0].disabled).toBeFalsy();
-  });
-
-  it('should disable input if input is valid', () => {
-    batchAPIService.checkIfReagentExists.and.returnValue(of(true));
-
-    const input = 'RTS000ING|U0000-000|000000|000000000';
-
-    expect(component.reagents.controls[0].enabled).toBeTruthy();
-
-    // set value via html input
-    const inputElement =
-      fixture.debugElement.nativeElement.querySelector('.input-element');
-    inputElement.value = input;
-    inputElement.dispatchEvent(new Event('input'));
-
-    expect(component.reagents.controls[0].disabled).toBeTruthy();
-    expect(component.reagents.controls[0].value).toEqual({ id: input });
-    expect(component.reagents.controls[0].valid).toBeFalsy();
-  });
-
-  it('should enable input if input is invalid', () => {
-    batchAPIService.checkIfReagentExists.and.returnValue(of(true));
-
-    const input = 'RTS000ING|U0000-000|000000|000000000';
-
-    // set value via html input
-    const inputElement =
-      fixture.debugElement.nativeElement.querySelector('.input-element');
-    inputElement.value = input;
-    inputElement.dispatchEvent(new Event('input'));
-
-    expect(component.reagents.controls[0].disabled).toBeTruthy();
-    expect(component.reagents.controls[0].value).toEqual({ id: input });
-    expect(component.reagents.controls[0].valid).toBeFalsy();
-
-    // set value via html input
-    inputElement.value = '';
-    inputElement.dispatchEvent(new Event('input'));
-
-    expect(component.reagents.controls[0].enabled).toBeTruthy();
-    expect(component.reagents.controls[0].value).toEqual({ id: '' });
-    expect(component.reagents.controls[0].valid).toBeFalsy();
   });
 });

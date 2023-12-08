@@ -8,30 +8,38 @@ import { BehaviorSubject, of } from 'rxjs';
 import { Analysis, Device, Kind } from '../../interfaces/simple';
 import { PCRStateHandlerService } from '../../services/pcrstate-handler.service';
 import { BatchCreateComponent } from './batch-create.component';
+import { BatchAPIService } from '../../services/batch-api.service';
 
-const mockAnalyses: Analysis[] = [
-  { name: "dummy", id: "1", }
-];
-const mockDevices: Device[] = [
-  { name: "dummy", id: "1", }
-];
-const mockKinds: Kind[] = [
-  { name: "dummy", id: "1", }
-];
+const mockAnalyses: Analysis[] = [{ name: 'dummy', id: '1' }];
+const mockDevices: Device[] = [{ name: 'dummy', id: '1' }];
+const mockKinds: Kind[] = [{ name: 'dummy', id: '1' }];
 
 describe('BatchCreateComponent', () => {
   let component: BatchCreateComponent;
   let fixture: ComponentFixture<BatchCreateComponent>;
   let pcrStateHandlerService: jasmine.SpyObj<PCRStateHandlerService>;
   let notificationService: jasmine.SpyObj<NotificationService>;
+  let batchAPIService: jasmine.SpyObj<BatchAPIService>;
 
   beforeEach(async () => {
-    pcrStateHandlerService = jasmine.createSpyObj('PCRStateHandlerService', ['refreshData'], {
-      analyses: new BehaviorSubject(mockAnalyses),
-      devices: new BehaviorSubject(mockDevices),
-      kinds: new BehaviorSubject(mockKinds),
-    });
-    notificationService = jasmine.createSpyObj('NotificationService', ['warnMessage']);
+    batchAPIService = jasmine.createSpyObj('BatchAPIService', [
+      'deleteBatch',
+      'getBatch',
+      'searchBatch',
+    ]);
+
+    pcrStateHandlerService = jasmine.createSpyObj(
+      'PCRStateHandlerService',
+      ['refreshData'],
+      {
+        analyses: new BehaviorSubject(mockAnalyses),
+        devices: new BehaviorSubject(mockDevices),
+        kinds: new BehaviorSubject(mockKinds),
+      }
+    );
+    notificationService = jasmine.createSpyObj('NotificationService', [
+      'warnMessage',
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [BatchCreateComponent, MatDialogModule],
@@ -40,6 +48,7 @@ describe('BatchCreateComponent', () => {
         provideNoopAnimations(),
         { provide: PCRStateHandlerService, useValue: pcrStateHandlerService },
         { provide: NotificationService, useValue: notificationService },
+        { provide: BatchAPIService, useValue: batchAPIService },
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(BatchCreateComponent);
@@ -102,9 +111,7 @@ describe('BatchCreateComponent', () => {
     component.groupForm.controls.amount.setValue(1);
 
     // fill reagentsForm
-    component.reagentsFormGroup.controls.reagents.setValue([
-      { id: 'dummy' },
-    ]);
+    component.reagentsFormGroup.controls.reagents.setValue([{ id: 'dummy' }]);
     component.reagentsFormGroup.controls.reagents.controls[0].disable();
     fixture.detectChanges();
 
@@ -146,9 +153,7 @@ describe('BatchCreateComponent', () => {
     component.groupForm.controls.amount.setValue(1);
 
     // fill reagentsForm
-    component.reagentsFormGroup.controls.reagents.setValue([
-      { id: 'dummy' },
-    ]);
+    component.reagentsFormGroup.controls.reagents.setValue([{ id: 'dummy' }]);
 
     // submit
     component.submit();

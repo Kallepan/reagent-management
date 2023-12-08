@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
-  DestroyRef,
   EventEmitter,
   Input,
   OnDestroy,
@@ -23,7 +22,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { cleanQuery } from '@app/modules/pcr/functions/query-cleaner.function';
 import { BatchAPIService } from '@app/modules/pcr/services/batch-api.service';
-import { PCRStateHandlerService } from '@app/modules/pcr/services/pcrstate-handler.service';
 import { ReagentValidator } from '@app/modules/pcr/validators/reagent-validator';
 
 @Component({
@@ -101,6 +99,12 @@ export class ReagentCreateComponent implements OnInit, OnDestroy {
       { id: cleanQuery(value.id) },
       { emitEvent: false }
     );
+
+    if (this.reagents.controls[index].invalid) {
+      this.reagents.controls[index].enable({ emitEvent: false });
+    } else {
+      this.reagents.controls[index].disable({ emitEvent: false });
+    }
   }
 
   ngOnInit(): void {
