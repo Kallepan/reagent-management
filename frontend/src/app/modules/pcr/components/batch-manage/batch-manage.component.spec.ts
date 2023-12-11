@@ -8,7 +8,6 @@ import { PCRStateHandlerService } from '../../services/pcrstate-handler.service'
 import { DUMMY_BATCH } from '../../tests/constants';
 import { BatchManageComponent } from './batch-manage.component';
 
-
 describe('BatchManageComponent', () => {
   let component: BatchManageComponent;
   let fixture: ComponentFixture<BatchManageComponent>;
@@ -22,24 +21,29 @@ describe('BatchManageComponent', () => {
     router = jasmine.createSpyObj('Router', ['navigate']);
 
     // Mock the notification service and the pcr state handler service
-    notificationService = jasmine.createSpyObj('NotificationService', ['warnMessage', 'infoMessage']);
-    pcrStateHandlerService = jasmine.createSpyObj('PCRStateHandlerService', ['getBatch', 'postRemoval']);
+    notificationService = jasmine.createSpyObj('NotificationService', [
+      'warnMessage',
+      'infoMessage',
+    ]);
+    pcrStateHandlerService = jasmine.createSpyObj('PCRStateHandlerService', [
+      'getBatch',
+      'postRemoval',
+      'createOnlyReagents',
+    ]);
     pcrStateHandlerService.getBatch.and.returnValue(of(DUMMY_BATCH));
+    pcrStateHandlerService.createOnlyReagents.and.returnValue(of(null));
 
     // Mock the activated route
     let paramMap = jasmine.createSpyObj('ParamMap', ['get']);
     paramMap.get.and.returnValue('testID');
     activatedRoute = jasmine.createSpyObj<any>('ActivatedRoute', [], {
       snapshot: {
-        paramMap: paramMap
+        paramMap: paramMap,
       },
     });
 
     await TestBed.configureTestingModule({
-      imports: [
-        BatchManageComponent,
-        MatCardModule,
-      ],
+      imports: [BatchManageComponent, MatCardModule],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
         { provide: PCRStateHandlerService, useValue: pcrStateHandlerService },
@@ -55,7 +59,9 @@ describe('BatchManageComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-    expect(activatedRoute.snapshot.paramMap.get).toHaveBeenCalledWith('batchId');
+    expect(activatedRoute.snapshot.paramMap.get).toHaveBeenCalledWith(
+      'batchId'
+    );
     expect(component.batch()).toBeTruthy();
   });
 
@@ -65,7 +71,7 @@ describe('BatchManageComponent', () => {
     const change: MatChipSelectionChange = {
       selected: true,
       source: {
-        value: DUMMY_BATCH.reagents[0]
+        value: DUMMY_BATCH.reagents[0],
       } as any,
       isUserInput: true,
     };
@@ -73,7 +79,6 @@ describe('BatchManageComponent', () => {
     component.handleReagentSelectionChange(change);
     expect(component.activeReagent()).toEqual(DUMMY_BATCH.reagents[0]);
   });
-
 
   it('should filter out null values for _batch', () => {
     // reset calls
@@ -103,11 +108,12 @@ describe('BatchManageComponent', () => {
   it('should handle creation of removal of reagents', () => {
     pcrStateHandlerService.postRemoval.and.returnValue(of(null) as any);
     const spy = spyOn(component.dialog, 'open').and.returnValue({
-      afterClosed: () => of({
-        amount: 1,
-        user: 'testUser',
-        comment: '',
-      }),
+      afterClosed: () =>
+        of({
+          amount: 1,
+          user: 'testUser',
+          comment: '',
+        }),
     } as any);
     // set active reagent
     component.activeReagent.set(DUMMY_BATCH.reagents[0]);
@@ -125,11 +131,12 @@ describe('BatchManageComponent', () => {
   it('should handle creation of removal of reagents with null comment', () => {
     pcrStateHandlerService.postRemoval.and.returnValue(of(null) as any);
     const spy = spyOn(component.dialog, 'open').and.returnValue({
-      afterClosed: () => of({
-        amount: 1,
-        user: 'testUser',
-        comment: null,
-      }),
+      afterClosed: () =>
+        of({
+          amount: 1,
+          user: 'testUser',
+          comment: null,
+        }),
     } as any);
     // set active reagent
     component.activeReagent.set(DUMMY_BATCH.reagents[0]);
@@ -145,13 +152,16 @@ describe('BatchManageComponent', () => {
   });
 
   it('should handle creation of removal of reagents with error in postRemoval', () => {
-    pcrStateHandlerService.postRemoval.and.returnValue(new Error('testError') as any);
+    pcrStateHandlerService.postRemoval.and.returnValue(
+      new Error('testError') as any
+    );
     const spy = spyOn(component.dialog, 'open').and.returnValue({
-      afterClosed: () => of({
-        amount: 1,
-        user: 'testUser',
-        comment: null,
-      }),
+      afterClosed: () =>
+        of({
+          amount: 1,
+          user: 'testUser',
+          comment: null,
+        }),
     } as any);
     // set active reagent
     component.activeReagent.set(DUMMY_BATCH.reagents[0]);
@@ -164,5 +174,34 @@ describe('BatchManageComponent', () => {
     expect(spy).toHaveBeenCalled();
     expect(pcrStateHandlerService.postRemoval).toHaveBeenCalled();
     expect(notificationService.warnMessage).toHaveBeenCalled();
+  });
+
+  it('addReagents should return called if form is invalid', () => {
+    pcrStateHandlerService.getBatch.and.returnValue(of(DUMMY_BATCH));
+    component.formGroup.setErrors({ test: 'test' });
+    component.addReagents(DUMMY_BATCH);
+
+    // must be called once due to the initial call
+    expect(pcrStateHandlerService.getBatch).toHaveBeenCalledTimes(1);
+    expect(notificationService.warnMessage).toHaveBeenCalled();
+  });
+
+  it('addReagents should refresh the batch', () => {
+    pcrStateHandlerService.getBatch.and.returnValue(of(DUMMY_BATCH));
+    // just return any dummy value
+    pcrStateHandlerService.createOnlyReagents.and.returnValue(of(true));
+
+    // call this method
+    component.formGroup.controls['createdBy'].setValue('test');
+    component.addReagents(DUMMY_BATCH);
+
+    // must be called twice due to the initial call and the call in the method
+    expect(pcrStateHandlerService.getBatch).toHaveBeenCalledTimes(2);
+
+    // formGroup should be reset
+    expect(component.formGroup.value).toEqual({
+      createdBy: '',
+      reagents: [],
+    });
   });
 });

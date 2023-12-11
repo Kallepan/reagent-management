@@ -82,6 +82,13 @@ describe('ReagentCreateComponent', () => {
     spyOn(component.onSubmit, 'emit');
     const submitButton =
       fixture.debugElement.nativeElement.querySelector('.submit-button');
+
+    // Set form to disabled
+    component.reagents.controls[0].disable();
+    fixture.detectChanges();
+
+    expect(component.reagents.controls[0].disabled).toBeTrue();
+
     submitButton.click();
     expect(component.onSubmit.emit).toHaveBeenCalled();
   });

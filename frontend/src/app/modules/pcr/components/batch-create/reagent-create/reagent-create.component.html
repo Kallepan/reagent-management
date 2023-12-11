@@ -29,7 +29,7 @@
             <button class="add-button" mat-mini-fab color="accent" (click)="addReagentForm()">
                 <mat-icon>add</mat-icon>
             </button>
-            <button class="submit-button" mat-mini-fab color="accent" (click)="onSubmit.emit()">
+            <button class="submit-button" mat-mini-fab color="accent" (click)="onSubmit.emit()" [disabled]="isDisabled()">
                 <mat-icon>done</mat-icon>
             </button>
         </div>

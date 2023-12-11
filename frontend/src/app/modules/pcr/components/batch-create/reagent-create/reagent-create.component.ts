@@ -64,6 +64,7 @@ export class ReagentCreateComponent implements OnInit, OnDestroy {
   @Input({ required: true }) controlKey = 'reagents';
   parentContainer = inject(ControlContainer);
   private readonly _formBuilder = inject(FormBuilder);
+
   // Functions to get the formGroup and formArray of the reagents
   get parentFormGroup(): FormGroup {
     return this.parentContainer.control as FormGroup;
@@ -99,15 +100,6 @@ export class ReagentCreateComponent implements OnInit, OnDestroy {
         // Do nothing
       });
 
-    reagentForm.statusChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((status) => {
-        // we only need to check if the form is valid since pending and invalid are handled by the validator
-        if (status === 'VALID') {
-          reagentForm.disable({ emitEvent: false });
-        }
-      });
-
     this.reagents.push(reagentForm);
   }
 
@@ -117,6 +109,11 @@ export class ReagentCreateComponent implements OnInit, OnDestroy {
 
   removeReagentForm(index: number): void {
     this.reagents.removeAt(index);
+  }
+
+  isDisabled(): boolean {
+    // should return true if none of the reagents are disabled
+    return !this.reagents.controls.every((reagent) => reagent.disabled);
   }
 
   ngOnInit(): void {

@@ -1,7 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { FormBuilder, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipSelectionChange } from '@angular/material/chips';
@@ -26,11 +31,15 @@ import {
   tap,
   throwError,
 } from 'rxjs';
-import { Batch, Reagent } from '../../interfaces/reagent';
+import { Batch, CreateReagent, Reagent } from '../../interfaces/reagent';
 import { Removal } from '../../interfaces/removal';
 import { PCRStateHandlerService } from '../../services/pcrstate-handler.service';
 import { ReagentManageComponent } from '../reagent-manage/reagent-manage.component';
 import { RemovalManageComponent } from '../removal-manage/removal-manage.component';
+import { ReagentCreateComponent } from '../batch-create/reagent-create/reagent-create.component';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
+import { MatInput, MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-batch-manage',
@@ -41,20 +50,32 @@ import { RemovalManageComponent } from '../removal-manage/removal-manage.compone
     MatDividerModule,
     MatProgressBarModule,
     MatButtonModule,
+    MatExpansionModule,
+    MatInputModule,
+    MatFormFieldModule,
+    ReactiveFormsModule,
 
     ReagentManageComponent,
     RemovalManageComponent,
     GenericCreateDialogComponent,
+    ReagentCreateComponent,
   ],
   templateUrl: './batch-manage.component.html',
   styleUrl: './batch-manage.component.scss',
 })
 export class BatchManageComponent implements OnInit {
+  // formGroup
+  private fb = inject(FormBuilder);
+  formGroup = this.fb.group({
+    createdBy: ['', [Validators.required, Validators.pattern(/^[a-z]{2,4}$/)]],
+    reagents: this.fb.array([]),
+  });
+
+  // ─── INJECTIONS ───
   private notificationService = inject(NotificationService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   dialog = inject(MatDialog);
-  private fb = inject(FormBuilder);
   loading = signal(false);
 
   pcrStateHandlerService = inject(PCRStateHandlerService);
@@ -283,6 +304,57 @@ export class BatchManageComponent implements OnInit {
         error: () => {
           this.notificationService.warnMessage(
             messages.PCR.BATCH_DELETE_FAILED
+          );
+        },
+      });
+  }
+
+  addReagents(batch: Batch): void {
+    if (!this.formGroup.valid) {
+      this.notificationService.warnMessage(messages.PCR.INVALID_DATA);
+      return;
+    }
+
+    // get the initial amount from the first present reagent
+    const createdBy = this.formGroup.get('createdBy')?.value;
+    if (!createdBy || !batch.reagents.length) return;
+    const initialAmount = batch.reagents[0].initial_amount;
+
+    // get the formArray
+    const reagentsFromForm = this.formGroup.get('reagents')?.value;
+    if (!reagentsFromForm) return;
+    const reagentsToBeCreated = reagentsFromForm.map((reagent: any) => {
+      const newReagent: CreateReagent = {
+        batch_id: batch.id,
+        id: reagent.id,
+        initial_amount: initialAmount,
+        created_by: createdBy,
+      };
+
+      return newReagent;
+    });
+
+    // post the reagents
+    this.pcrStateHandlerService
+      .createOnlyReagents(reagentsToBeCreated)
+      .pipe(
+        tap(() => {
+          this.formGroup.reset(
+            { createdBy: '', reagents: [] },
+            { emitEvent: false }
+          );
+        })
+      )
+      .subscribe({
+        next: (batch) => {
+          this.notificationService.infoMessage(
+            messages.PCR.REAGENT_CREATE_SUCCESS
+          );
+          this._batch.next(this._batch.value);
+        },
+        error: () => {
+          this.notificationService.warnMessage(
+            messages.PCR.REAGENT_CREATE_ERROR
           );
         },
       });

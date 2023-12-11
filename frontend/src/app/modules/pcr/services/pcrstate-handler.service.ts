@@ -1,8 +1,20 @@
 import { DestroyRef, Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NotificationService } from '@app/core/services/notification.service';
-import { BehaviorSubject, Observable, catchError, map, switchMap, throwError } from 'rxjs';
-import { Batch, CreateBatch, CreateReagent, Reagent } from '../interfaces/reagent';
+import {
+  BehaviorSubject,
+  Observable,
+  catchError,
+  map,
+  switchMap,
+  throwError,
+} from 'rxjs';
+import {
+  Batch,
+  CreateBatch,
+  CreateReagent,
+  Reagent,
+} from '../interfaces/reagent';
 import { CreateRemoval, Removal } from '../interfaces/removal';
 import { Analysis, Device, Kind } from '../interfaces/simple';
 import { AnalysisService } from './analysis.service';
@@ -12,12 +24,12 @@ import { KindService } from './kind.service';
 import { RemovalService } from './removal.service';
 
 @Injectable({
-  providedIn: null
+  providedIn: null,
 })
 export class PCRStateHandlerService {
   // system-wide loading state
   private notificationService = inject(NotificationService);
-  private destroyRef = inject(DestroyRef)
+  private destroyRef = inject(DestroyRef);
 
   // Module specific loading state
   private kindAPIService = inject(KindService);
@@ -37,22 +49,30 @@ export class PCRStateHandlerService {
     this.refreshData();
   }
   private refreshData() {
-    this.kindAPIService.getKinds().pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe((kinds) => {
-      this.kinds.next(kinds);
-    });
-    this.deviceAPIService.getDevices().pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe((devices) => {
-      this.devices.next(devices);
-    });
-    this.analysisAPIService.getAnalyses().pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe((analyses) => {
-      this.analyses.next(analyses);
-    });
+    this.kindAPIService
+      .getKinds()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((kinds) => {
+        this.kinds.next(kinds);
+      });
+    this.deviceAPIService
+      .getDevices()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((devices) => {
+        this.devices.next(devices);
+      });
+    this.analysisAPIService
+      .getAnalyses()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((analyses) => {
+        this.analyses.next(analyses);
+      });
   }
+
+  createOnlyReagents(reagents: CreateReagent[]): Observable<any> {
+    return this.batchAPIService.createReagents(reagents);
+  }
+
   // reagents
   createReagents(groupData: any, reagents: { id: string }[]): Observable<any> {
     const newBatch: CreateBatch = {
@@ -80,9 +100,9 @@ export class PCRStateHandlerService {
 
         return this.batchAPIService.createReagents(reagentsWithBatchID).pipe(
           catchError((err) => throwError(() => err)),
-          map(() => batchId), // I only care about the id
+          map(() => batchId) // I only care about the id
         );
-      }),
+      })
     );
   }
 
@@ -102,15 +122,19 @@ export class PCRStateHandlerService {
     return this.batchAPIService.deleteBatch(batchId);
   }
 
-
   // removal
-  postRemoval(reagentID: string, createdBy: string, amount: number, comment: string): Observable<any> {
+  postRemoval(
+    reagentID: string,
+    createdBy: string,
+    amount: number,
+    comment: string
+  ): Observable<any> {
     const removal: CreateRemoval = {
       reagent_id: reagentID,
       created_by: createdBy,
       amount: amount,
       comment: comment,
-    }
+    };
     return this.removalAPIService.postRemoval(removal);
   }
   deleteRemoval(removalId: string): Observable<any> {
@@ -119,5 +143,4 @@ export class PCRStateHandlerService {
   updateRemoval(removal: Removal): Observable<any> {
     return this.removalAPIService.updateRemoval(removal);
   }
-
 }
