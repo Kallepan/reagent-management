@@ -77,7 +77,9 @@ export class BatchManageComponent implements OnInit {
 
   protected pcrStateHandlerService = inject(PCRStateHandlerService);
 
-  protected activeReagent = signal<Reagent | null>(null);
+  // some minor states
+  activeReagent = signal<Reagent | null>(null);
+  scannedReagent = signal<Reagent | null>(null);
 
   _batch = new BehaviorSubject<string | null>(null);
   batch = toSignal(
@@ -100,6 +102,18 @@ export class BatchManageComponent implements OnInit {
         }
       }),
       filter((batch): batch is Batch => batch !== null),
+      tap((batch) => {
+        // fetch searchTerm
+        const searchTerm = this.pcrStateHandlerService.getLastSearchTerm();
+
+        // get reagent from batch where id matches searchTerm
+        const reagent = batch.reagents.find(
+          (reagent) => reagent.id === searchTerm,
+        );
+
+        // set scannedReagent
+        this.scannedReagent.set(reagent || null);
+      }),
       tap((batch) => {
         // update activeReagent if it is not null:
         if (this.activeReagent() !== null) {

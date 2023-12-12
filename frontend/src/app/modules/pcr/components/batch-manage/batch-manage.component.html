@@ -18,6 +18,7 @@
               [reagents]="batch.reagents"
               (selectionChange)="handleReagentSelectionChange($event)"
               [activeReagent]="activeReagent()"
+              [scannedReagent]="scannedReagent()"
             >
             </app-reagent-manage>
             <app-removal-manage

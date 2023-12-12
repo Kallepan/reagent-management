@@ -46,17 +46,21 @@ describe('PCRStateHandlerService', () => {
     TestBed.configureTestingModule({
       providers: [
         PCRStateHandlerService,
-        { provide: RemovalService, useValue: removalService, },
-        { provide: KindService, useValue: kindService, },
-        { provide: DeviceService, useValue: deviceService, },
-        { provide: AnalysisService, useValue: analysisService, },
-        { provide: BatchAPIService, useValue: batchAPIService, },
-      ]
+        { provide: RemovalService, useValue: removalService },
+        { provide: KindService, useValue: kindService },
+        { provide: DeviceService, useValue: deviceService },
+        { provide: AnalysisService, useValue: analysisService },
+        { provide: BatchAPIService, useValue: batchAPIService },
+      ],
     });
     service = TestBed.inject(PCRStateHandlerService);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('lastSearchTerm should be null', () => {
+    expect(service.getLastSearchTerm()).toBeNull();
   });
 });

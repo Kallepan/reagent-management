@@ -1,6 +1,5 @@
 import { DestroyRef, Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NotificationService } from '@app/core/services/notification.service';
 import {
   BehaviorSubject,
   Observable,
@@ -27,8 +26,10 @@ import { RemovalService } from './removal.service';
   providedIn: null,
 })
 export class PCRStateHandlerService {
+  // some minor states
+  private lastSearchTerm: string | null = null;
+
   // system-wide loading state
-  private notificationService = inject(NotificationService);
   private destroyRef = inject(DestroyRef);
 
   // Module specific loading state
@@ -145,5 +146,13 @@ export class PCRStateHandlerService {
   }
   updateRemoval(removal: Removal): Observable<any> {
     return this.removalAPIService.updateRemoval(removal);
+  }
+
+  // minor states
+  setLastSearchTerm(searchTerm: string | null) {
+    this.lastSearchTerm = searchTerm;
+  }
+  getLastSearchTerm() {
+    return this.lastSearchTerm;
   }
 }

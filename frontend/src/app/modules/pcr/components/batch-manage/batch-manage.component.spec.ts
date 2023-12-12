@@ -29,9 +29,12 @@ describe('BatchManageComponent', () => {
       'getBatch',
       'postRemoval',
       'createOnlyReagents',
+      'setLastSearchTerm',
+      'getLastSearchTerm',
     ]);
     pcrStateHandlerService.getBatch.and.returnValue(of(DUMMY_BATCH));
     pcrStateHandlerService.createOnlyReagents.and.returnValue(of(null));
+    pcrStateHandlerService.getLastSearchTerm.and.returnValue(null);
 
     // Mock the activated route
     let paramMap = jasmine.createSpyObj('ParamMap', ['get']);

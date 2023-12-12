@@ -17,6 +17,7 @@ export class ReagentManageComponent {
   @Input({ required: true }) reagents: Reagent[] = [];
   @Input() index: number;
   @Input() activeReagent: Reagent | null;
+  @Input() scannedReagent: Reagent | null;
 
   // Emits a boolean value when the user clicks on the remove button.
   @Output() selectionChange = new EventEmitter<MatChipSelectionChange>();

@@ -19,8 +19,15 @@ describe('BatchListComponent', () => {
   let router: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
-    notificationService = jasmine.createSpyObj('NotificationService', ['warnMessage', 'infoMessage']);
-    pcrStateHandlerService = jasmine.createSpyObj('PCRStateHandlerService', ['refreshData', 'searchBatch']);
+    notificationService = jasmine.createSpyObj('NotificationService', [
+      'warnMessage',
+      'infoMessage',
+    ]);
+    pcrStateHandlerService = jasmine.createSpyObj('PCRStateHandlerService', [
+      'refreshData',
+      'searchBatch',
+      'setLastSearchTerm',
+    ]);
     activatedRoute = jasmine.createSpyObj('ActivatedRoute', ['']);
     router = jasmine.createSpyObj('Router', ['navigate']);
 
@@ -33,9 +40,8 @@ describe('BatchListComponent', () => {
         { provide: PCRStateHandlerService, useValue: pcrStateHandlerService },
         { provide: ActivatedRoute, useValue: activatedRoute },
         { provide: Router, useValue: router },
-      ]
-    })
-      .compileComponents();
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(BatchListComponent);
     component = fixture.componentInstance;
@@ -44,6 +50,14 @@ describe('BatchListComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('setLastSearchTerm should be called', () => {
+    const searchTerm = 'searchTerm';
+    component.searchReagents(searchTerm);
+    expect(pcrStateHandlerService.setLastSearchTerm).toHaveBeenCalledWith(
+      searchTerm,
+    );
   });
 
   it('searchReagents should call notificationService.warnMessage if no batches are found', () => {
@@ -64,20 +78,27 @@ describe('BatchListComponent', () => {
     const searchTerm = 'searchTerm';
     pcrStateHandlerService.searchBatch.and.returnValue(of([DUMMY_BATCH]));
     component.searchReagents(searchTerm);
-    expect(router.navigate).toHaveBeenCalledWith(['pcr', 'batch', DUMMY_BATCH.id]);
+    expect(router.navigate).toHaveBeenCalledWith([
+      'pcr',
+      'batch',
+      DUMMY_BATCH.id,
+    ]);
   });
 
   it('should handle multiple results with valid choice', () => {
     // create spy object
     const spy = spyOn(component.dialog, 'open').and.returnValue({
-      afterClosed: () => of({
-        id: DUMMY_BATCH.id,
-      }),
+      afterClosed: () =>
+        of({
+          id: DUMMY_BATCH.id,
+        }),
     } as any);
 
     // call function
     const searchTerm = DUMMY_BATCH.reagents[0].id;
-    pcrStateHandlerService.searchBatch.and.returnValue(of([DUMMY_BATCH, DUMMY_BATCH]));
+    pcrStateHandlerService.searchBatch.and.returnValue(
+      of([DUMMY_BATCH, DUMMY_BATCH]),
+    );
     component.searchReagents(searchTerm);
 
     // check if the dialog was opened
@@ -95,7 +116,9 @@ describe('BatchListComponent', () => {
 
     // call function
     const searchTerm = DUMMY_BATCH.reagents[0].id;
-    pcrStateHandlerService.searchBatch.and.returnValue(of([DUMMY_BATCH, DUMMY_BATCH]));
+    pcrStateHandlerService.searchBatch.and.returnValue(
+      of([DUMMY_BATCH, DUMMY_BATCH]),
+    );
     component.searchReagents(searchTerm);
 
     // check if the dialog was opened
