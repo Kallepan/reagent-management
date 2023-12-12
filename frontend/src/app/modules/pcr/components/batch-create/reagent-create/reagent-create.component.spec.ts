@@ -1,4 +1,4 @@
-import { type ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import {
   ControlContainer,
   FormArray,
@@ -8,10 +8,10 @@ import {
   Validators,
 } from '@angular/forms';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { ReagentCreateComponent } from './reagent-create.component';
+import { constants } from '@app/core/constants/constants';
 import { BatchAPIService } from '@app/modules/pcr/services/batch-api.service';
 import { of } from 'rxjs';
-import { constants } from '@app/core/constants/constants';
+import { ReagentCreateComponent } from './reagent-create.component';
 
 describe('ReagentCreateComponent', () => {
   let component: ReagentCreateComponent;
@@ -84,7 +84,7 @@ describe('ReagentCreateComponent', () => {
       fixture.debugElement.nativeElement.querySelector('.submit-button');
 
     // Set form to disabled
-    component.reagents.controls[0].disable();
+    component.reagents.controls[0].disable({ emitEvent: false });
     fixture.detectChanges();
 
     expect(component.reagents.controls[0].disabled).toBeTrue();
@@ -155,14 +155,14 @@ describe('ReagentCreateComponent', () => {
     ];
     const dummyForm = new FormControl(
       '',
-      Validators.pattern(constants.PCR.REAGENT_REGEX)
+      Validators.pattern(constants.PCR.REAGENT_REGEX),
     );
     expect(dummyForm.value).toBe('');
 
     strings.forEach((input) => {
-      dummyForm.setValue(input);
+      dummyForm.setValue(input, { emitEvent: true });
       expect(dummyForm.valid).toBeTrue();
-      dummyForm.reset();
+      dummyForm.reset(null, { emitEvent: false });
     });
   });
 });
