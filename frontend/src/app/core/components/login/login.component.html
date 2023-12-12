@@ -24,7 +24,7 @@
 </mat-menu>
 } @else {
 <div class="info">
-    {{authService.authData()?.department|titlecase}}
+    {{authService.authData()?.department|uppercase}}
     <button mat-icon-button (click)="authService.logout()"><mat-icon>logout</mat-icon></button>
 </div>
 }

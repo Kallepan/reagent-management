@@ -1,9 +1,30 @@
-<div class="container">
-    @if(activatedRoute$ | async; as featureFlag) {
-    @if (featureFlag === 'BAK') {
-    <app-search-bar [control]="control" formHint="" (searchSubmit)="onSearch(featureFlag, $event)"
-        placeholder="Suche nach Lot"></app-search-bar>
-    <button mat-raised-button color="accent" routerLink="/bak/lots/create">Lot Anlegen</button>
-    }
-    }
-</div>
+@if (activatedRoute$ | async; as featureFlag) {
+  @if (featureFlag === 'BAK') {
+    <div class="container">
+      <app-search-bar
+        [control]="control"
+        formHint=""
+        (searchSubmit)="onSearch(featureFlag, $event)"
+        placeholder="Suche nach Lot"
+      ></app-search-bar>
+      <button
+        class="lot-create-button"
+        mat-raised-button
+        color="accent"
+        routerLink="/bak/lots/create"
+      >
+        Lot Anlegen
+      </button>
+    </div>
+  }
+  @if (featureFlag === 'PCR') {
+    <button
+      class="pcr-home-button"
+      mat-raised-button
+      color="accent"
+      routerLink="/pcr"
+    >
+      PCR Home
+    </button>
+  }
+}
