@@ -1,5 +1,6 @@
 .container {
-    display: flex;
-    align-items: center;
-    margin-top: 15px;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  margin-top: 15px;
 }

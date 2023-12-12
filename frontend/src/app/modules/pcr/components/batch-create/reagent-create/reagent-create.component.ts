@@ -1,22 +1,22 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
+  DestroyRef,
   EventEmitter,
   Input,
-  type OnDestroy,
-  type OnInit,
   Output,
   inject,
-  DestroyRef,
+  type OnDestroy,
+  type OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   ControlContainer,
-  type FormArray,
   FormBuilder,
-  type FormGroup,
   ReactiveFormsModule,
   Validators,
+  type FormArray,
+  type FormGroup,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -27,7 +27,6 @@ import { cleanQuery } from '@app/modules/pcr/functions/query-cleaner.function';
 import { BatchAPIService } from '@app/modules/pcr/services/batch-api.service';
 import { createValidator } from '@app/modules/pcr/validators/reagent-validator';
 import { debounceTime, filter, map, tap } from 'rxjs';
-import { __values } from 'tslib';
 
 @Component({
   selector: 'app-reagent-create',
@@ -94,7 +93,7 @@ export class ReagentCreateComponent implements OnInit, OnDestroy {
         }),
         tap((value) => {
           reagentForm.patchValue(value, { emitEvent: false });
-        })
+        }),
       )
       .subscribe(() => {
         // Do nothing
@@ -123,6 +122,6 @@ export class ReagentCreateComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     // clean the reagents array
-    this.reagents.clear();
+    this.reagents.clear({ emitEvent: false });
   }
 }

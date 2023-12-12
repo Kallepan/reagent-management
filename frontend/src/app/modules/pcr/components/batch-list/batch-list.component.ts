@@ -12,8 +12,8 @@ import { DataTableComponent } from '@app/shared/components/data-table/data-table
 import { SearchBarComponent } from '@app/shared/components/search-bar/search-bar.component';
 import { debounceTime, filter, map, switchMap, tap } from 'rxjs';
 import { cleanQuery } from '../../functions/query-cleaner.function';
-import { PCRStateHandlerService } from '../../services/pcrstate-handler.service';
 import { Batch } from '../../interfaces/reagent';
+import { PCRStateHandlerService } from '../../services/pcrstate-handler.service';
 
 @Component({
   selector: 'app-batch-list',
@@ -40,12 +40,14 @@ export class BatchListComponent implements OnInit {
     takeUntilDestroyed(),
     filter((contents): contents is string => typeof contents === 'string'),
     debounceTime(200),
-    map(query => cleanQuery(query)),
+    map((query) => cleanQuery(query)),
   );
 
   ngOnInit(): void {
     // Subscribe to filter changes and update the query parameter
-    this.filter$.subscribe(query => this.filterControl.patchValue(query, { emitEvent: false }));
+    this.filter$.subscribe((query) =>
+      this.filterControl.patchValue(query, { emitEvent: false }),
+    );
   }
 
   // State stuff
@@ -56,51 +58,64 @@ export class BatchListComponent implements OnInit {
     /**
      * Query the API for reagents matching the search term and open them
      * using the router in detailview. Should lead to batch manage view.
-    **/
-    this.pcrStateHandlerService.searchBatch(searchTerm).pipe(
-      tap(batches => {
-        if (batches.length === 0) {
-          this.notificationService.warnMessage(messages.PCR.NO_BATCHES_FOUND);
-        }
-      }),
-      filter(batches => batches.length > 0),
-      tap(batches => {
-        // Navigate to the first batch if there is only one
-        if (batches.length === 1) {
-          this.router.navigate(['pcr', 'batch', batches[0].id]);
-        }
-      }),
-      filter(batches => batches.length > 1),
-      // use notificationService to display a info
-      tap(() => {
-        this.notificationService.infoMessage(messages.PCR.MULTIPLE_BATCHES_FOUND);
-      }),
-      // Open a dialog to choose the batch
-      switchMap(batches => {
-        const matDialogConfig: MatDialogConfig = {
-          data: {
-            title: messages.PCR.MULTIPLE_BATCHES_FOUND,
-            message: messages.PCR.MULTIPLE_BATCHES_FOUND,
-            choices: batches.map(batch => ({
-              id: batch.id,
-              name: this._getFormattingString(batch),
-            })),
+     **/
+    this.pcrStateHandlerService
+      .searchBatch(searchTerm)
+      .pipe(
+        tap((batches) => {
+          if (batches.length === 0) {
+            this.notificationService.warnMessage(messages.PCR.NO_BATCHES_FOUND);
           }
-        }
-        return this.dialog.open(ChoiceDialogComponent, matDialogConfig).afterClosed();
-      }),
-      // filter result is string
-      filter(result => result !== undefined && result !== null),
-      map(result => result.id as string),
-    ).subscribe({
-      // display notification if more than one batch is found
-      next: (batchId) => {
-        this.router.navigate(['pcr', 'batch', batchId]);
-      },
-    })
+        }),
+        filter((batches) => batches.length > 0),
+        tap(() => {
+          // set last search term in pcrStateHandlerService
+          this.pcrStateHandlerService.setLastSearchTerm(searchTerm);
+        }),
+        tap((batches) => {
+          // Navigate to the first batch if there is only one
+          if (batches.length === 1) {
+            this.router.navigate(['pcr', 'batch', batches[0].id]);
+          }
+        }),
+        filter((batches) => batches.length > 1),
+        // use notificationService to display a info
+        tap(() => {
+          this.notificationService.infoMessage(
+            messages.PCR.MULTIPLE_BATCHES_FOUND,
+          );
+        }),
+        // Open a dialog to choose the batch
+        switchMap((batches) => {
+          const matDialogConfig: MatDialogConfig = {
+            data: {
+              title: messages.PCR.MULTIPLE_BATCHES_FOUND,
+              message: messages.PCR.MULTIPLE_BATCHES_FOUND,
+              choices: batches.map((batch) => ({
+                id: batch.id,
+                name: this._getFormattingString(batch),
+              })),
+            },
+          };
+          return this.dialog
+            .open(ChoiceDialogComponent, matDialogConfig)
+            .afterClosed();
+        }),
+        // filter result is string
+        filter((result) => result !== undefined && result !== null),
+        map((result) => result.id as string),
+      )
+      .subscribe({
+        // display notification if more than one batch is found
+        next: (batchId) => {
+          this.router.navigate(['pcr', 'batch', batchId]);
+        },
+      });
   }
 
   protected _getFormattingString(batch: Batch): string {
-    return `${batch.kind.name}: ${batch.reagents.map(reagent => reagent.id.split('|').pop() ?? 'NA').join(', ')}`
+    return `${batch.kind.name}: ${batch.reagents
+      .map((reagent) => reagent.id.split('|').pop() ?? 'NA')
+      .join(', ')}`;
   }
 }

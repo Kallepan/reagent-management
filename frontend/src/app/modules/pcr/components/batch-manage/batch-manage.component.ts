@@ -1,22 +1,21 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipSelectionChange } from '@angular/material/chips';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { messages } from '@app/core/constants/messages';
 import { NotificationService } from '@app/core/services/notification.service';
 import { ChoiceDialogComponent } from '@app/shared/components/choice-dialog/choice-dialog.component';
+import { EditTextareaComponent } from '@app/shared/components/edit-textarea/edit-textarea.component';
 import {
   CreateDialogData,
   GenericCreateDialogComponent,
@@ -34,12 +33,9 @@ import {
 import { Batch, CreateReagent, Reagent } from '../../interfaces/reagent';
 import { Removal } from '../../interfaces/removal';
 import { PCRStateHandlerService } from '../../services/pcrstate-handler.service';
+import { ReagentCreateComponent } from '../batch-create/reagent-create/reagent-create.component';
 import { ReagentManageComponent } from '../reagent-manage/reagent-manage.component';
 import { RemovalManageComponent } from '../removal-manage/removal-manage.component';
-import { ReagentCreateComponent } from '../batch-create/reagent-create/reagent-create.component';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
-import { MatInput, MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-batch-manage',
@@ -59,6 +55,7 @@ import { MatInput, MatInputModule } from '@angular/material/input';
     RemovalManageComponent,
     GenericCreateDialogComponent,
     ReagentCreateComponent,
+    EditTextareaComponent,
   ],
   templateUrl: './batch-manage.component.html',
   styleUrl: './batch-manage.component.scss',
@@ -78,9 +75,11 @@ export class BatchManageComponent implements OnInit {
   dialog = inject(MatDialog);
   loading = signal(false);
 
-  pcrStateHandlerService = inject(PCRStateHandlerService);
+  protected pcrStateHandlerService = inject(PCRStateHandlerService);
 
+  // some minor states
   activeReagent = signal<Reagent | null>(null);
+  scannedReagent = signal<Reagent | null>(null);
 
   _batch = new BehaviorSubject<string | null>(null);
   batch = toSignal(
@@ -93,8 +92,8 @@ export class BatchManageComponent implements OnInit {
           catchError(() => {
             this.router.navigate(['/pcr/batch']);
             return of(null);
-          })
-        )
+          }),
+        ),
       ),
       tap((batch) => {
         if (batch === null) {
@@ -104,16 +103,33 @@ export class BatchManageComponent implements OnInit {
       }),
       filter((batch): batch is Batch => batch !== null),
       tap((batch) => {
+        // fetch searchTerm
+        const searchTerm = this.pcrStateHandlerService.getLastSearchTerm();
+
+        // get reagent from batch where id matches searchTerm
+        const reagent = batch.reagents.find(
+          (reagent) => reagent.id === searchTerm,
+        );
+
+        // set scannedReagent
+        this.scannedReagent.set(reagent || null);
+      }),
+      tap((batch) => {
         // update activeReagent if it is not null:
         if (this.activeReagent() !== null) {
           const reagent = batch.reagents.find(
-            (reagent) => reagent.id === this.activeReagent()?.id
+            (reagent) => reagent.id === this.activeReagent()?.id,
           );
           if (reagent !== undefined) this.activeReagent.set(reagent);
           else this.activeReagent.set(null);
         }
-      })
-    )
+      }),
+      map((batch) => {
+        // set comment to default value if it is empty string
+        batch.comment = batch.comment || 'Kein Kommentar hinterlegt';
+        return batch;
+      }),
+    ),
   );
 
   handleReagentSelectionChange(change: MatChipSelectionChange) {
@@ -185,9 +201,9 @@ export class BatchManageComponent implements OnInit {
       .pipe(
         filter(
           (
-            result
+            result,
           ): result is { amount: number; user: string; comment: string } =>
-            result !== undefined && result !== null
+            result !== undefined && result !== null,
         ),
         // set default comment to empty string
         map((result) => {
@@ -205,19 +221,19 @@ export class BatchManageComponent implements OnInit {
         switchMap((result) =>
           this.pcrStateHandlerService
             .postRemoval(reagent.id, result.user, result.amount, result.comment)
-            .pipe(catchError((err) => throwError(() => err)))
-        )
+            .pipe(catchError((err) => throwError(() => err))),
+        ),
       )
       .subscribe({
         next: () => {
           this.notificationService.infoMessage(
-            messages.PCR.REMOVAL_CREATE_SUCCESS
+            messages.PCR.REMOVAL_CREATE_SUCCESS,
           );
           this._batch.next(this._batch.value);
         },
         error: () => {
           this.notificationService.warnMessage(
-            messages.PCR.REMOVAL_CREATE_FAILED
+            messages.PCR.REMOVAL_CREATE_FAILED,
           );
         },
         complete: () => this.loading.set(false),
@@ -239,26 +255,26 @@ export class BatchManageComponent implements OnInit {
       .pipe(
         filter(
           (result): result is { id: string; name: string } =>
-            result !== undefined && result !== null
+            result !== undefined && result !== null,
         ),
         filter((result) => result.id === 'yes'),
         tap(() => this.loading.set(true)),
         switchMap(() =>
           this.pcrStateHandlerService
             .deleteRemoval(removal.id)
-            .pipe(catchError((err) => throwError(() => err)))
-        )
+            .pipe(catchError((err) => throwError(() => err))),
+        ),
       )
       .subscribe({
         next: () => {
           this.notificationService.infoMessage(
-            messages.PCR.REMOVAL_DELETE_SUCCESS
+            messages.PCR.REMOVAL_DELETE_SUCCESS,
           );
           this._batch.next(this._batch.value);
         },
         error: (err) => {
           this.notificationService.warnMessage(
-            messages.PCR.REMOVAL_DELETE_FAILED
+            messages.PCR.REMOVAL_DELETE_FAILED,
           );
         },
         complete: () => this.loading.set(false),
@@ -280,30 +296,30 @@ export class BatchManageComponent implements OnInit {
       .pipe(
         filter(
           (result): result is { id: string; name: string } =>
-            result !== undefined && result !== null
+            result !== undefined && result !== null,
         ),
         filter((result) => result.id === 'yes'),
         map(() => this.batch()?.id),
         filter(
           (batchId): batchId is string =>
-            batchId !== undefined && batchId !== null
+            batchId !== undefined && batchId !== null,
         ),
         switchMap((batchId) =>
           this.pcrStateHandlerService
             .deleteBatch(batchId)
-            .pipe(catchError((err) => throwError(() => err)))
+            .pipe(catchError((err) => throwError(() => err))),
         ),
-        tap(() => this.router.navigate(['/pcr/batch']))
+        tap(() => this.router.navigate(['/pcr/batch'])),
       )
       .subscribe({
         next: () => {
           this.notificationService.infoMessage(
-            messages.PCR.BATCH_DELETE_SUCCESS
+            messages.PCR.BATCH_DELETE_SUCCESS,
           );
         },
         error: () => {
           this.notificationService.warnMessage(
-            messages.PCR.BATCH_DELETE_FAILED
+            messages.PCR.BATCH_DELETE_FAILED,
           );
         },
       });
@@ -341,23 +357,35 @@ export class BatchManageComponent implements OnInit {
         tap(() => {
           this.formGroup.reset(
             { createdBy: '', reagents: [] },
-            { emitEvent: false }
+            { emitEvent: false },
           );
-        })
+        }),
       )
       .subscribe({
         next: (batch) => {
           this.notificationService.infoMessage(
-            messages.PCR.REAGENT_CREATE_SUCCESS
+            messages.PCR.REAGENT_CREATE_SUCCESS,
           );
           this._batch.next(this._batch.value);
         },
         error: () => {
           this.notificationService.warnMessage(
-            messages.PCR.REAGENT_CREATE_ERROR
+            messages.PCR.REAGENT_CREATE_ERROR,
           );
         },
       });
+  }
+
+  updateBatchComment(id: string, comment: string) {
+    this.loading.set(true);
+    this.pcrStateHandlerService.updateBatchComment(id, comment).subscribe({
+      next: () => {
+        this._batch.next(id);
+      },
+      complete: () => {
+        this.loading.set(false);
+      },
+    });
   }
 
   ngOnInit(): void {

@@ -29,9 +29,12 @@ describe('BatchManageComponent', () => {
       'getBatch',
       'postRemoval',
       'createOnlyReagents',
+      'setLastSearchTerm',
+      'getLastSearchTerm',
     ]);
     pcrStateHandlerService.getBatch.and.returnValue(of(DUMMY_BATCH));
     pcrStateHandlerService.createOnlyReagents.and.returnValue(of(null));
+    pcrStateHandlerService.getLastSearchTerm.and.returnValue(null);
 
     // Mock the activated route
     let paramMap = jasmine.createSpyObj('ParamMap', ['get']);
@@ -60,7 +63,7 @@ describe('BatchManageComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
     expect(activatedRoute.snapshot.paramMap.get).toHaveBeenCalledWith(
-      'batchId'
+      'batchId',
     );
     expect(component.batch()).toBeTruthy();
   });
@@ -153,7 +156,7 @@ describe('BatchManageComponent', () => {
 
   it('should handle creation of removal of reagents with error in postRemoval', () => {
     pcrStateHandlerService.postRemoval.and.returnValue(
-      new Error('testError') as any
+      new Error('testError') as any,
     );
     const spy = spyOn(component.dialog, 'open').and.returnValue({
       afterClosed: () =>
@@ -203,5 +206,18 @@ describe('BatchManageComponent', () => {
       createdBy: '',
       reagents: [],
     });
+  });
+
+  it('if batch.comment is empty it should be replaced by "Kein Kommentar hinterlegt"', () => {
+    pcrStateHandlerService.getBatch.and.returnValue(
+      of({
+        ...DUMMY_BATCH,
+        comment: '',
+      }),
+    );
+    component.ngOnInit();
+
+    expect(component.batch()).toBeTruthy();
+    expect(component.batch()!.comment).toBe('Kein Kommentar hinterlegt');
   });
 });
