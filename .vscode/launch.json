@@ -1,40 +1,36 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Python: Django",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/backend/src/manage.py",
-            "args": [
-                "runserver",
-                "--nothreading",
-                "--noreload",
-            ],
-            "django": true,
-            "justMyCode": true,
-            "envFile": "${workspaceFolder}/.devcontainer/.env"
-        },
-        {
-            "name": "NodeJS: Angular (test)",
-            "type": "chrome",
-            "request": "launch",
-            "preLaunchTask": "npm: test",
-            "url": "http://localhost:9876/debug.html",
-            "webRoot": "${workspaceFolder}/frontend",
-            "sourceMaps": true,
-        },
-        {
-            "name": "NodeJS: Angular",
-            "type": "chrome",
-            "request": "launch",
-            "preLaunchTask": "npm: start",
-            "url": "http://localhost:4200/",
-            "webRoot": "${workspaceFolder}/frontend",
-            "sourceMaps": true,
-        },
-    ]
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Django",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/src/manage.py",
+      "args": ["runserver", "--nothreading", "--noreload"],
+      "django": true,
+      "justMyCode": true,
+      "envFile": "${workspaceFolder}/.devcontainer/.env"
+    },
+    {
+      "name": "NodeJS: Angular (test)",
+      "type": "chrome",
+      "request": "launch",
+      "preLaunchTask": "npm: test",
+      "url": "http://localhost:9876/debug.html",
+      "webRoot": "${workspaceFolder}/frontend",
+      "sourceMaps": true
+    },
+    {
+      "name": "NodeJS: Angular",
+      "type": "chrome",
+      "request": "launch",
+      "preLaunchTask": "npm: start",
+      "url": "http://localhost:4200/",
+      "webRoot": "${workspaceFolder}/frontend",
+      "sourceMaps": true
+    }
+  ]
 }
