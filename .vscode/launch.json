@@ -9,7 +9,7 @@
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}/backend/src/manage.py",
-      "args": ["runserver", "--nothreading", "--noreload"],
+      "args": ["runserver", "--nothreading"],
       "django": true,
       "justMyCode": true,
       "envFile": "${workspaceFolder}/.devcontainer/.env"
