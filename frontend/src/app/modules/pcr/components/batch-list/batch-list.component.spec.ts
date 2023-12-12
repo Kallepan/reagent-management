@@ -23,11 +23,13 @@ describe('BatchListComponent', () => {
       'warnMessage',
       'infoMessage',
     ]);
-    pcrStateHandlerService = jasmine.createSpyObj('PCRStateHandlerService', [
-      'refreshData',
-      'searchBatch',
-      'setLastSearchTerm',
-    ]);
+    pcrStateHandlerService = jasmine.createSpyObj(
+      'PCRStateHandlerService',
+      ['refreshData', 'searchBatch', 'setLastSearchTerm'],
+      {
+        lastSearchTerm: null,
+      },
+    );
     activatedRoute = jasmine.createSpyObj('ActivatedRoute', ['']);
     router = jasmine.createSpyObj('Router', ['navigate']);
 
@@ -52,7 +54,15 @@ describe('BatchListComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('setLastSearchTerm should be called', () => {
+  it('setLastSearchTerm should not be called on invalid search', () => {
+    pcrStateHandlerService.searchBatch.and.returnValue(of([]));
+    const searchTerm = '';
+    component.searchReagents(searchTerm);
+    expect(pcrStateHandlerService.setLastSearchTerm).not.toHaveBeenCalled();
+  });
+
+  it('setLastSearchTerm should be called on valid search', () => {
+    pcrStateHandlerService.searchBatch.and.returnValue(of([DUMMY_BATCH]));
     const searchTerm = 'searchTerm';
     component.searchReagents(searchTerm);
     expect(pcrStateHandlerService.setLastSearchTerm).toHaveBeenCalledWith(

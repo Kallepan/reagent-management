@@ -62,16 +62,16 @@ export class BatchListComponent implements OnInit {
     this.pcrStateHandlerService
       .searchBatch(searchTerm)
       .pipe(
-        tap(() => {
-          // set last search term in pcrStateHandlerService
-          this.pcrStateHandlerService.setLastSearchTerm(searchTerm);
-        }),
         tap((batches) => {
           if (batches.length === 0) {
             this.notificationService.warnMessage(messages.PCR.NO_BATCHES_FOUND);
           }
         }),
         filter((batches) => batches.length > 0),
+        tap(() => {
+          // set last search term in pcrStateHandlerService
+          this.pcrStateHandlerService.setLastSearchTerm(searchTerm);
+        }),
         tap((batches) => {
           // Navigate to the first batch if there is only one
           if (batches.length === 1) {
