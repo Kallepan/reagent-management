@@ -2,15 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { constants } from '@app/core/constants/constants';
 import { CustomResponseType } from '@app/core/interfaces/response';
-import {
-  Observable,
-  catchError,
-  delay,
-  map,
-  merge,
-  of,
-  throwError,
-} from 'rxjs';
+import { Observable, catchError, map, merge, of, throwError } from 'rxjs';
 import { Batch, CreateBatch, CreateReagent } from '../interfaces/reagent';
 
 @Injectable({
@@ -45,7 +37,7 @@ export class BatchAPIService {
     return this.http.get<CustomResponseType>(url, httpOptions).pipe(
       map((resp) => {
         return resp.data as Batch;
-      })
+      }),
     );
   }
 
@@ -71,7 +63,7 @@ export class BatchAPIService {
     return this.http.get<CustomResponseType>(url, httpOptions).pipe(
       map((resp) => {
         return resp.data.results as Batch[];
-      })
+      }),
     );
   }
 
@@ -88,7 +80,28 @@ export class BatchAPIService {
     return this.http.post<CustomResponseType>(url, batchData, httpOptions).pipe(
       map((resp) => {
         return resp.data;
-      })
+      }),
+    );
+  }
+
+  updateBatchComment(batchID: string, comment: string): Observable<any> {
+    const url = `${constants.APIS.PCR.BASE}/batches/${batchID}/`;
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      withCredentials: true,
+    };
+
+    const data = {
+      comment: comment,
+    };
+
+    return this.http.patch<CustomResponseType>(url, data, httpOptions).pipe(
+      map((resp) => {
+        return resp.data;
+      }),
     );
   }
 
@@ -110,7 +123,7 @@ export class BatchAPIService {
         // ignore errors
         catchError((err) => {
           return of(null);
-        })
+        }),
       );
     });
 
@@ -134,7 +147,7 @@ export class BatchAPIService {
         if (err.status === 404) return of(false);
 
         return throwError(() => err);
-      })
+      }),
     );
   }
 }

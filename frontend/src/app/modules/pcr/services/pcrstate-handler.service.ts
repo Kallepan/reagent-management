@@ -100,9 +100,9 @@ export class PCRStateHandlerService {
 
         return this.batchAPIService.createReagents(reagentsWithBatchID).pipe(
           catchError((err) => throwError(() => err)),
-          map(() => batchId) // I only care about the id
+          map(() => batchId), // I only care about the id
         );
-      })
+      }),
     );
   }
 
@@ -121,13 +121,16 @@ export class PCRStateHandlerService {
   deleteBatch(batchId: string): Observable<any> {
     return this.batchAPIService.deleteBatch(batchId);
   }
+  updateBatchComment(batchId: string, comment: string): Observable<any> {
+    return this.batchAPIService.updateBatchComment(batchId, comment);
+  }
 
   // removal
   postRemoval(
     reagentID: string,
     createdBy: string,
     amount: number,
-    comment: string
+    comment: string,
   ): Observable<any> {
     const removal: CreateRemoval = {
       reagent_id: reagentID,

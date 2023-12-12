@@ -1,55 +1,89 @@
-
 <div class="container">
-    @defer(when batch()) {
+  @defer (when batch()) {
     @if (batch(); as batch) {
-        <div class="card-container">
-            <mat-card class="card">
-                <mat-card-header class="card-header">
-                    <mat-card-title>Identifikator: {{batch.id}}</mat-card-title>
-                    <mat-card-subtitle>Batch</mat-card-subtitle>
-                    <mat-card-subtitle>{{batch.device.name}}: {{batch.analysis.name}}-{{batch.kind.name}}</mat-card-subtitle>
-                </mat-card-header>
-                <mat-divider></mat-divider>
-                <mat-card-content class="card-multiple-content">
-                    <app-reagent-manage [reagents]="batch.reagents" (selectionChange)="handleReagentSelectionChange($event)" [activeReagent]="activeReagent()">
-                    </app-reagent-manage>
-                    <app-removal-manage [reagent]="activeReagent()" (onCreate)="handleRemovalCreation($event)"
-                    (onDelete)="handleRemovalDeletion($event)"></app-removal-manage>
-                </mat-card-content>
-                <mat-divider></mat-divider>
-                <mat-card-footer class="card-footer">
-                    Restmenge: {{batch.current_amount}}/{{batch.initial_amount}}
-                    @if (loading()) {
-                        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-                    }
-                </mat-card-footer>
-                <mat-card-actions class="card-actions">
-                    <button mat-raised-button (click)="deleteBatch()" color="warn">Löschen</button>
-                </mat-card-actions>
-            </mat-card>
-            <mat-expansion-panel class="card">
-                <mat-expansion-panel-header>
-                    <mat-panel-title>Weitere Reagenzien hinzufuegen</mat-panel-title>
-                </mat-expansion-panel-header>
-                <form action="none" [formGroup]="formGroup">
-                    <mat-form-field>
-                        <mat-label>Erstellt von</mat-label>
-                        <input type="text" matInput formControlName="createdBy" required>
-                        @if(formGroup.get('created_by')?.hasError('required')) {
-                            <mat-error>
-                                Dieses Feld ist erforderlich
-                            </mat-error>
-                        }
-                    </mat-form-field>
-                    <app-reagent-create controlKey="reagents" (onSubmit)="addReagents(batch)"></app-reagent-create>
-                </form>
-            </mat-expansion-panel>
-        </div>
+      <div class="card-container">
+        <mat-card class="card">
+          <mat-card-header class="card-header">
+            <mat-card-title>Identifikator: {{ batch.id }}</mat-card-title>
+            <mat-card-subtitle>Batch</mat-card-subtitle>
+            <mat-card-subtitle
+              >{{ batch.device.name }}: {{ batch.analysis.name }}-{{
+                batch.kind.name
+              }}</mat-card-subtitle
+            >
+          </mat-card-header>
+          <mat-divider></mat-divider>
+          <mat-card-content class="card-multiple-content">
+            <app-reagent-manage
+              [reagents]="batch.reagents"
+              (selectionChange)="handleReagentSelectionChange($event)"
+              [activeReagent]="activeReagent()"
+            >
+            </app-reagent-manage>
+            <app-removal-manage
+              [reagent]="activeReagent()"
+              (onCreate)="handleRemovalCreation($event)"
+              (onDelete)="handleRemovalDeletion($event)"
+            ></app-removal-manage>
+          </mat-card-content>
+          <mat-divider></mat-divider>
+          <mat-card-footer class="card-footer">
+            Restmenge: {{ batch.current_amount }}/{{ batch.initial_amount }}
+            @if (loading()) {
+              <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            }
+          </mat-card-footer>
+          <mat-divider></mat-divider>
+          <mat-card-footer class="card-footer">
+            <app-edit-textarea
+              [text]="batch.comment"
+              label="Kommentar"
+              hint="Kommentar bearbeiten"
+              (onSubmit)="updateBatchComment(batch.id, $event)"
+            ></app-edit-textarea>
+          </mat-card-footer>
+          <mat-card-actions class="card-actions">
+            <button
+              mat-raised-button
+              (click)="deleteBatch()"
+              color="warn"
+            >
+              Löschen
+            </button>
+          </mat-card-actions>
+        </mat-card>
+        <mat-expansion-panel class="card">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Weitere Reagenzien hinzufuegen</mat-panel-title>
+          </mat-expansion-panel-header>
+          <form
+            action="none"
+            [formGroup]="formGroup"
+          >
+            <mat-form-field>
+              <mat-label>Erstellt von</mat-label>
+              <input
+                type="text"
+                matInput
+                formControlName="createdBy"
+                required
+              />
+              @if (formGroup.get('created_by')?.hasError('required')) {
+                <mat-error> Dieses Feld ist erforderlich </mat-error>
+              }
+            </mat-form-field>
+            <app-reagent-create
+              controlKey="reagents"
+              (onSubmit)="addReagents(batch)"
+            ></app-reagent-create>
+          </form>
+        </mat-expansion-panel>
+      </div>
     } @else {
-    <!-- This should not be displayed as we are redirected before this is displayed, anyhow this is here just to be sure-->
-    <h1>Keine Batches gefunden</h1>
+      <!-- This should not be displayed as we are redirected before this is displayed, anyhow this is here just to be sure-->
+      <h1>Keine Batches gefunden</h1>
     }
-    } @placeholder {
+  } @placeholder {
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-    }
+  }
 </div>
