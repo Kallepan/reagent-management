@@ -155,4 +155,12 @@ export class PCRStateHandlerService {
   getLastSearchTerm() {
     return this.lastSearchTerm;
   }
+
+  // amounts
+  getDefaultAmountForBatch(
+    analysisID: string,
+    kindID: string,
+  ): Observable<number> {
+    return this.batchAPIService.getDefaultAmountForBatch(analysisID, kindID);
+  }
 }
