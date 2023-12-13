@@ -346,7 +346,7 @@ class AmountTest(TestCase):
         self.dummy_amount = Amount.objects.create(
             kind=self.kind,
             analysis=self.analysis,
-            amount=10,
+            value=10,
         )
 
     def test_get_amount(self):
@@ -356,7 +356,7 @@ class AmountTest(TestCase):
         url = f"/api/v1/pcr/amounts/{self.dummy_amount.id}/"
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["amount"], 10)
+        self.assertEqual(response.data["value"], 10)
 
     def test_filter_amount(self):
         """Ensure we can filter the amounts by kind and analysis"""
@@ -372,20 +372,22 @@ class AmountTest(TestCase):
         _ = Amount.objects.create(
             kind=other_kind,
             analysis=other_analysis,
-            amount=20,
+            value=20,
         )
 
         # check if all amounts are returned
         url = "/api/v1/pcr/amounts/"
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data["results"]), 2)
+        self.assertEqual(
+            len(response.data["results"]), 22
+        )  # 22 because of the initial amounts
 
         # check if only the amounts with the correct kind are returned
         url = f"/api/v1/pcr/amounts/?kind={self.kind.id}&analysis={self.analysis.id}"
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["results"][0]["amount"], 10)
+        self.assertEqual(response.data["results"][0]["value"], 10)
         self.assertEqual(len(response.data["results"]), 1)
         self.assertEqual(response.data["results"][0]["kind"], self.kind.id)
         self.assertEqual(response.data["results"][0]["analysis"], self.analysis.id)

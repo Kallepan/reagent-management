@@ -150,7 +150,7 @@ class Amount(models.Model):
     )
 
     # Set default to 4 because that is the most common amount.
-    amount = models.IntegerField(default=4, validators=[MinValueValidator(1)])
+    value = models.IntegerField(default=4, validators=[MinValueValidator(1)])
 
     class Meta:
         db_table = 'pcr"."amount'
@@ -163,4 +163,4 @@ class Amount(models.Model):
         index_together = ["kind", "analysis"]
 
     def __str__(self) -> str:
-        return f"{self.kind} - {self.analysis} ({self.amount})"
+        return f"{self.kind} - {self.analysis} ({self.value})"

@@ -225,4 +225,4 @@ class AmountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Amount
-        fields = ["id", "kind", "analysis", "amount"]
+        fields = ["id", "kind", "analysis", "value"]

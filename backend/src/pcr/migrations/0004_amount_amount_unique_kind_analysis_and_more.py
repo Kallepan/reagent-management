@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "amount",
+                    "value",
                     models.IntegerField(
                         default=4,
                         validators=[django.core.validators.MinValueValidator(1)],
