@@ -69,7 +69,7 @@ export class BatchCreateComponent implements OnInit {
   });
 
   reagentsFormGroup = this._formBuilder.group({
-    reagents: this._formBuilder.array([]) // TODO async validator
+    reagents: this._formBuilder.array([]) 
   });
 
   // pcrStateHandlerService keeps track of the state of the pcr module and all data necessary for the forms

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Kind, Analysis, Device, Batch, Reagent, Removal
+from .models import Kind, Analysis, Device, Batch, Reagent, Removal, Amount
 
 from django.db.models import Sum
 
@@ -216,3 +216,13 @@ class BatchSerializer(serializers.ModelSerializer):
         )
 
         return batch
+
+
+class AmountSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Amount model.
+    """
+
+    class Meta:
+        model = Amount
+        fields = ["id", "kind", "analysis", "amount"]

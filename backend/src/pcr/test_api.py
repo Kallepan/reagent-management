@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework.test import APIClient
 
-from .models import Reagent, Batch, Kind, Analysis, Device, Removal
+from .models import Reagent, Batch, Kind, Analysis, Device, Removal, Amount
 
 User = get_user_model()
 
@@ -323,3 +323,70 @@ class ReagentAPITest(TestCase):
 
         removal.delete()
         self.assertEqual(reagent.is_empty, False)
+
+
+class AmountTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(
+            identifier="testuser", password="testpass", email="test@example.com"
+        )
+        self.user.groups.create(name="PCR")
+
+        self.client.force_authenticate(user=self.user)
+
+        self.kind = Kind.objects.create(
+            name="Kontrolle",
+        )
+
+        self.analysis = Analysis.objects.create(
+            name="ANA1",
+        )
+
+        self.dummy_amount = Amount.objects.create(
+            kind=self.kind,
+            analysis=self.analysis,
+            amount=10,
+        )
+
+    def test_get_amount(self):
+        """
+        Ensure we can get an amount.
+        """
+        url = f"/api/v1/pcr/amounts/{self.dummy_amount.id}/"
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["amount"], 10)
+
+    def test_filter_amount(self):
+        """Ensure we can filter the amounts by kind and analysis"""
+        # create another amount
+        other_kind = Kind.objects.create(
+            name="Standard",
+        )
+
+        other_analysis = Analysis.objects.create(
+            name="ANA2",
+        )
+
+        _ = Amount.objects.create(
+            kind=other_kind,
+            analysis=other_analysis,
+            amount=20,
+        )
+
+        # check if all amounts are returned
+        url = "/api/v1/pcr/amounts/"
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data["results"]), 2)
+
+        # check if only the amounts with the correct kind are returned
+        url = f"/api/v1/pcr/amounts/?kind={self.kind.id}&analysis={self.analysis.id}"
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["results"][0]["amount"], 10)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["kind"], self.kind.id)
+        self.assertEqual(response.data["results"][0]["analysis"], self.analysis.id)
+        self.assertEqual(response.data["results"][0]["id"], str(self.dummy_amount.id))
