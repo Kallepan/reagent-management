@@ -52,4 +52,24 @@ describe('BatchAPIService', () => {
       },
     });
   });
+
+  it('getDefaultAmountForBatch should return 1 if no defaultAmounts could be found in the backend', () => {
+    const analysisID = '1';
+    const kindID = '1';
+
+    service.getDefaultAmountForBatch(analysisID, kindID).subscribe((res) => {
+      expect(res).toEqual(0);
+    });
+
+    const req = httpMock.expectOne(
+      `http://localhost:8000/api/v1/pcr/amounts/?analysis=${analysisID}&kind=${kindID}`,
+    );
+
+    expect(req.request.method).toBe('GET');
+    req.flush({
+      data: {
+        results: [],
+      },
+    });
+  });
 });

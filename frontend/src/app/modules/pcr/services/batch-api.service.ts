@@ -173,8 +173,11 @@ export class BatchAPIService {
     return this.http.get<CustomResponseType>(url, httpOptions).pipe(
       map((resp) => resp.data),
       map((data) => data.results),
-      map((data) => data[0]),
-      map((data) => data.value),
+      map((data) => {
+        if (data.length === 0) return 1;
+
+        return data[0].value;
+      }),
     );
   }
 }
