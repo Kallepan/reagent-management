@@ -78,14 +78,14 @@ export class BatchCreateComponent implements OnInit {
   private readonly _formBuilder = inject(FormBuilder);
   groupForm = this._formBuilder.group({
     device: [
-      '',
+      null as Device | null,
       [Validators.required, Validators.minLength(3), Validators.maxLength(5)],
     ],
     analysis: [
-      null,
+      null as Analysis | null,
       [Validators.required, Validators.minLength(3), Validators.maxLength(5)],
     ],
-    kind: [null, [Validators.required, Validators.minLength(3)]],
+    kind: [null as Kind | null, [Validators.required, Validators.minLength(3)]],
     amount: [1, [Validators.required, Validators.min(1)]],
     comment: ['', [Validators.maxLength(255)]],
     created_by: [
@@ -195,10 +195,9 @@ export class BatchCreateComponent implements OnInit {
           return value.kind !== null && value.analysis !== null;
         }),
         switchMap((value) =>
-          this._pcrStateHandlerService.getDefaultAmountForBatch(
-            value.analysis.id,
-            value.kind.id,
-          ).pipe(catchError((err) => throwError(() => err))),
+          this._pcrStateHandlerService
+            .getDefaultAmountForBatch(value.analysis.id, value.kind.id)
+            .pipe(catchError((err) => throwError(() => err))),
         ),
         catchError(() => of(1)),
       )
