@@ -165,4 +165,45 @@ describe('ReagentCreateComponent', () => {
       dummyForm.reset(null, { emitEvent: false });
     });
   });
+
+  it('reagentForm should handle multiple valid reagents input', () => {
+    batchAPIService.checkIfReagentExists.and.returnValue(of(false));
+
+    // set value of initially created form, we need to do this
+    const control = component.getReagent(0);
+    control.controls['id'].setValue('RTS000ING|U0000-000|000000|000000000', {
+      emitEvent: true,
+    });
+
+    const strings = [
+      'RTS000ING|U0000-000|000000|000000001',
+      'STD015PLD-5|U1222-017|241130|220020887',
+      'RTS150ING|U0623-017|250131|230626882',
+    ];
+
+    // add formControls
+    strings.forEach((input) => {
+      component.addReagentForm();
+      const reagent = component.getReagent(component.reagents.length - 1);
+      reagent.controls['id'].setValue(input, { emitEvent: true });
+    });
+
+    // check if all forms are disabled
+    expect(component.reagents.valid).toBeFalse();
+    component.reagents.controls.forEach((control) => {
+      expect(control.disabled).toBeTrue();
+    });
+
+    // try to submit form
+    const spy = spyOn(component.onSubmit, 'emit');
+    fixture.detectChanges();
+
+    // click submit button
+    const submitButton =
+      fixture.debugElement.nativeElement.querySelector('.submit-button');
+    submitButton.click();
+
+    // check if submit event was emitted
+    expect(spy).toHaveBeenCalled();
+  });
 });
