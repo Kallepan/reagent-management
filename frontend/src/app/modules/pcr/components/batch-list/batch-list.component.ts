@@ -10,7 +10,7 @@ import { NotificationService } from '@app/core/services/notification.service';
 import { ChoiceDialogComponent } from '@app/shared/components/choice-dialog/choice-dialog.component';
 import { DataTableComponent } from '@app/shared/components/data-table/data-table.component';
 import { SearchBarComponent } from '@app/shared/components/search-bar/search-bar.component';
-import { debounceTime, filter, map, switchMap, tap } from 'rxjs';
+import { filter, map, switchMap, tap } from 'rxjs';
 import { cleanQuery } from '../../functions/query-cleaner.function';
 import { Batch } from '../../interfaces/reagent';
 import { PCRStateHandlerService } from '../../services/pcrstate-handler.service';
@@ -36,18 +36,17 @@ export class BatchListComponent implements OnInit {
 
   // Search stuff
   filterControl = new FormControl('');
-  filter$ = this.filterControl.valueChanges.pipe(
-    takeUntilDestroyed(),
-    filter((contents): contents is string => typeof contents === 'string'),
-    debounceTime(200),
-    map((query) => cleanQuery(query)),
-  );
-
   ngOnInit(): void {
     // Subscribe to filter changes and update the query parameter
-    this.filter$.subscribe((query) =>
-      this.filterControl.patchValue(query, { emitEvent: false }),
-    );
+    this.filterControl.valueChanges
+      .pipe(
+        takeUntilDestroyed(),
+        filter((contents): contents is string => typeof contents === 'string'),
+        map((query) => cleanQuery(query)),
+      )
+      .subscribe((query) =>
+        this.filterControl.patchValue(query, { emitEvent: false }),
+      );
   }
 
   // State stuff
