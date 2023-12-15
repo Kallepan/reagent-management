@@ -4,12 +4,13 @@ import {
   MatChipSelectionChange,
   MatChipsModule,
 } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Reagent } from '../../interfaces/reagent';
 
 @Component({
   selector: 'app-reagent-manage',
   standalone: true,
-  imports: [CommonModule, MatChipsModule],
+  imports: [CommonModule, MatChipsModule, MatTooltipModule],
   templateUrl: './reagent-manage.component.html',
   styleUrl: './reagent-manage.component.scss',
 })

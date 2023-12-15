@@ -4,7 +4,8 @@
       <div class="card-container">
         <mat-card class="card">
           <mat-card-header class="card-header">
-            <mat-card-title>Identifikator: {{ batch.id }}</mat-card-title>
+            <mat-card-title> Identifikator: {{ batch.id }} </mat-card-title>
+
             <mat-card-subtitle>Batch</mat-card-subtitle>
             <mat-card-subtitle
               >{{ batch.device.name }}: {{ batch.analysis.name }}-{{
@@ -29,9 +30,20 @@
           </mat-card-content>
           <mat-divider></mat-divider>
           <mat-card-footer class="card-footer">
-            Restmenge: {{ batch.current_amount }}/{{ batch.initial_amount }}
             @if (loading()) {
               <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            } @else {
+              Restmenge: {{ batch.current_amount }}/{{ batch.initial_amount }}
+
+              @if (batch.first_opened_at !== null) {
+                <span class="info">
+                  Kontrolle gelaufen am:
+                  {{ batch.first_opened_at | date: 'dd.MM.yyyy' }},
+                  {{ batch.first_opened_by }}
+                </span>
+              } @else {
+                Kontrolle <strong>NICHT</strong> gelaufen.
+              }
             }
           </mat-card-footer>
           <mat-divider></mat-divider>

@@ -23,6 +23,9 @@ export interface Batch extends CreationType {
   initial_amount: number;
   current_amount: number;
 
+  first_opened_at: Date | null;
+  first_opened_by: string | null;
+
   comment: string;
 
   reagents: Reagent[];

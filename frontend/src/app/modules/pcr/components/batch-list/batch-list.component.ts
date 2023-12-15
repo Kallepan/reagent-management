@@ -116,7 +116,13 @@ export class BatchListComponent implements OnInit {
 
   protected _getFormattingString(batch: Batch): string {
     return `${batch.kind.name}: ${batch.reagents
-      .map((reagent) => reagent.id.split('|').pop() ?? 'NA')
-      .join(', ')}`;
+      .map((reagent) => {
+        const subParts = reagent.id.split('|');
+
+        if (!subParts.length) return 'NA';
+
+        return subParts[1];
+      })
+      .join(', ')} (${batch.current_amount}/${batch.current_amount})`;
   }
 }

@@ -140,6 +140,6 @@ describe('BatchListComponent', () => {
 
   it('test get formatting string', () => {
     const formattingString = component['_getFormattingString'](DUMMY_BATCH);
-    expect(formattingString).toEqual('Standard: 230626882, 230626883');
+    expect(formattingString).toEqual('Standard: U0623-017, U0623-017 (1/1)');
   });
 });
