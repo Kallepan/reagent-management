@@ -123,6 +123,6 @@ export class BatchListComponent implements OnInit {
 
         return subParts[1];
       })
-      .join(', ')} (${batch.current_amount}/${batch.current_amount})`;
+      .join(', ')} (${batch.current_amount}/${batch.initial_amount})`;
   }
 }
