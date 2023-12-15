@@ -175,8 +175,10 @@ class BatchSerializer(serializers.ModelSerializer):
             "created_at",
             "created_by",
             "reagents",
+            "first_opened_at",
+            "first_opened_by",
         ]
-        read_only_fields = ["id", "created_at"]
+        read_only_fields = ["id", "created_at", "first_opened_at", "first_opened_by"]
 
     def get_initial_amount(self, obj):
         # get the initial amount by summing up all reagents

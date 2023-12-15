@@ -27,6 +27,100 @@ class BatchAPITest(TestCase):
             name="Device 1",
         )
 
+    def test_batch_first_opened_at_by(self):
+        """
+        This test checks taht first opened by and opened at are automatically filled after the first Removal creation of a reagent of a Batch
+        """
+        batch = Batch.objects.create(
+            kind=self.kind,
+            analysis=self.analysis,
+            device=self.device,
+            created_by="Test User",
+        )
+
+        reagent = Reagent.objects.create(
+            id="Reagent 1",
+            initial_amount=10,
+            batch=batch,
+            created_by="Test User",
+        )
+
+        # check if first_opened_at and first_opened_by are None
+        batch = Batch.objects.get(id=batch.id)
+        self.assertEqual(batch.first_opened_at, None)
+        self.assertEqual(batch.first_opened_by, None)
+
+        # create a removal
+        removal = Removal.objects.create(
+            reagent=reagent,
+            amount=10,
+            created_by="Test User",
+        )
+        removal.save()
+
+        # check if first_opened_at and first_opened_by are set
+        batch = Batch.objects.get(id=batch.id)
+        self.assertNotEqual(batch.first_opened_at, None)
+        self.assertNotEqual(batch.first_opened_by, None)
+
+    def test_batch_first_opened_at_by_with_multiple_reagents(self):
+        """
+        This test checks that first opened by and opened at are automatically filled after the first Removal creation of a reagent of a Batch
+        """
+        batch = Batch.objects.create(
+            kind=self.kind,
+            analysis=self.analysis,
+            device=self.device,
+            created_by="Test User",
+        )
+
+        reagent1 = Reagent.objects.create(
+            id="Reagent 1",
+            initial_amount=10,
+            batch=batch,
+            created_by="Test User",
+        )
+        reagent2 = Reagent.objects.create(
+            id="Reagent 2",
+            initial_amount=10,
+            batch=batch,
+            created_by="Test User",
+        )
+
+        # check if first_opened_at and first_opened_by are None
+        batch = Batch.objects.get(id=batch.id)
+        self.assertEqual(batch.first_opened_at, None)
+        self.assertEqual(batch.first_opened_by, None)
+
+        # create a removal
+        removal = Removal.objects.create(
+            reagent=reagent1,
+            amount=10,
+            created_by="Test User",
+        )
+        removal.save()
+
+        # check if first_opened_at and first_opened_by are set
+        batch = Batch.objects.get(id=batch.id)
+        self.assertNotEqual(batch.first_opened_at, None)
+        self.assertNotEqual(batch.first_opened_by, None)
+        # store the first_opened_at and first_opened_by
+        first_opened_at = batch.first_opened_at
+        first_opened_by = batch.first_opened_by
+
+        # create a removal
+        removal = Removal.objects.create(
+            reagent=reagent2,
+            amount=10,
+            created_by="Test User",
+        )
+        removal.save()
+
+        # check if first_opened_at and first_opened_by have not changed
+        batch = Batch.objects.get(id=batch.id)
+        self.assertEqual(batch.first_opened_at, first_opened_at)
+        self.assertEqual(batch.first_opened_by, first_opened_by)
+
     def test_batch_update(self):
         """
         Ensure we can update a batch object.
