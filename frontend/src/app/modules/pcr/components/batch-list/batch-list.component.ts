@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,6 +31,8 @@ import { PCRStateHandlerService } from '../../services/pcrstate-handler.service'
   styleUrl: './batch-list.component.scss',
 })
 export class BatchListComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+
   private router = inject(Router);
   dialog = inject(MatDialog);
 
@@ -40,7 +42,7 @@ export class BatchListComponent implements OnInit {
     // Subscribe to filter changes and update the query parameter
     this.filterControl.valueChanges
       .pipe(
-        takeUntilDestroyed(),
+        takeUntilDestroyed(this.destroyRef),
         filter((contents): contents is string => typeof contents === 'string'),
         map((query) => cleanQuery(query)),
       )
