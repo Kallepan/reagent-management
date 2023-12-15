@@ -1,9 +1,18 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HarnessLoader } from '@angular/cdk/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import {
+  ComponentFixture,
+  DeferBlockState,
+  TestBed,
+} from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
+import { MatCardHarness } from '@angular/material/card/testing';
 import { MatChipSelectionChange } from '@angular/material/chips';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from '@app/core/services/notification.service';
 import { of } from 'rxjs';
+import { BatchAPIService } from '../../services/batch-api.service';
 import { PCRStateHandlerService } from '../../services/pcrstate-handler.service';
 import { DUMMY_BATCH } from '../../tests/constants';
 import { BatchManageComponent } from './batch-manage.component';
@@ -13,8 +22,11 @@ describe('BatchManageComponent', () => {
   let fixture: ComponentFixture<BatchManageComponent>;
   let activatedRoute: jasmine.SpyObj<ActivatedRoute>;
   let pcrStateHandlerService: jasmine.SpyObj<PCRStateHandlerService>;
+  let batchAPIService: jasmine.SpyObj<BatchAPIService>;
+
   let notificationService: jasmine.SpyObj<NotificationService>;
   let router: jasmine.SpyObj<Router>;
+  let loader: HarnessLoader;
 
   beforeEach(async () => {
     // Mock the router
@@ -49,14 +61,17 @@ describe('BatchManageComponent', () => {
       imports: [BatchManageComponent, MatCardModule],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
+        { provide: BatchAPIService, useValue: batchAPIService },
         { provide: PCRStateHandlerService, useValue: pcrStateHandlerService },
         { provide: NotificationService, useValue: notificationService },
         { provide: Router, useValue: router },
+        provideNoopAnimations(),
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BatchManageComponent);
     component = fixture.componentInstance;
+    loader = TestbedHarnessEnvironment.loader(fixture);
     fixture.detectChanges();
   });
 
@@ -219,5 +234,32 @@ describe('BatchManageComponent', () => {
 
     expect(component.batch()).toBeTruthy();
     expect(component.batch()!.comment).toBe('Kein Kommentar hinterlegt');
+  });
+
+  it('should display batch.first_opened_at and by if first_opened_at is not null', async () => {
+    pcrStateHandlerService.getBatch.and.returnValue(
+      of({
+        ...DUMMY_BATCH,
+        first_opened_at: new Date(),
+        first_opened_by: 'test',
+      }),
+    );
+    component.ngOnInit();
+    component.loading.set(false);
+    fixture.detectChanges();
+
+    // wait for the defer block to be rendered
+    const deferBlockFixture = (await fixture.getDeferBlocks())[0];
+    await deferBlockFixture.render(DeferBlockState.Complete);
+
+    expect(component.batch()).toBeTruthy();
+    expect(component.batch()!.first_opened_at).toBeTruthy();
+    expect(component.batch()!.first_opened_by).toBeTruthy();
+
+    // fetch CardHarness
+    const card = await loader.getHarness(MatCardHarness);
+
+    // check if the text is displayed
+    expect(await card.getText()).toContain('Kontrolle gelaufen');
   });
 });
