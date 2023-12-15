@@ -2,6 +2,8 @@ from typing import Any
 from django.db import models
 from django.core.validators import MinValueValidator
 
+from datetime import datetime
+
 import uuid
 
 
@@ -134,10 +136,9 @@ class Removal(models.Model):
     def save(self, *args, **kwargs):
         # If this is the first removal of a batch then set the first_opened_at and first_opened_by fields.
         if self.reagent.batch.first_opened_at is None:
-            self.reagent.batch.first_opened_at = self.created_at
+            self.reagent.batch.first_opened_at = datetime.now()
             self.reagent.batch.first_opened_by = self.created_by
             self.reagent.batch.save()
-
 
         # Automatically sets the is_empty field to True if the reagent is empty.
         if self.reagent.current_amount == self.amount:
