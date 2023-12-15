@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Kind, Analysis, Device, Batch, Reagent, Removal
+from .models import Kind, Analysis, Device, Batch, Reagent, Removal, Amount
 
 from django.db.models import Sum
 
@@ -175,8 +175,10 @@ class BatchSerializer(serializers.ModelSerializer):
             "created_at",
             "created_by",
             "reagents",
+            "first_opened_at",
+            "first_opened_by",
         ]
-        read_only_fields = ["id", "created_at"]
+        read_only_fields = ["id", "created_at", "first_opened_at", "first_opened_by"]
 
     def get_initial_amount(self, obj):
         # get the initial amount by summing up all reagents
@@ -216,3 +218,13 @@ class BatchSerializer(serializers.ModelSerializer):
         )
 
         return batch
+
+
+class AmountSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Amount model.
+    """
+
+    class Meta:
+        model = Amount
+        fields = ["id", "kind", "analysis", "value"]

@@ -41,6 +41,9 @@ export const DUMMY_BATCH: Batch = {
     name: 'InGe1',
   },
 
+  first_opened_at: new Date(),
+  first_opened_by: 'test',
+
   created_at: new Date(),
   created_by: '1',
   initial_amount: 3,

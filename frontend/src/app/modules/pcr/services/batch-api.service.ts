@@ -150,4 +150,34 @@ export class BatchAPIService {
       }),
     );
   }
+
+  getDefaultAmountForBatch(
+    analysisID: string,
+    kindID: string,
+  ): Observable<number> {
+    const url = `${constants.APIS.PCR.BASE}/amounts/`;
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      params: new HttpParams({
+        fromObject: {
+          analysis: analysisID,
+          kind: kindID,
+        },
+      }),
+      withCredentials: true,
+    };
+
+    return this.http.get<CustomResponseType>(url, httpOptions).pipe(
+      map((resp) => resp.data),
+      map((data) => data.results),
+      map((data) => {
+        if (data.length === 0) return 1;
+
+        return data[0].value;
+      }),
+    );
+  }
 }

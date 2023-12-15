@@ -75,7 +75,7 @@ export class PCRStateHandlerService {
   }
 
   // reagents
-  createReagents(groupData: any, reagents: { id: string }[]): Observable<any> {
+  createReagents(groupData: any, reagentIDs: {id: string}[]): Observable<any> {
     const newBatch: CreateBatch = {
       kind_id: groupData.kind.id,
       device_id: groupData.device.id,
@@ -88,7 +88,7 @@ export class PCRStateHandlerService {
     return this.batchAPIService.createBatch(newBatch).pipe(
       switchMap((batch) => {
         const batchId = batch.id;
-        const reagentsWithBatchID = reagents.map((reagent: any) => {
+        const reagentsWithBatchID = reagentIDs.map((reagent: any) => {
           const newReagent: CreateReagent = {
             batch_id: batchId,
             id: reagent.id,
@@ -154,5 +154,13 @@ export class PCRStateHandlerService {
   }
   getLastSearchTerm() {
     return this.lastSearchTerm;
+  }
+
+  // amounts
+  getDefaultAmountForBatch(
+    analysisID: string,
+    kindID: string,
+  ): Observable<number> {
+    return this.batchAPIService.getDefaultAmountForBatch(analysisID, kindID);
   }
 }

@@ -12,10 +12,10 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   ControlContainer,
+  FormArray,
   FormBuilder,
   ReactiveFormsModule,
   Validators,
-  type FormArray,
   type FormGroup,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,7 +26,7 @@ import { constants } from '@app/core/constants/constants';
 import { cleanQuery } from '@app/modules/pcr/functions/query-cleaner.function';
 import { BatchAPIService } from '@app/modules/pcr/services/batch-api.service';
 import { createValidator } from '@app/modules/pcr/validators/reagent-validator';
-import { debounceTime, filter, map, tap } from 'rxjs';
+import { debounceTime, filter, map } from 'rxjs';
 
 @Component({
   selector: 'app-reagent-create',
@@ -68,12 +68,11 @@ export class ReagentCreateComponent implements OnInit, OnDestroy {
   get parentFormGroup(): FormGroup {
     return this.parentContainer.control as FormGroup;
   }
-
-  get reagents(): FormArray<FormGroup> {
-    return this.parentFormGroup.get(this.controlKey) as FormArray;
+  get reagentControls(): FormArray {
+    return this.parentFormGroup.controls[this.controlKey] as FormArray;
   }
 
-  addReagentForm(): void {
+  addReagentFormGroup(): void {
     const reagentForm = this._formBuilder.group({
       id: [
         '',
@@ -91,37 +90,44 @@ export class ReagentCreateComponent implements OnInit, OnDestroy {
         map((value) => {
           return { id: cleanQuery(value.id) };
         }),
-        tap((value) => {
-          reagentForm.patchValue(value, { emitEvent: false });
-        }),
       )
-      .subscribe(() => {
-        // Do nothing
+      .subscribe((value) => {
+        reagentForm.patchValue(value, { emitEvent: false });
       });
 
-    this.reagents.push(reagentForm);
+    (this.parentFormGroup.controls[this.controlKey] as FormArray).push(
+      reagentForm,
+    );
   }
 
-  getReagent(index: number): FormGroup {
-    return this.reagents.at(index);
+  getReagentFormGroup(index: number): FormGroup {
+    return (this.parentFormGroup.controls[this.controlKey] as FormArray).at(
+      index,
+    ) as FormGroup;
   }
 
-  removeReagentForm(index: number): void {
-    this.reagents.removeAt(index);
+  removeReagentFormGroup(index: number): void {
+    (this.parentFormGroup.controls[this.controlKey] as FormArray).removeAt(
+      index,
+    );
   }
 
   isDisabled(): boolean {
     // should return true if none of the reagents are disabled
-    return !this.reagents.controls.every((reagent) => reagent.disabled);
+    return !(
+      this.parentFormGroup.controls[this.controlKey] as FormArray
+    ).controls.every((reagent) => reagent.disabled);
   }
 
   ngOnInit(): void {
     // Add a default reagent form
-    this.addReagentForm();
+    this.addReagentFormGroup();
   }
 
   ngOnDestroy(): void {
     // clean the reagents array
-    this.reagents.clear({ emitEvent: false });
+    (this.parentFormGroup.controls[this.controlKey] as FormArray).clear({
+      emitEvent: false,
+    });
   }
 }

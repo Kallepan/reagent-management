@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 services:
   app:
@@ -20,8 +20,3 @@ services:
     env_file:
       - .env
     restart: always
-    volumes:
-      - db-data:/var/lib/postgresql/data
-
-volumes:
-  db-data:
