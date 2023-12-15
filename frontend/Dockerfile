@@ -2,11 +2,11 @@ FROM node:18-alpine as builder
 
 WORKDIR /app
 
-COPY ./package.json ./package-lock.json ./angular.json ./
-RUN npm install
+COPY ./package.json ./yarn.lock ./angular.json ./
+RUN yarn install
 
 COPY . .
-RUN npm run build --configuration=production
+RUN yarn run build --configuration=production
 
 FROM nginx:alpine
 
