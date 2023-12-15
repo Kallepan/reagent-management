@@ -255,12 +255,15 @@ export class BatchCreateComponent implements OnInit {
         filter((result) => result?.id !== undefined),
         map((result) => result?.id ?? 'ABORT'),
         filter((choice) => choice === 'OK'),
-        switchMap(() =>
+        map(() => ({
+          batch: this.groupForm.value,
+          reagents: this.reagentsFormGroup.controls['reagents'].controls.map(
+            (control) => control.value as { id: string },
+          ),
+        })),
+        switchMap((data) =>
           this._pcrStateHandlerService
-            .createReagents(
-              this.groupForm.value,
-              this.reagentsFormGroup.value.reagents as Array<{ id: string }>,
-            )
+            .createReagents(data.batch, data.reagents)
             .pipe(catchError((err) => throwError(() => err))),
         ),
         switchMap((batchID) =>

@@ -57,25 +57,33 @@ describe('ReagentCreateComponent', () => {
   });
 
   it('should add reagent', () => {
-    component.addReagentForm();
+    const formArray = component.parentFormGroup.controls[
+      component.controlKey
+    ] as FormArray;
+
+    component.addReagentFormGroup();
     // one form is added by default
-    expect(component.reagents.length).toBe(2);
+    expect(formArray.length).toBe(2);
   });
 
   it('should remove reagent', () => {
-    component.addReagentForm();
-    component.removeReagentForm(0);
+    const formArray = component.parentFormGroup.controls[
+      component.controlKey
+    ] as FormArray;
+
+    component.addReagentFormGroup();
+    component.removeReagentFormGroup(0);
 
     // one form is added by default
-    expect(component.reagents.length).toBe(1);
+    expect(formArray.length).toBe(1);
   });
 
   it('addButton should call addReagentForm', () => {
-    spyOn(component, 'addReagentForm');
+    spyOn(component, 'addReagentFormGroup');
     const addButton =
       fixture.debugElement.nativeElement.querySelector('.add-button');
     addButton.click();
-    expect(component.addReagentForm).toHaveBeenCalled();
+    expect(component.addReagentFormGroup).toHaveBeenCalled();
   });
 
   it('submitButton should call submitEventEmitter', () => {
@@ -84,21 +92,24 @@ describe('ReagentCreateComponent', () => {
       fixture.debugElement.nativeElement.querySelector('.submit-button');
 
     // Set form to disabled
-    component.reagents.controls[0].disable({ emitEvent: false });
+    const formArray = component.parentFormGroup.controls[
+      component.controlKey
+    ] as FormArray;
+    formArray.controls[0].disable({ emitEvent: false });
     fixture.detectChanges();
 
-    expect(component.reagents.controls[0].disabled).toBeTrue();
+    expect(formArray.controls[0].disabled).toBeTrue();
 
     submitButton.click();
     expect(component.onSubmit.emit).toHaveBeenCalled();
   });
 
   it('removeButton should call removeReagentForm', () => {
-    spyOn(component, 'removeReagentForm');
+    spyOn(component, 'removeReagentFormGroup');
     const removeButton =
       fixture.debugElement.nativeElement.querySelector('.remove-button');
     removeButton.click();
-    expect(component.removeReagentForm).toHaveBeenCalled();
+    expect(component.removeReagentFormGroup).toHaveBeenCalled();
   });
 
   it('form should not be disabled if async validation is pending or fails', () => {
@@ -106,7 +117,7 @@ describe('ReagentCreateComponent', () => {
     batchAPIService.checkIfReagentExists.and.returnValue(of(true));
 
     // add form and reagent
-    const reagent = component.getReagent(0);
+    const reagent = component.getReagentFormGroup(0);
 
     // set value via html input
     reagent.controls['id'].setValue(input, { emitEvent: true });
@@ -121,7 +132,7 @@ describe('ReagentCreateComponent', () => {
     batchAPIService.checkIfReagentExists.and.returnValue(of(false));
 
     // add form and reagent
-    const reagent = component.getReagent(0);
+    const reagent = component.getReagentFormGroup(0);
 
     // set value via html input
     reagent.controls['id'].setValue(input, { emitEvent: true });
@@ -142,9 +153,12 @@ describe('ReagentCreateComponent', () => {
     inputElement.value = input;
     inputElement.dispatchEvent(new Event('input'));
 
-    expect(component.reagents.controls[0].valid).toBeFalse();
-    expect(component.reagents.controls[0].value).toEqual({ id: input });
-    expect(component.reagents.controls[0].disabled).toBeFalse();
+    const formArray = component.parentFormGroup.controls[
+      component.controlKey
+    ] as FormArray;
+    expect(formArray.controls[0].valid).toBeFalse();
+    expect(formArray.controls[0].value).toEqual({ id: input });
+    expect(formArray.controls[0].disabled).toBeFalse();
   });
 
   it('reagentForm should validate input', () => {
@@ -170,7 +184,7 @@ describe('ReagentCreateComponent', () => {
     batchAPIService.checkIfReagentExists.and.returnValue(of(false));
 
     // set value of initially created form, we need to do this
-    const control = component.getReagent(0);
+    const control = component.getReagentFormGroup(0);
     control.controls['id'].setValue('RTS000ING|U0000-000|000000|000000000', {
       emitEvent: true,
     });
@@ -182,15 +196,18 @@ describe('ReagentCreateComponent', () => {
     ];
 
     // add formControls
+    const formArray = component.parentFormGroup.controls[
+      component.controlKey
+    ] as FormArray;
     strings.forEach((input) => {
-      component.addReagentForm();
-      const reagent = component.getReagent(component.reagents.length - 1);
+      component.addReagentFormGroup();
+      const reagent = component.getReagentFormGroup(formArray.length - 1);
       reagent.controls['id'].setValue(input, { emitEvent: true });
     });
 
     // check if all forms are disabled
-    expect(component.reagents.valid).toBeFalse();
-    component.reagents.controls.forEach((control) => {
+    expect(formArray.valid).toBeFalse();
+    formArray.controls.forEach((control) => {
       expect(control.disabled).toBeTrue();
     });
 
