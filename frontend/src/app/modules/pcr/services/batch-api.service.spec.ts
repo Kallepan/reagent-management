@@ -58,7 +58,7 @@ describe('BatchAPIService', () => {
     const kindID = '1';
 
     service.getDefaultAmountForBatch(analysisID, kindID).subscribe((res) => {
-      expect(res).toEqual(0);
+      expect(res).toEqual(1);
     });
 
     const req = httpMock.expectOne(
