@@ -3,7 +3,16 @@ from django.contrib.auth import get_user_model
 
 from rest_framework.test import APIClient
 
-from .models import Reagent, Batch, Kind, Analysis, Device, Removal, Amount
+from .models import (
+    Reagent,
+    Batch,
+    Kind,
+    Analysis,
+    Device,
+    Removal,
+    Amount,
+    RecRemovalCounts,
+)
 
 User = get_user_model()
 
@@ -486,3 +495,72 @@ class AmountTest(TestCase):
         self.assertEqual(response.data["results"][0]["kind"], self.kind.id)
         self.assertEqual(response.data["results"][0]["analysis"], self.analysis.id)
         self.assertEqual(response.data["results"][0]["id"], str(self.dummy_amount.id))
+
+
+class RecRemovalCountsTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(
+            identifier="testuser", password="testpass", email="test@example.com"
+        )
+        self.user.groups.create(name="PCR")
+
+        self.client.force_authenticate(user=self.user)
+
+        self.kind = Kind.objects.create(
+            name="Kontrolle",
+        )
+
+        self.analysis = Analysis.objects.create(
+            name="ANA1",
+        )
+
+        self.dummy_rec_removal_count = RecRemovalCounts.objects.create(
+            kind=self.kind,
+            analysis=self.analysis,
+            value=10,
+        )
+
+    def test_get_rec_removal_count(self):
+        """
+        Ensure we can get an rec_removal_count.
+        """
+        url = f"/api/v1/pcr/recommended_removals/{self.dummy_rec_removal_count.id}/"
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["value"], 10)
+
+    def test_filter_rec_removal_count(self):
+        """Ensure we can filter the recommended_removals by kind and analysis"""
+        # create another rec_removal_count
+        other_kind = Kind.objects.create(
+            name="Standard",
+        )
+
+        other_analysis = Analysis.objects.create(
+            name="ANA2",
+        )
+
+        _ = RecRemovalCounts.objects.create(
+            kind=other_kind,
+            analysis=other_analysis,
+            value=20,
+        )
+
+        # check if all recommended_removals are returned
+        url = "/api/v1/pcr/recommended_removals/"
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data["results"]), 2)
+
+        # check if only the recommended_removals with the correct kind are returned
+        url = f"/api/v1/pcr/recommended_removals/?kind={self.kind.id}&analysis={self.analysis.id}"
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["results"][0]["value"], 10)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["kind"], self.kind.id)
+        self.assertEqual(response.data["results"][0]["analysis"], self.analysis.id)
+        self.assertEqual(
+            response.data["results"][0]["id"], str(self.dummy_rec_removal_count.id)
+        )

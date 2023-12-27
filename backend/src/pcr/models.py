@@ -148,6 +148,36 @@ class Removal(models.Model):
         super(Removal, self).save(*args, **kwargs)
 
 
+class RecRemovalCounts(models.Model):
+    """
+    This class stores the recommended maximal removal counts for each combination of kind and analysis.
+    """
+
+    # Technically we only need a composite key of kind and analysis. But Django does not support composite keys.
+    # So we use a UUID as primary key and add a unique constraint on kind and analysis.
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    kind = models.ForeignKey(Kind, on_delete=models.CASCADE, related_name="counts")
+    analysis = models.ForeignKey(
+        Analysis, on_delete=models.CASCADE, related_name="counts"
+    )
+
+    value = models.IntegerField(default=1, validators=[MinValueValidator(1)])
+
+    class Meta:
+        verbose_name_plural = "Recommended removal counts"
+        db_table = 'pcr"."removal_counts'
+        ordering = ["kind", "analysis"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["kind", "analysis"], name="unique_kind_analysis_rec_removals"
+            )
+        ]
+        index_together = ["kind", "analysis"]
+
+    def __str__(self) -> str:
+        return f"{self.kind} - {self.analysis} ({self.value})"
+
+
 class Amount(models.Model):
     """
     This class keeps track of all default amounts of reagents for each combination of kind and analysis.
@@ -169,7 +199,7 @@ class Amount(models.Model):
         ordering = ["kind", "analysis"]
         constraints = [
             models.UniqueConstraint(
-                fields=["kind", "analysis"], name="unique_kind_analysis"
+                fields=["kind", "analysis"], name="unique_kind_analysis_amounts"
             )
         ]
         index_together = ["kind", "analysis"]

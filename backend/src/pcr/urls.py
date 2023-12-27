@@ -8,6 +8,7 @@ from .views import (
     BatchViewSet,
     RemovalViewSet,
     AmountViewSet,
+    RecRemovalCountsViewset,
 )
 
 router = routers.SimpleRouter()
@@ -19,7 +20,7 @@ router.register(r"devices", DeviceViewSet)
 router.register(r"batches", BatchViewSet)
 router.register(r"removals", RemovalViewSet)
 router.register(r"amounts", AmountViewSet)
-
+router.register(r"recommended_removals", RecRemovalCountsViewset)
 urlpatterns = []
 
 urlpatterns += router.urls

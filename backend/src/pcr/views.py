@@ -5,7 +5,16 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from .renderers import ResponseRenderer
 from .permissions import IsAdminOrPcr
-from .models import Kind, Analysis, Device, Batch, Reagent, Removal, Amount
+from .models import (
+    Kind,
+    Analysis,
+    Device,
+    Batch,
+    Reagent,
+    Removal,
+    Amount,
+    RecRemovalCounts,
+)
 from .serializers import (
     KindSerializer,
     AnalysisSerializer,
@@ -14,6 +23,7 @@ from .serializers import (
     ReagentSerializer,
     RemovalSerializer,
     AmountSerializer,
+    RecRemovalCountsSerializer,
 )
 
 
@@ -135,6 +145,21 @@ class AmountViewSet(
 
     queryset = Amount.objects.all()
     serializer_class = AmountSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrPcr]
+    renderer_classes = [ResponseRenderer]
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    filterset_fields = ["kind", "analysis"]
+
+
+class RecRemovalCountsViewset(
+    mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
+):
+    """
+    ViewSet for RecRemovalCounts model.
+    """
+
+    queryset = RecRemovalCounts.objects.all()
+    serializer_class = RecRemovalCountsSerializer
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrPcr]
     renderer_classes = [ResponseRenderer]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]

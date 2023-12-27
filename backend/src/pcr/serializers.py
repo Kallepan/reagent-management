@@ -1,6 +1,15 @@
 from rest_framework import serializers
 
-from .models import Kind, Analysis, Device, Batch, Reagent, Removal, Amount
+from .models import (
+    Kind,
+    Analysis,
+    Device,
+    Batch,
+    Reagent,
+    Removal,
+    Amount,
+    RecRemovalCounts,
+)
 
 from django.db.models import Sum
 
@@ -227,4 +236,14 @@ class AmountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Amount
+        fields = ["id", "kind", "analysis", "value"]
+
+
+class RecRemovalCountsSerializer(serializers.ModelSerializer):
+    """
+    Serializer for RemovalCounts model.
+    """
+
+    class Meta:
+        model = RecRemovalCounts
         fields = ["id", "kind", "analysis", "value"]
