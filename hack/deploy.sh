@@ -17,11 +17,11 @@ kubectl create secret docker-registry -n $NAMESPACE \
     --kubeconfig=$KUBECONFIG
 
 cd backend
-docker build -t $DOCKER_REGISTRY_USERNAME/$DOCKER_REGISTRY_REPOSITORY-backend:${VERSION} .
+docker build --platform linux/amd64 -t $DOCKER_REGISTRY_USERNAME/$DOCKER_REGISTRY_REPOSITORY-backend:${VERSION} .
 docker push $DOCKER_REGISTRY_USERNAME/$DOCKER_REGISTRY_REPOSITORY-backend:${VERSION}
 
 cd ../frontend
-docker build -t $DOCKER_REGISTRY_USERNAME/$DOCKER_REGISTRY_REPOSITORY-frontend:${VERSION} .
+docker build --platform linux/amd64 -t $DOCKER_REGISTRY_USERNAME/$DOCKER_REGISTRY_REPOSITORY-frontend:${VERSION} .
 docker push $DOCKER_REGISTRY_USERNAME/$DOCKER_REGISTRY_REPOSITORY-frontend:${VERSION}
 
 cd ../infrastructure/prod
