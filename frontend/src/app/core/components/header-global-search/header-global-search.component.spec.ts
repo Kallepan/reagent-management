@@ -109,4 +109,18 @@ describe('HeaderGlobalSearchComponent', () => {
     expect(compiled.querySelector('.pcr-home-button')).toBeFalsy();
     expect(compiled.querySelector('.lot-create-button')).toBeTruthy();
   });
+
+  it('should navigate to /pcr/batch', () => {
+    component.activatedRoute$ = of('PCR');
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement;
+
+    // call input method:
+    component.onSearch('PCR', 'test');
+
+    // expect router.navigate to have been called
+    expect(router.navigate).toHaveBeenCalledWith(['pcr', 'batch'], {
+      queryParams: { search: 'test' },
+    });
+  });
 });

@@ -1,10 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { provideHttpClient } from '@angular/common/http';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from '@app/core/services/notification.service';
-import { of } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { PCRStateHandlerService } from '../../services/pcrstate-handler.service';
 import { DUMMY_BATCH } from '../../tests/constants';
 import { BatchListComponent } from './batch-list.component';
@@ -17,6 +16,8 @@ describe('BatchListComponent', () => {
   let pcrStateHandlerService: jasmine.SpyObj<PCRStateHandlerService>;
   let activatedRoute: jasmine.SpyObj<ActivatedRoute>;
   let router: jasmine.SpyObj<Router>;
+
+  let routerQueryParamsMockSubject = new Subject<any>();
 
   beforeEach(async () => {
     notificationService = jasmine.createSpyObj('NotificationService', [
@@ -31,7 +32,13 @@ describe('BatchListComponent', () => {
       },
     );
     activatedRoute = jasmine.createSpyObj('ActivatedRoute', ['']);
-    router = jasmine.createSpyObj('Router', ['navigate']);
+    router = jasmine.createSpyObj('Router', ['navigate'], {
+      routerState: {
+        root: {
+          queryParams: routerQueryParamsMockSubject.asObservable(),
+        },
+      },
+    });
 
     await TestBed.configureTestingModule({
       imports: [BatchListComponent],
@@ -140,6 +147,15 @@ describe('BatchListComponent', () => {
 
   it('test get formatting string', () => {
     const formattingString = component['_getFormattingString'](DUMMY_BATCH);
-    expect(formattingString).toEqual('Standard: U0623-017, U0623-017 (1/1)');
+    expect(formattingString).toEqual('Standard: U0623-017, U0623-017 (1/3)');
+  });
+
+  it('should register detect the query param (search) and call searchReagents', () => {
+    const spy = spyOn(component, 'searchReagents');
+    fixture.detectChanges();
+
+    routerQueryParamsMockSubject.next({ search: 'searchTerm' });
+
+    expect(spy).toHaveBeenCalledWith('searchTerm');
   });
 });

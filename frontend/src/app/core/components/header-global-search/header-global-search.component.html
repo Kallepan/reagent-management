@@ -18,13 +18,22 @@
     </div>
   }
   @if (featureFlag === 'PCR') {
-    <button
-      class="pcr-home-button"
-      mat-raised-button
-      color="accent"
-      routerLink="/pcr/batch"
-    >
-      PCR Home
-    </button>
+    <div class="container">
+      <app-search-bar
+        [control]="control"
+        formHint=""
+        (searchSubmit)="onSearch(featureFlag, $event)"
+        placeholder="Suche nach Lot"
+      >
+      </app-search-bar>
+      <button
+        class="pcr-home-button"
+        mat-raised-button
+        color="accent"
+        routerLink="/pcr/batch"
+      >
+        PCR Home
+      </button>
+    </div>
   }
 }

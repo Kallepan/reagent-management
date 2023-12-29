@@ -74,6 +74,11 @@ export class HeaderGlobalSearchComponent {
             this._router.navigate(['bak', 'lots', 'detail', lot.id]);
           });
         break;
+      case 'PCR':
+        this._router.navigate(['pcr', 'batch'], {
+          queryParams: { search: query },
+        });
+        break;
       default:
         this._notificationService.warnMessage(
           messages.GENERAL.FEATURE_NOT_IMPLEMENTED,

@@ -8,37 +8,44 @@ import { Router, RouterLink } from '@angular/router';
 import { messages } from '@app/core/constants/messages';
 import { NotificationService } from '@app/core/services/notification.service';
 import { ChoiceDialogComponent } from '@app/shared/components/choice-dialog/choice-dialog.component';
-import { DataTableComponent } from '@app/shared/components/data-table/data-table.component';
 import { SearchBarComponent } from '@app/shared/components/search-bar/search-bar.component';
 import { filter, map, switchMap, tap } from 'rxjs';
 import { cleanQuery } from '../../functions/query-cleaner.function';
 import { Batch } from '../../interfaces/reagent';
 import { PCRStateHandlerService } from '../../services/pcrstate-handler.service';
-
 @Component({
   selector: 'app-batch-list',
   standalone: true,
-  imports: [
-    CommonModule,
-
-    SearchBarComponent,
-    DataTableComponent,
-
-    MatButtonModule,
-    RouterLink,
-  ],
+  imports: [CommonModule, SearchBarComponent, MatButtonModule, RouterLink],
   templateUrl: './batch-list.component.html',
   styleUrl: './batch-list.component.scss',
 })
 export class BatchListComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
+  // Search stuff
+  filterControl = new FormControl('');
+
+  // State stuff
+  pcrStateHandlerService = inject(PCRStateHandlerService);
+  private notificationService = inject(NotificationService);
   private router = inject(Router);
   dialog = inject(MatDialog);
 
-  // Search stuff
-  filterControl = new FormControl('');
   ngOnInit(): void {
+    // Check if route has query params
+    this.router.routerState.root.queryParams
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        filter((params) => !!params),
+        map((params) => params['search'] as string | undefined),
+        filter((search): search is string => !!search),
+      )
+      .subscribe((param) => {
+        // If query params exist, set the query params to the search input
+        this.searchReagents(param);
+      });
+
     // Subscribe to filter changes and update the query parameter
     this.filterControl.valueChanges
       .pipe(
@@ -50,10 +57,6 @@ export class BatchListComponent implements OnInit {
         this.filterControl.patchValue(query, { emitEvent: false }),
       );
   }
-
-  // State stuff
-  pcrStateHandlerService = inject(PCRStateHandlerService);
-  private notificationService = inject(NotificationService);
 
   searchReagents(searchTerm: string) {
     /**
