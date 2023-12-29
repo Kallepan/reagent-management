@@ -20,7 +20,7 @@ kubectl create secret docker-registry -n $NAMESPACE \
 
 # Delete deployments
 kubectl delete deployment rms-backend -n $NAMESPACE --kubeconfig=$KUBECONFIG
-# kubectl delete deployment rms-db -n $NAMESPACE --kubeconfig=$KUBECONFIG
+kubectl delete deployment rms-db -n $NAMESPACE --kubeconfig=$KUBECONFIG
 kubectl delete deployment rms-frontend -n $NAMESPACE --kubeconfig=$KUBECONFIG
 
 cd backend
@@ -33,5 +33,4 @@ docker push $DOCKER_REGISTRY_USERNAME/$DOCKER_REGISTRY_REPOSITORY-frontend:${VER
 
 cd ../infrastructure/staging
 kubectl kustomize . > run.yaml
-sed -i "s/IMAGE_TAG/${VERSION}/g" run.yaml
 kubectl apply -f run.yaml --kubeconfig=$KUBECONFIG

@@ -26,5 +26,5 @@ docker push $DOCKER_REGISTRY_USERNAME/$DOCKER_REGISTRY_REPOSITORY-frontend:${VER
 
 cd ../infrastructure/prod
 kubectl kustomize . > run.yaml
-sed -i "s/IMAGE_TAG/${VERSION}/g" run.yaml
+sed -i '' "s/IMAGE_TAG/${VERSION}/g" run.yaml
 kubectl apply -f run.yaml --kubeconfig=$KUBECONFIG

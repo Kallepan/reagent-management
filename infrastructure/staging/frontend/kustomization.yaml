@@ -7,6 +7,6 @@ resources:
   - ingress.yaml
 
 images:
-- name: kallepan/reagent-management-frontend
-  newName: kallepan/reagent-management-frontend
-  newTag: IMAGE_TAG
+  - name: kallepan/reagent-management-frontend
+    newName: kallepan/reagent-management-frontend
+    newTag: dev
