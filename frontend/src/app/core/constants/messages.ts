@@ -34,6 +34,8 @@ export class messages {
 
     BATCH_DELETE_SUCCESS: 'Der Batch wurde erfolgreich gelöscht',
     BATCH_DELETE_FAILED: 'Der Batch konnte nicht gelöscht werden',
+
+    REMOVAL_MAX_REACHED: 'Maximale empfohlene Anzahl an Entnahmen erreicht',
   };
 
   public static GENERAL = {

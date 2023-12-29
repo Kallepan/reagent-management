@@ -75,7 +75,10 @@ export class PCRStateHandlerService {
   }
 
   // reagents
-  createReagents(groupData: any, reagentIDs: {id: string}[]): Observable<any> {
+  createReagents(
+    groupData: any,
+    reagentIDs: { id: string }[],
+  ): Observable<any> {
     const newBatch: CreateBatch = {
       kind_id: groupData.kind.id,
       device_id: groupData.device.id,
@@ -162,5 +165,16 @@ export class PCRStateHandlerService {
     kindID: string,
   ): Observable<number> {
     return this.batchAPIService.getDefaultAmountForBatch(analysisID, kindID);
+  }
+
+  // max recommended removals
+  getMaxRecommendedRemovalsForBatch(
+    analysisID: string,
+    kindID: string,
+  ): Observable<number> {
+    return this.batchAPIService.getMaxRecommendedRemovalsForBatch(
+      analysisID,
+      kindID,
+    );
   }
 }

@@ -223,20 +223,51 @@ export class BatchManageComponent implements OnInit {
             .postRemoval(reagent.id, result.user, result.amount, result.comment)
             .pipe(catchError((err) => throwError(() => err))),
         ),
-      )
-      .subscribe({
-        next: () => {
-          this.notificationService.infoMessage(
-            messages.PCR.REMOVAL_CREATE_SUCCESS,
-          );
-          this._batch.next(this._batch.value);
-        },
-        error: () => {
+        catchError(() => {
           this.notificationService.warnMessage(
             messages.PCR.REMOVAL_CREATE_FAILED,
           );
-        },
-        complete: () => this.loading.set(false),
+          return of(null);
+        }),
+        tap(() => this.loading.set(false)),
+        filter((result): result is Removal => result !== null),
+        tap(() =>
+          this.notificationService.infoMessage(
+            messages.PCR.REMOVAL_CREATE_SUCCESS,
+          ),
+        ),
+        tap(() => this._batch.next(this._batch.value)),
+        switchMap(() => {
+          // switch to check if the reagent was removed more than X times
+          // Note that removal in this context means the number of single removal events not how many units were removed
+          return this.pcrStateHandlerService
+            .getMaxRecommendedRemovalsForBatch(
+              this.batch()?.analysis.id ?? '',
+              this.batch()?.kind.id ?? '',
+            )
+            .pipe(catchError((err) => of(0)));
+        }),
+        filter(
+          (maxRemovals) =>
+            maxRemovals > reagent.removals.length && maxRemovals > 0,
+        ),
+        switchMap((maxRemovals) => {
+          // open dialog to warn user if the reagent was removed more than X times
+          const matDialogConfig: MatDialogConfig = {
+            data: {
+              title: `Maximale Anzahl an empfohlenen Entnahmen (${maxRemovals}) erreicht!`,
+              choices: [{ id: 'ok', name: 'Ok' }],
+              displayCancel: false,
+            },
+          };
+
+          return this.dialog
+            .open(ChoiceDialogComponent, matDialogConfig)
+            .afterClosed();
+        }),
+      )
+      .subscribe({
+        next: (maxRemovals) => {},
       });
   }
 

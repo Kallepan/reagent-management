@@ -180,4 +180,36 @@ export class BatchAPIService {
       }),
     );
   }
+
+  getMaxRecommendedRemovalsForBatch(
+    analysisID: string,
+    kindID: string,
+  ): Observable<number> {
+    /* Function the fetch the maximum allowed number of removals for a reagent of a batch */
+
+    const url = `${constants.APIS.PCR.BASE}/recommended_removals/`;
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      params: new HttpParams({
+        fromObject: {
+          analysis: analysisID,
+          kind: kindID,
+        },
+      }),
+      withCredentials: true,
+    };
+
+    return this.http.get<CustomResponseType>(url, httpOptions).pipe(
+      map((resp) => resp.data),
+      map((data) => data.results),
+      map((data) => {
+        if (data.length === 0) return 0;
+
+        return data[0].value;
+      }),
+    );
+  }
 }
