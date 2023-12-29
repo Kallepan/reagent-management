@@ -1,7 +1,24 @@
-<h1 mat-dialog-title>{{title}}</h1>
-<div mat-dialog-content class="content">
-    @for (choice of choices; track choice) {
-    <button mat-raised-button color="accent" [mat-dialog-close]="choice">{{choice.name}}</button>
-    }
-    <button mat-raised-button color="warn" [mat-dialog-close]="null">Abbruch</button>
+<h1 mat-dialog-title>{{ title }}</h1>
+<div
+  mat-dialog-content
+  class="content"
+>
+  @for (choice of choices; track choice) {
+    <button
+      mat-raised-button
+      color="accent"
+      [mat-dialog-close]="choice"
+    >
+      {{ choice.name }}
+    </button>
+  }
+  @if (displayCancel) {
+    <button
+      mat-raised-button
+      color="warn"
+      [mat-dialog-close]="null"
+    >
+      Abbruch
+    </button>
+  }
 </div>
