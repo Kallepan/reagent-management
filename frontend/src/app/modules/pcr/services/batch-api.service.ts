@@ -181,7 +181,7 @@ export class BatchAPIService {
     );
   }
 
-  getMaxRecommendedRemovalsForBatch(
+  getMaxRecommendedRemovalsForReagent(
     analysisID: string,
     kindID: string,
   ): Observable<number> {

@@ -12,10 +12,20 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from '@app/core/services/notification.service';
 import { of } from 'rxjs';
+import { Removal } from '../../interfaces/removal';
 import { BatchAPIService } from '../../services/batch-api.service';
 import { PCRStateHandlerService } from '../../services/pcrstate-handler.service';
 import { DUMMY_BATCH } from '../../tests/constants';
 import { BatchManageComponent } from './batch-manage.component';
+
+const DUMMY_REMOVAL: Removal = {
+  id: 'testID',
+  reagentID: DUMMY_BATCH.reagents[0].id,
+  created_at: new Date(),
+  created_by: 'testUser',
+  amount: 1,
+  comment: 'null',
+};
 
 describe('BatchManageComponent', () => {
   let component: BatchManageComponent;
@@ -43,6 +53,7 @@ describe('BatchManageComponent', () => {
       'createOnlyReagents',
       'setLastSearchTerm',
       'getLastSearchTerm',
+      'getMaxRecommendedRemovalsForReagent',
     ]);
     pcrStateHandlerService.getBatch.and.returnValue(of(DUMMY_BATCH));
     pcrStateHandlerService.createOnlyReagents.and.returnValue(of(null));
@@ -124,7 +135,12 @@ describe('BatchManageComponent', () => {
   });
 
   it('should handle creation of removal of reagents', () => {
-    pcrStateHandlerService.postRemoval.and.returnValue(of(null) as any);
+    pcrStateHandlerService.postRemoval.and.returnValue(
+      of(DUMMY_REMOVAL) as any,
+    );
+    pcrStateHandlerService.getMaxRecommendedRemovalsForReagent.and.returnValue(
+      of(10),
+    );
     const spy = spyOn(component.dialog, 'open').and.returnValue({
       afterClosed: () =>
         of({
@@ -147,7 +163,12 @@ describe('BatchManageComponent', () => {
   });
 
   it('should handle creation of removal of reagents with null comment', () => {
-    pcrStateHandlerService.postRemoval.and.returnValue(of(null) as any);
+    pcrStateHandlerService.postRemoval.and.returnValue(
+      of(DUMMY_REMOVAL) as any,
+    );
+    pcrStateHandlerService.getMaxRecommendedRemovalsForReagent.and.returnValue(
+      of(10),
+    );
     const spy = spyOn(component.dialog, 'open').and.returnValue({
       afterClosed: () =>
         of({
@@ -261,5 +282,22 @@ describe('BatchManageComponent', () => {
 
     // check if the text is displayed
     expect(await card.getText()).toContain('Kontrolle gelaufen');
+  });
+
+  it('should open the warning dialog if getMaxRecommendedRemovalsForReagent returns more than batch.reagents[i].amount', () => {
+    pcrStateHandlerService.postRemoval.and.returnValue(
+      of(DUMMY_REMOVAL) as any,
+    );
+    pcrStateHandlerService.getMaxRecommendedRemovalsForReagent.and.returnValue(
+      of(10),
+    );
+    // We dont care about the return value of the dialog
+    const spy = spyOn(component.dialog, 'open').and.returnValue({
+      afterClosed: () => of(null),
+    } as any);
+
+    component.handleRemovalCreation(DUMMY_BATCH.reagents[0]);
+
+    expect(spy).toHaveBeenCalled();
   });
 });

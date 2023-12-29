@@ -230,18 +230,19 @@ export class BatchManageComponent implements OnInit {
           return of(null);
         }),
         tap(() => this.loading.set(false)),
-        filter((result): result is Removal => result !== null),
-        tap(() =>
+        filter((removal): removal is Removal => removal !== null),
+        tap(() => {
+          // Side effects
           this.notificationService.infoMessage(
             messages.PCR.REMOVAL_CREATE_SUCCESS,
-          ),
-        ),
-        tap(() => this._batch.next(this._batch.value)),
+          );
+          this._batch.next(this._batch.value);
+        }),
         switchMap(() => {
           // switch to check if the reagent was removed more than X times
           // Note that removal in this context means the number of single removal events not how many units were removed
           return this.pcrStateHandlerService
-            .getMaxRecommendedRemovalsForBatch(
+            .getMaxRecommendedRemovalsForReagent(
               this.batch()?.analysis.id ?? '',
               this.batch()?.kind.id ?? '',
             )

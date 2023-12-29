@@ -168,11 +168,11 @@ export class PCRStateHandlerService {
   }
 
   // max recommended removals
-  getMaxRecommendedRemovalsForBatch(
+  getMaxRecommendedRemovalsForReagent(
     analysisID: string,
     kindID: string,
   ): Observable<number> {
-    return this.batchAPIService.getMaxRecommendedRemovalsForBatch(
+    return this.batchAPIService.getMaxRecommendedRemovalsForReagent(
       analysisID,
       kindID,
     );
