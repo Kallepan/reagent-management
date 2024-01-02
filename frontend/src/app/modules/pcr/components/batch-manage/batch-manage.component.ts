@@ -241,16 +241,20 @@ export class BatchManageComponent implements OnInit {
         switchMap(() => {
           // switch to check if the reagent was removed more than X times
           // Note that removal in this context means the number of single removal events not how many units were removed
-          return this.pcrStateHandlerService
-            .getMaxRecommendedRemovalsForReagent(
-              this.batch()?.analysis.id ?? '',
-              this.batch()?.kind.id ?? '',
-            )
-            .pipe(catchError((err) => of(0)));
+          return (
+            this.pcrStateHandlerService
+              .getMaxRecommendedRemovalsForReagent(
+                this.batch()?.analysis.id ?? '',
+                this.batch()?.kind.id ?? '',
+              )
+              // Here we handle the default case if no maxReagents were found
+              .pipe(catchError(() => of(0)))
+          );
         }),
         filter(
           (maxRemovals) =>
-            maxRemovals > reagent.removals.length && maxRemovals > 0,
+            // maxRemmovals is 0 if the no maxReagents were found
+            maxRemovals <= reagent.removals.length && maxRemovals > 0,
         ),
         switchMap((maxRemovals) => {
           // open dialog to warn user if the reagent was removed more than X times
@@ -268,7 +272,9 @@ export class BatchManageComponent implements OnInit {
         }),
       )
       .subscribe({
-        next: (maxRemovals) => {},
+        next: (maxRemovals) => {
+          console.log('maxRemovals: ', maxRemovals);
+        },
       });
   }
 

@@ -4,6 +4,8 @@ import {
   ComponentFixture,
   DeferBlockState,
   TestBed,
+  fakeAsync,
+  tick,
 } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatCardHarness } from '@angular/material/card/testing';
@@ -141,14 +143,15 @@ describe('BatchManageComponent', () => {
     pcrStateHandlerService.getMaxRecommendedRemovalsForReagent.and.returnValue(
       of(10),
     );
-    const spy = spyOn(component.dialog, 'open').and.returnValue({
+    const dialogSpy = spyOn(component.dialog, 'open').and.returnValue({
       afterClosed: () =>
         of({
           amount: 1,
           user: 'testUser',
-          comment: '',
+          comment: 'test',
         }),
     } as any);
+
     // set active reagent
     component.activeReagent.set(DUMMY_BATCH.reagents[0]);
     fixture.detectChanges();
@@ -157,7 +160,7 @@ describe('BatchManageComponent', () => {
     component.handleRemovalCreation(DUMMY_BATCH.reagents[0]);
 
     // expect the dialog to be opened
-    expect(spy).toHaveBeenCalled();
+    expect(dialogSpy).toHaveBeenCalled();
     expect(pcrStateHandlerService.postRemoval).toHaveBeenCalled();
     expect(notificationService.infoMessage).toHaveBeenCalled();
   });
@@ -169,14 +172,15 @@ describe('BatchManageComponent', () => {
     pcrStateHandlerService.getMaxRecommendedRemovalsForReagent.and.returnValue(
       of(10),
     );
-    const spy = spyOn(component.dialog, 'open').and.returnValue({
+    const dialogSpy = spyOn(component.dialog, 'open').and.returnValue({
       afterClosed: () =>
         of({
           amount: 1,
           user: 'testUser',
-          comment: null,
+          comment: 'test',
         }),
     } as any);
+
     // set active reagent
     component.activeReagent.set(DUMMY_BATCH.reagents[0]);
     fixture.detectChanges();
@@ -185,7 +189,7 @@ describe('BatchManageComponent', () => {
     component.handleRemovalCreation(DUMMY_BATCH.reagents[0]);
 
     // expect the dialog to be opened
-    expect(spy).toHaveBeenCalled();
+    expect(dialogSpy).toHaveBeenCalled();
     expect(pcrStateHandlerService.postRemoval).toHaveBeenCalled();
     expect(notificationService.infoMessage).toHaveBeenCalled();
   });
@@ -194,14 +198,15 @@ describe('BatchManageComponent', () => {
     pcrStateHandlerService.postRemoval.and.returnValue(
       new Error('testError') as any,
     );
-    const spy = spyOn(component.dialog, 'open').and.returnValue({
+    const dialogSpy = spyOn(component.dialog, 'open').and.returnValue({
       afterClosed: () =>
         of({
           amount: 1,
           user: 'testUser',
-          comment: null,
+          comment: 'test',
         }),
     } as any);
+
     // set active reagent
     component.activeReagent.set(DUMMY_BATCH.reagents[0]);
     fixture.detectChanges();
@@ -210,7 +215,7 @@ describe('BatchManageComponent', () => {
     component.handleRemovalCreation(DUMMY_BATCH.reagents[0]);
 
     // expect the dialog to be opened
-    expect(spy).toHaveBeenCalled();
+    expect(dialogSpy).toHaveBeenCalled();
     expect(pcrStateHandlerService.postRemoval).toHaveBeenCalled();
     expect(notificationService.warnMessage).toHaveBeenCalled();
   });
@@ -284,20 +289,69 @@ describe('BatchManageComponent', () => {
     expect(await card.getText()).toContain('Kontrolle gelaufen');
   });
 
-  it('should open the warning dialog if getMaxRecommendedRemovalsForReagent returns more than batch.reagents[i].amount', () => {
+  it('should not open the warning dialog if getMaxRecommendedRemovalsForReagent returns more than batch.reagents[i].amount', fakeAsync(() => {
+    pcrStateHandlerService.getBatch.and.returnValue(of(DUMMY_BATCH));
+    component._batch.next(DUMMY_BATCH.id);
+
+    fixture.detectChanges();
+
     pcrStateHandlerService.postRemoval.and.returnValue(
       of(DUMMY_REMOVAL) as any,
     );
     pcrStateHandlerService.getMaxRecommendedRemovalsForReagent.and.returnValue(
       of(10),
     );
-    // We dont care about the return value of the dialog
-    const spy = spyOn(component.dialog, 'open').and.returnValue({
-      afterClosed: () => of(null),
+    const dialogSpy = spyOn(component.dialog, 'open').and.returnValue({
+      afterClosed: () =>
+        of({
+          amount: 1,
+          user: 'testUser',
+          comment: 'test',
+        }),
     } as any);
 
+    // call the method
     component.handleRemovalCreation(DUMMY_BATCH.reagents[0]);
+    // simulate time passage
+    tick();
 
-    expect(spy).toHaveBeenCalled();
-  });
+    // expect the dialog to be opened --> Open dalog once, because the second opening for the warning does not occur.
+    expect(dialogSpy).toHaveBeenCalledTimes(1);
+
+    // spy on notificationService.infoMessage --> Side Effect removal creation success
+    expect(notificationService.infoMessage).toHaveBeenCalled();
+  }));
+
+  it('should open the warning dialog if getMaxRecommendedRemovalsForReagent returns less than batch.reagents[i].amount', fakeAsync(() => {
+    pcrStateHandlerService.getBatch.and.returnValue(of(DUMMY_BATCH));
+    component._batch.next(DUMMY_BATCH.id);
+
+    fixture.detectChanges();
+
+    pcrStateHandlerService.postRemoval.and.returnValue(
+      of(DUMMY_REMOVAL) as any,
+    );
+    // set the max recommended removals to 1 so that the warning dialog is opened
+    pcrStateHandlerService.getMaxRecommendedRemovalsForReagent.and.returnValue(
+      of(1),
+    );
+
+    const dialogSpy = spyOn(component.dialog, 'open').and.returnValue({
+      afterClosed: () =>
+        of({
+          amount: 1,
+          user: 'testUser',
+          comment: 'test',
+        }),
+    } as any);
+
+    // call the method
+    component.handleRemovalCreation(DUMMY_BATCH.reagents[0]);
+    // simulate time passage
+    tick();
+
+    // expect the dialog to be opened --> Open dalog twice, because the second opening for the warning occurs.
+    expect(dialogSpy).toHaveBeenCalledTimes(2);
+    expect(notificationService.infoMessage).toHaveBeenCalled();
+  }));
 });
