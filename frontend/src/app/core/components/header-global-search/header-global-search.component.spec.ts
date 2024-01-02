@@ -1,4 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
@@ -20,10 +25,17 @@ describe('HeaderGlobalSearchComponent', () => {
       'infoMessage',
       'warnMessage',
     ]);
+
+    // setup router
     router = jasmine.createSpyObj('Router', ['navigate'], {
       events: of(new NavigationEnd(1, '', '')),
     });
+    router.navigate.and.returnValue(Promise.resolve(true));
+
+    // setup lotAPIService
     lotAPIService = jasmine.createSpyObj('LotAPIService', ['searchLots']);
+
+    // setup activatedRoute
     activatedRoute = jasmine.createSpyObj('ActivatedRoute', ['data'], {
       data: of({ featureFlag: 'BAK' }),
     });
@@ -123,4 +135,17 @@ describe('HeaderGlobalSearchComponent', () => {
       queryParams: { search: 'test' },
     });
   });
+
+  it('should clear form after navigating to /pcr/batch', fakeAsync(() => {
+    component.activatedRoute$ = of('PCR');
+    fixture.detectChanges();
+
+    // call input method:
+    component.onSearch('PCR', 'test');
+
+    tick();
+
+    // expect form to be cleared
+    expect(component.control.value).toEqual('');
+  }));
 });

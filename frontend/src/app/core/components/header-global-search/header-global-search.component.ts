@@ -3,7 +3,7 @@
  * or nothing.
  **/
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
@@ -77,7 +77,7 @@ export class HeaderGlobalSearchComponent {
       case 'PCR':
         this._router.navigate(['pcr', 'batch'], {
           queryParams: { search: query },
-        });
+        }).then(() => this.control.setValue('', { emitEvent: false }));
         break;
       default:
         this._notificationService.warnMessage(
