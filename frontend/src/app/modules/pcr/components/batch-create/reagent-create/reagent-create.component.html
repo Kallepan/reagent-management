@@ -10,10 +10,10 @@
           <input
             matInput
             formControlName="id"
-            placeholder="RTS150ING|U0623-017|250131|230626882"
+            placeholder="Reagenz-ID..."
             class="input-element"
           />
-          <mat-hint>Bitte geben Sie die Reagenz-ID ein.</mat-hint>
+          <mat-hint>Bsp.: RTS150ING|U0623-017|250131|230626882</mat-hint>
           @if (
             getReagentFormGroup($index).controls['id'].hasError(
               'reagentAlreadyExists'
