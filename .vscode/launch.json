@@ -12,7 +12,12 @@
       "args": ["runserver", "--nothreading"],
       "django": true,
       "justMyCode": true,
-      "envFile": "${workspaceFolder}/.devcontainer/.env"
+      "envFile": "${workspaceFolder}/.devcontainer/.env",
+      "presentation": {
+        "hidden": true,
+        "group": "",
+        "order": 1
+      }
     },
     {
       "name": "NodeJS: Angular (test)",
@@ -30,7 +35,18 @@
       "preLaunchTask": "npm: start",
       "url": "http://localhost:4200/",
       "webRoot": "${workspaceFolder}/frontend",
-      "sourceMaps": true
+      "sourceMaps": true,
+      "presentation": {
+        "hidden": true,
+        "group": "",
+        "order": 1
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Fullstack: Django + Angular",
+      "configurations": ["Python: Django", "NodeJS: Angular"]
     }
   ]
 }

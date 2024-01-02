@@ -551,7 +551,9 @@ class RecRemovalCountsTest(TestCase):
         url = "/api/v1/pcr/recommended_removals/"
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data["results"]), 2)
+        self.assertEqual(
+            len(response.data["results"]), 6
+        )  # 6 because of the initial amounts
 
         # check if only the recommended_removals with the correct kind are returned
         url = f"/api/v1/pcr/recommended_removals/?kind={self.kind.id}&analysis={self.analysis.id}"
