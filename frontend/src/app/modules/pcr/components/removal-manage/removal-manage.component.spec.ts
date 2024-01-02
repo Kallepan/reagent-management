@@ -16,9 +16,7 @@ describe('RemovalManageComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [RemovalManageComponent],
-      providers: [
-        provideNoopAnimations(),
-      ]
+      providers: [provideNoopAnimations()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RemovalManageComponent);
@@ -43,7 +41,6 @@ describe('RemovalManageComponent', () => {
   });
 
   it('should display removals if reagent is not null', async () => {
-    const date = new Date('2021-01-01');
     component.reagent = DUMMY_REAGENT;
     fixture.detectChanges();
 
@@ -68,7 +65,14 @@ describe('RemovalManageComponent', () => {
       const text = await listItems[index].getFullText();
       expect(text).toContain(removal.id);
       expect(text).toContain(`${removal.amount}`);
-      expect(text).toContain(removal.created_at.toLocaleDateString("de-DE"));
+
+      // To Format: de-DE 01.02.2024
+      const formattedDate = removal.created_at.toLocaleDateString('de-DE', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      });
+      expect(text).toContain(formattedDate);
     });
   });
 
