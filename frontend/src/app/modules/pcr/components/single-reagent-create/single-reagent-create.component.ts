@@ -48,8 +48,13 @@ export class SingleReagentCreateComponent implements OnInit {
     createdBy: ['', [Validators.required, Validators.pattern(/^[a-z]{2,4}$/)]],
     reagentID: [
       '',
-      [Validators.required, Validators.pattern(constants.PCR.REAGENT_REGEX)],
-      [createValidatorNoDisable(this.batchAPIService)],
+      {
+        validators: [
+          Validators.required,
+          Validators.pattern(constants.PCR.REAGENT_REGEX),
+        ],
+        asyncValidators: [createValidatorNoDisable(this.batchAPIService)],
+      },
     ],
   });
 
@@ -62,7 +67,9 @@ export class SingleReagentCreateComponent implements OnInit {
     // set the last used user as default
     const lastUser = localStorage.getItem('lastUser');
     if (lastUser) {
-      this.formGroup.get('createdBy')?.setValue(lastUser, { emitEvent: false });
+      this.formGroup
+        .get('createdBy')
+        ?.setValue(lastUser, { emitEvent: false, onlySelf: true });
     }
 
     // setUp cleaner during valueChanges of reagentID
@@ -70,13 +77,14 @@ export class SingleReagentCreateComponent implements OnInit {
       .get('reagentID')
       ?.valueChanges.pipe(
         takeUntilDestroyed(this.destroyRef$),
-        debounceTime(constants.PCR.REAGENT_DEBOUNCE_TIME),
         filter((value): value is string => typeof value === 'string'),
         map((value) => cleanQuery(value)),
         map((value) => value.trim()),
       )
       .subscribe((value) => {
-        this.formGroup.get('reagentID')?.setValue(value, { emitEvent: false });
+        this.formGroup
+          .get('reagentID')
+          ?.patchValue(value, { emitEvent: false, onlySelf: true });
       });
 
     // set the last used user as default
@@ -96,7 +104,7 @@ export class SingleReagentCreateComponent implements OnInit {
     return (
       this.formGroup.invalid ||
       this.formGroup.disabled ||
-      this.formGroup.pending
+      this.formGroup.pending // <-- this is the problem
     );
   }
 

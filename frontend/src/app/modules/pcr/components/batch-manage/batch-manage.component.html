@@ -66,6 +66,7 @@
             <mat-panel-title>Weitere Reagenzien hinzufuegen</mat-panel-title>
           </mat-expansion-panel-header>
           <app-single-reagent-create
+            [batch]="batch"
             (createEvent)="refreshBatch()"></app-single-reagent-create>
         </mat-expansion-panel>
       </div>
