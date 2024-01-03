@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import {
@@ -62,13 +63,17 @@ describe('BatchManageComponent', () => {
     pcrStateHandlerService.getLastSearchTerm.and.returnValue(null);
 
     // Mock the activated route
-    let paramMap = jasmine.createSpyObj('ParamMap', ['get']);
+    const paramMap = jasmine.createSpyObj('ParamMap', ['get']);
     paramMap.get.and.returnValue('testID');
-    activatedRoute = jasmine.createSpyObj<any>('ActivatedRoute', [], {
-      snapshot: {
-        paramMap: paramMap,
-      },
-    });
+    activatedRoute = jasmine.createSpyObj<ActivatedRoute>(
+      'ActivatedRoute',
+      [],
+      {
+        snapshot: {
+          paramMap: paramMap,
+        },
+      } as any,
+    );
 
     await TestBed.configureTestingModule({
       imports: [BatchManageComponent, MatCardModule],
@@ -220,33 +225,20 @@ describe('BatchManageComponent', () => {
     expect(notificationService.warnMessage).toHaveBeenCalled();
   });
 
-  it('addReagents should return called if form is invalid', () => {
+  it('setUp function should be called during initial setup', () => {
     pcrStateHandlerService.getBatch.and.returnValue(of(DUMMY_BATCH));
-    component.formGroup.setErrors({ test: 'test' });
-    component.addReagents(DUMMY_BATCH);
 
     // must be called once due to the initial call
     expect(pcrStateHandlerService.getBatch).toHaveBeenCalledTimes(1);
-    expect(notificationService.warnMessage).toHaveBeenCalled();
   });
 
   it('addReagents should refresh the batch', () => {
     pcrStateHandlerService.getBatch.and.returnValue(of(DUMMY_BATCH));
-    // just return any dummy value
-    pcrStateHandlerService.createOnlyReagents.and.returnValue(of(true));
 
-    // call this method
-    component.formGroup.controls['createdBy'].setValue('test');
-    component.addReagents(DUMMY_BATCH);
+    component.refreshBatch();
 
     // must be called twice due to the initial call and the call in the method
     expect(pcrStateHandlerService.getBatch).toHaveBeenCalledTimes(2);
-
-    // formGroup should be reset
-    expect(component.formGroup.value).toEqual({
-      createdBy: '',
-      reagents: [],
-    });
   });
 
   it('if batch.comment is empty it should be replaced by ""', () => {

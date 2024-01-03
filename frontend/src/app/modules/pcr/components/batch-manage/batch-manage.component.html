@@ -19,14 +19,12 @@
               [reagents]="batch.reagents"
               (selectionChange)="handleReagentSelectionChange($event)"
               [activeReagent]="activeReagent()"
-              [scannedReagent]="scannedReagent()"
-            >
+              [scannedReagent]="scannedReagent()">
             </app-reagent-manage>
             <app-removal-manage
               [reagent]="activeReagent()"
               (onCreate)="handleRemovalCreation($event)"
-              (onDelete)="handleRemovalDeletion($event)"
-            ></app-removal-manage>
+              (onDelete)="handleRemovalDeletion($event)"></app-removal-manage>
           </mat-card-content>
           <mat-divider></mat-divider>
           <mat-card-footer class="card-footer">
@@ -53,15 +51,12 @@
               [text]="batch.comment"
               label="Kommentar"
               hint="Kommentar bearbeiten"
-              (onSubmit)="updateBatchComment(batch.id, $event)"
-            ></app-edit-textarea>
+              (onSubmit)="
+                updateBatchComment(batch.id, $event)
+              "></app-edit-textarea>
           </mat-card-footer>
           <mat-card-actions class="card-actions">
-            <button
-              mat-raised-button
-              (click)="deleteBatch()"
-              color="warn"
-            >
+            <button mat-raised-button (click)="deleteBatch()" color="warn">
               Löschen
             </button>
           </mat-card-actions>
@@ -70,27 +65,8 @@
           <mat-expansion-panel-header>
             <mat-panel-title>Weitere Reagenzien hinzufuegen</mat-panel-title>
           </mat-expansion-panel-header>
-          <form
-            action="none"
-            [formGroup]="formGroup"
-          >
-            <mat-form-field>
-              <mat-label>Erstellt von</mat-label>
-              <input
-                type="text"
-                matInput
-                formControlName="createdBy"
-                required
-              />
-              @if (formGroup.get('created_by')?.hasError('required')) {
-                <mat-error> Dieses Feld ist erforderlich </mat-error>
-              }
-            </mat-form-field>
-            <app-reagent-create
-              controlKey="reagents"
-              (onSubmit)="addReagents(batch)"
-            ></app-reagent-create>
-          </form>
+          <app-single-reagent-create
+            (createEvent)="refreshBatch()"></app-single-reagent-create>
         </mat-expansion-panel>
       </div>
     } @else {

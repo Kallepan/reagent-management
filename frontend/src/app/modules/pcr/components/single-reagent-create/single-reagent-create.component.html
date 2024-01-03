@@ -1,0 +1,35 @@
+<form action="none" [formGroup]="formGroup" class="reagent-form">
+  <mat-form-field>
+    <mat-label>Erstellt von</mat-label>
+    <input type="text" matInput formControlName="createdBy" required />
+    @if (formGroup.get('created_by')?.hasError('required')) {
+      <mat-error> Dieses Feld ist erforderlich </mat-error>
+    }
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Reagenzien ID</mat-label>
+    <input
+      matInput
+      formControlName="reagentID"
+      placeholder="Reagenz-ID..."
+      class="input-element" />
+    <mat-hint>Bsp.: RTS150ING|U0623-017|250131|230626882</mat-hint>
+    @if (formGroup.controls['reagentID'].hasError('reagentAlreadyExists')) {
+      <mat-error> Reagenz mit dieser ID existiert bereits. </mat-error>
+    }
+    @if (formGroup.controls['reagentID'].hasError('pattern')) {
+      <mat-error> Das Format der Reagenz-ID ist ungültig. </mat-error>
+    }
+  </mat-form-field>
+
+  <div class="actions">
+    <button
+      class="submit-button"
+      mat-mini-fab
+      color="accent"
+      (click)="createReagent()"
+      [disabled]="isDisabled()">
+      <mat-icon>done</mat-icon>
+    </button>
+  </div>
+</form>

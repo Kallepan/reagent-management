@@ -87,7 +87,7 @@ describe('ReagentCreateComponent', () => {
   });
 
   it('submitButton should call submitEventEmitter', () => {
-    spyOn(component.onSubmit, 'emit');
+    spyOn(component.submitEvent, 'emit');
     const submitButton =
       fixture.debugElement.nativeElement.querySelector('.submit-button');
 
@@ -101,7 +101,7 @@ describe('ReagentCreateComponent', () => {
     expect(formArray.controls[0].disabled).toBeTrue();
 
     submitButton.click();
-    expect(component.onSubmit.emit).toHaveBeenCalled();
+    expect(component.submitEvent.emit).toHaveBeenCalled();
   });
 
   it('removeButton should call removeReagentForm', () => {
@@ -212,7 +212,7 @@ describe('ReagentCreateComponent', () => {
     });
 
     // try to submit form
-    const spy = spyOn(component.onSubmit, 'emit');
+    const spy = spyOn(component.submitEvent, 'emit');
     fixture.detectChanges();
 
     // click submit button

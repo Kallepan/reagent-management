@@ -57,7 +57,7 @@ export class ReagentCreateComponent implements OnInit, OnDestroy {
   private readonly batchAPIService = inject(BatchAPIService);
 
   // Emit the submit event to the parent
-  @Output() onSubmit = new EventEmitter<void>();
+  @Output() submitEvent = new EventEmitter<void>();
 
   // Inject the parent container and formBuilder
   @Input({ required: true }) controlKey = 'reagents';
@@ -84,7 +84,7 @@ export class ReagentCreateComponent implements OnInit, OnDestroy {
     reagentForm.valueChanges
       .pipe(
         takeUntilDestroyed(this.destroyRef),
-        debounceTime(200),
+        debounceTime(constants.PCR.REAGENT_DEBOUNCE_TIME),
         // cleanInput
         filter((value): value is { id: string } => value.id !== null),
         map((value) => {

@@ -1,18 +1,14 @@
 <ng-container formArrayName="reagents">
   <div class="reagent-form">
     @for (reagentForm of reagentControls.controls; track $index) {
-      <span
-        [formGroup]="getReagentFormGroup($index)"
-        class="row"
-      >
+      <span [formGroup]="getReagentFormGroup($index)" class="row">
         <mat-form-field appearance="fill">
           <mat-label>Reagenz</mat-label>
           <input
             matInput
             formControlName="id"
             placeholder="Reagenz-ID..."
-            class="input-element"
-          />
+            class="input-element" />
           <mat-hint>Bsp.: RTS150ING|U0623-017|250131|230626882</mat-hint>
           @if (
             getReagentFormGroup($index).controls['id'].hasError(
@@ -29,8 +25,7 @@
           mat-mini-fab
           color="warn"
           (click)="removeReagentFormGroup($index)"
-          class="remove-button"
-        >
+          class="remove-button">
           <mat-icon> delete_forever </mat-icon>
         </button>
       </span>
@@ -40,17 +35,15 @@
         class="add-button"
         mat-mini-fab
         color="accent"
-        (click)="addReagentFormGroup()"
-      >
+        (click)="addReagentFormGroup()">
         <mat-icon>add</mat-icon>
       </button>
       <button
         class="submit-button"
         mat-mini-fab
         color="accent"
-        (click)="onSubmit.emit()"
-        [disabled]="isDisabled()"
-      >
+        (click)="submitEvent.emit()"
+        [disabled]="isDisabled()">
         <mat-icon>done</mat-icon>
       </button>
     </div>

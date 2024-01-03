@@ -30,12 +30,12 @@ import {
   tap,
   throwError,
 } from 'rxjs';
-import { Batch, CreateReagent, Reagent } from '../../interfaces/reagent';
+import { Batch, Reagent } from '../../interfaces/reagent';
 import { Removal } from '../../interfaces/removal';
 import { PCRStateHandlerService } from '../../services/pcrstate-handler.service';
-import { ReagentCreateComponent } from '../batch-create/reagent-create/reagent-create.component';
 import { ReagentManageComponent } from '../reagent-manage/reagent-manage.component';
 import { RemovalManageComponent } from '../removal-manage/removal-manage.component';
+import { SingleReagentCreateComponent } from '../single-reagent-create/single-reagent-create.component';
 
 @Component({
   selector: 'app-batch-manage',
@@ -54,21 +54,15 @@ import { RemovalManageComponent } from '../removal-manage/removal-manage.compone
     ReagentManageComponent,
     RemovalManageComponent,
     GenericCreateDialogComponent,
-    ReagentCreateComponent,
     EditTextareaComponent,
+    SingleReagentCreateComponent,
   ],
   templateUrl: './batch-manage.component.html',
   styleUrl: './batch-manage.component.scss',
 })
 export class BatchManageComponent implements OnInit {
-  // formGroup
-  private fb = inject(FormBuilder);
-  formGroup = this.fb.group({
-    createdBy: ['', [Validators.required, Validators.pattern(/^[a-z]{2,4}$/)]],
-    reagents: this.fb.array([]),
-  });
-
   // ─── INJECTIONS ───
+  private fb = inject(FormBuilder);
   private notificationService = inject(NotificationService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -183,7 +177,7 @@ export class BatchManageComponent implements OnInit {
           [
             Validators.required,
             Validators.min(1),
-            Validators.pattern(/^\-?[0-9]+$/),
+            Validators.pattern(/^-?[0-9]+$/),
             Validators.max(reagent.current_amount),
           ],
         ],
@@ -310,7 +304,7 @@ export class BatchManageComponent implements OnInit {
           );
           this._batch.next(this._batch.value);
         },
-        error: (err) => {
+        error: () => {
           this.notificationService.warnMessage(
             messages.PCR.REMOVAL_DELETE_FAILED,
           );
@@ -363,57 +357,6 @@ export class BatchManageComponent implements OnInit {
       });
   }
 
-  addReagents(batch: Batch): void {
-    if (!this.formGroup.valid) {
-      this.notificationService.warnMessage(messages.PCR.INVALID_DATA);
-      return;
-    }
-
-    // get the initial amount from the first present reagent
-    const createdBy = this.formGroup.get('createdBy')?.value;
-    if (!createdBy || !batch.reagents.length) return;
-    const initialAmount = batch.reagents[0].initial_amount;
-
-    // get the formArray
-    const reagentsFromForm = this.formGroup.get('reagents')?.value;
-    if (!reagentsFromForm) return;
-    const reagentsToBeCreated = reagentsFromForm.map((reagent: any) => {
-      const newReagent: CreateReagent = {
-        batch_id: batch.id,
-        id: reagent.id,
-        initial_amount: initialAmount,
-        created_by: createdBy,
-      };
-
-      return newReagent;
-    });
-
-    // post the reagents
-    this.pcrStateHandlerService
-      .createOnlyReagents(reagentsToBeCreated)
-      .pipe(
-        tap(() => {
-          this.formGroup.reset(
-            { createdBy: '', reagents: [] },
-            { emitEvent: false },
-          );
-        }),
-      )
-      .subscribe({
-        next: (batch) => {
-          this.notificationService.infoMessage(
-            messages.PCR.REAGENT_CREATE_SUCCESS,
-          );
-          this._batch.next(this._batch.value);
-        },
-        error: () => {
-          this.notificationService.warnMessage(
-            messages.PCR.REAGENT_CREATE_ERROR,
-          );
-        },
-      });
-  }
-
   updateBatchComment(id: string, comment: string) {
     this.loading.set(true);
     this.pcrStateHandlerService.updateBatchComment(id, comment).subscribe({
@@ -424,6 +367,10 @@ export class BatchManageComponent implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  refreshBatch() {
+    this._batch.next(this._batch.value);
   }
 
   ngOnInit(): void {
