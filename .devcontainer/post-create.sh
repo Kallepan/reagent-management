@@ -12,4 +12,5 @@ npm install -g ${NODE_MODULES} \
 pip install -r backend/requirements.txt
 
 # install yarn packages
-yarn --cwd frontend install
+cd frontend
+yarn install
