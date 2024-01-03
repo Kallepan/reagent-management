@@ -34,18 +34,16 @@
               <mat-progress-bar mode="indeterminate"></mat-progress-bar>
             } @else {
               Restmenge: {{ batch.current_amount }}/{{ batch.initial_amount }}
-
-              @if (
-                batch.first_opened_at !== null &&
-                batch.kind.name === 'Mastermix'
-              ) {
-                <span class="info">
-                  NEG PRAEP Kontrolle gelaufen am
-                  {{ batch.first_opened_at | date: 'dd.MM.yyyy' }},
-                  {{ batch.first_opened_by | titlecase }}
-                </span>
-              } @else {
-                Kontrolle <strong>NICHT</strong> gelaufen.
+              @if (batch.kind.name === 'Mastermix') {
+                @if (batch.first_opened_at !== null) {
+                  <span class="info">
+                    NEG PRAEP Kontrolle gelaufen am
+                    {{ batch.first_opened_at | date: 'dd.MM.yyyy' }},
+                    {{ batch.first_opened_by | titlecase }}
+                  </span>
+                } @else {
+                  <span> Kontrolle <strong>NICHT</strong> gelaufen. </span>
+                }
               }
             }
           </mat-card-footer>
