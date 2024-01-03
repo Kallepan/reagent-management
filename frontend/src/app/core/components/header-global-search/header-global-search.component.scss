@@ -1,6 +1,15 @@
 .container {
   display: flex;
   flex-direction: row;
-  align-items: baseline;
-  margin-top: 15px;
+  align-items: center;
+
+  .search-bar {
+    margin-top: 20px;
+  }
+}
+
+.actions {
+  button + button {
+    margin-left: 10px;
+  }
 }

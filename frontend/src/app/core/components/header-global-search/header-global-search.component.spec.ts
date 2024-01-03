@@ -105,12 +105,13 @@ describe('HeaderGlobalSearchComponent', () => {
     expect(lotAPIService.searchLots).not.toHaveBeenCalled();
   });
 
-  it('should display PCR Home button if on Route /pcr', () => {
+  it('should display PCR Home button and Lot Create button if on Route /pcr', () => {
     component.activatedRoute$ = of('PCR');
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
 
     expect(compiled.querySelector('.pcr-home-button')).toBeTruthy();
+    expect(compiled.querySelector('.lot-create-button')).toBeTruthy();
   });
 
   it('should not display PCR Home button if not on Route /pcr', () => {
@@ -125,14 +126,13 @@ describe('HeaderGlobalSearchComponent', () => {
   it('should navigate to /pcr/batch', () => {
     component.activatedRoute$ = of('PCR');
     fixture.detectChanges();
-    const compiled = fixture.nativeElement;
 
     // call input method:
     component.onSearch('PCR', 'test');
 
     // expect router.navigate to have been called
     expect(router.navigate).toHaveBeenCalledWith(['pcr', 'batch'], {
-      queryParams: { search: 'test' },
+      queryParams: { search: 'TEST' },
     });
   });
 

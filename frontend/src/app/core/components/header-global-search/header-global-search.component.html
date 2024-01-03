@@ -2,6 +2,7 @@
   @if (featureFlag === 'BAK') {
     <div class="container">
       <app-search-bar
+        class="search-bar"
         [control]="control"
         formHint=""
         (searchSubmit)="onSearch(featureFlag, $event)"
@@ -18,8 +19,9 @@
     </div>
   }
   @if (featureFlag === 'PCR') {
-    <div class="container">
+    <div class="container actions">
       <app-search-bar
+        class="search-bar"
         [control]="control"
         formHint=""
         (searchSubmit)="onSearch(featureFlag, $event)"
@@ -33,6 +35,14 @@
         routerLink="/pcr/batch"
       >
         PCR Home
+      </button>
+      <button
+        class="lot-create-button"
+        mat-raised-button
+        color="accent"
+        routerLink="/pcr/batch/create"
+      >
+        Lot Anlegen
       </button>
     </div>
   }
