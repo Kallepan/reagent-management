@@ -10,7 +10,7 @@
     <mat-hint>{{ hint }}</mat-hint>
   </mat-form-field>
 } @else {
-  <div class="text">{{ text }}</div>
+  <div class="text">{{ text || 'Kein Kommentar hinterlegt' }}</div>
 }
 
 <div class="actions">

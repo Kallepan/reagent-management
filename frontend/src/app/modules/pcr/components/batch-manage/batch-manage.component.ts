@@ -126,7 +126,7 @@ export class BatchManageComponent implements OnInit {
       }),
       map((batch) => {
         // set comment to default value if it is empty string
-        batch.comment = batch.comment || 'Kein Kommentar hinterlegt';
+        batch.comment = batch.comment || '';
         return batch;
       }),
     ),

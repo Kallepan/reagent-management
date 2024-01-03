@@ -23,6 +23,30 @@ describe('EditTextareaComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('if text is null or "", should display placeholder', () => {
+    expect(component.text).toBe('');
+    expect(component.isEditing()).toBe(false);
+
+    // fetch the placeholder with By.css
+    const placeholder = fixture.debugElement.query(By.css('.text'));
+
+    expect(placeholder.nativeElement.textContent).toBe(
+      'Kein Kommentar hinterlegt',
+    );
+
+    // test for null just to be sure
+    component.text = null as any;
+    fixture.detectChanges();
+    expect(component.isEditing()).toBe(false);
+
+    // fetch the placeholder with By.css
+    const placeholder2 = fixture.debugElement.query(By.css('.text'));
+
+    expect(placeholder2.nativeElement.textContent).toBe(
+      'Kein Kommentar hinterlegt',
+    );
+  });
+
   it(`should toggle isEditing`, () => {
     expect(component.isEditing()).toBe(false);
 

@@ -249,7 +249,7 @@ describe('BatchManageComponent', () => {
     });
   });
 
-  it('if batch.comment is empty it should be replaced by "Kein Kommentar hinterlegt"', () => {
+  it('if batch.comment is empty it should be replaced by ""', () => {
     pcrStateHandlerService.getBatch.and.returnValue(
       of({
         ...DUMMY_BATCH,
@@ -259,10 +259,10 @@ describe('BatchManageComponent', () => {
     component.ngOnInit();
 
     expect(component.batch()).toBeTruthy();
-    expect(component.batch()!.comment).toBe('Kein Kommentar hinterlegt');
+    expect(component.batch()!.comment).toBe('');
   });
 
-  it('should display batch.first_opened_at and by if first_opened_at is not null', async () => {
+  it('should display batch.first_opened_at if first_opened_at is not null and kind.name ist Mastermix', async () => {
     pcrStateHandlerService.getBatch.and.returnValue(
       of({
         ...DUMMY_BATCH,
@@ -286,7 +286,32 @@ describe('BatchManageComponent', () => {
     const card = await loader.getHarness(MatCardHarness);
 
     // check if the text is displayed
-    expect(await card.getText()).toContain('Kontrolle gelaufen');
+    expect(await card.getText()).not.toContain(
+      'NEG PRAEP Kontrolle gelaufen am',
+    );
+
+    // Set kind to Mastermix
+    pcrStateHandlerService.getBatch.and.returnValue(
+      of({
+        ...DUMMY_BATCH,
+        first_opened_at: new Date(),
+        first_opened_by: 'test',
+        kind: {
+          id: '1',
+          name: 'Mastermix',
+        },
+      }),
+    );
+    component.ngOnInit();
+    component.loading.set(false);
+    fixture.detectChanges();
+
+    // wait for the defer block to be rendered
+    const deferBlockFixture2 = (await fixture.getDeferBlocks())[0];
+    await deferBlockFixture2.render(DeferBlockState.Complete);
+
+    // check if the text is displayed
+    expect(await card.getText()).toContain('NEG PRAEP Kontrolle gelaufen am');
   });
 
   it('should not open the warning dialog if getMaxRecommendedRemovalsForReagent returns more than batch.reagents[i].amount', fakeAsync(() => {
