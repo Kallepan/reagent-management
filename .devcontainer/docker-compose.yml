@@ -8,12 +8,13 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
-    network_mode: service:db
     command: sleep infinity
     depends_on:
       - db
     volumes:
       - ../../:/workspaces:cached
+    networks:
+      - default
 
   db:
     image: postgres:16.0-alpine
@@ -22,6 +23,12 @@ services:
     restart: always
     volumes:
       - db-data:/var/lib/postgresql/data
+    networks:
+      - default
 
 volumes:
   db-data:
+
+networks:
+  default:
+    name: rms
