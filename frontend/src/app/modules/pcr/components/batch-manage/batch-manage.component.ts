@@ -173,7 +173,7 @@ export class BatchManageComponent implements OnInit {
       ],
       formGroup: this.fb.group({
         amount: [
-          1,
+          null,
           [
             Validators.required,
             Validators.min(1),
