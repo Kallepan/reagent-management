@@ -8,6 +8,20 @@ A system which keeps track of the reagents in the laboratory.
 
 Simple storage system which keeps track of locations, the type of the reagent, as well as the lot number. Each lot can be present as multiple crates which are stored in different locations. Each crate can have a different amount of reagent. Each crate group has a unique composite key made up of the type of the reagent, location, lot which is used to uniquely identify it. Each create group has a coutner associated with it which tracks the number of crates in the group.
 
+#### Documentation
+
+- How to add a Location:
+  - Go to the admin page
+  - Click on the 'Locations' link
+  - Click on the 'Add Location' button
+  - Fill in the form (name is necessary) and click save
+
+- How to add a new producer:
+  - Go to the admin page
+  - Click on the 'Types' link
+  - Click on the 'Add Producer' button
+  - Fill in the form (article number, name of the product and producer name are necessary) and click save
+
 #### BAK Database Model
 
 ```dbdiagram.io
