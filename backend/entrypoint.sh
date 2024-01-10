@@ -1,7 +1,5 @@
 #!/bin/bash
 
-sleep 12
-
 python manage.py migrate --no-input
 
 # Apply database migrations
