@@ -1,38 +1,43 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { Observable, map, of } from 'rxjs';
 import { Device } from '../interfaces/simple';
-
-const mockDevices: Device[] = [
-  {
-    id: "1",
-    name: "InGe 1",
-  },
-  {
-    id: "2",
-    name: "InGe 2",
-  },
-  {
-    id: "3",
-    name: "InGe 3",
-  },
-  {
-    id: "4",
-    name: "Test 1",
-  }
-];
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { CustomResponseType } from '@app/core/interfaces/response';
+import { constants } from '@app/core/constants/constants';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: null
 })
 export class DeviceService {
+  private http = inject(HttpClient);
 
-  constructor() { }
+  getDeviceByID(id: string): Observable<Device> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      withCredentials: true,
+    };
 
-  getDevice(id: string): Observable<Device> {
-    return of(mockDevices.find(device => device.id === id)!);
+    return this.http.get<CustomResponseType>(constants.APIS.PCR.BASE + '/devices/' + id, httpOptions).pipe(
+      map(resp => {
+        return resp.data as Device;
+      })
+    );
   }
 
   getDevices(): Observable<Device[]> {
-    return of(mockDevices);
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      withCredentials: true,
+    };
+
+    return this.http.get<CustomResponseType>(constants.APIS.PCR.BASE + '/devices', httpOptions).pipe(
+      map(resp => {
+        return resp.data.results as Device[];
+      })
+    );
   }
 }

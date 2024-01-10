@@ -1,16 +1,19 @@
 import { TestBed } from '@angular/core/testing';
 
 import { RemovalService } from './removal.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('RemovalService', () => {
   let service: RemovalService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-      ]
+      providers: [
+        RemovalService,
+        provideHttpClientTesting(),
+        provideHttpClient(),
+      ],
     });
     service = TestBed.inject(RemovalService);
   });

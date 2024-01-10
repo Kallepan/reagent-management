@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { constants } from '@app/core/constants/constants';
-import { RouterModule } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterLink } from '@angular/router';
+import { constants } from '@app/core/constants/constants';
 
 @Component({
   selector: 'app-home',
@@ -12,7 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     CommonModule,
     MatButtonModule,
     MatTooltipModule,
-    RouterModule,
+    RouterLink
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']

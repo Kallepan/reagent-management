@@ -37,8 +37,10 @@
             <div class="content-block">
                 <p>Reagenzien</p>
                 <mat-list>
-                    <mat-list-item *ngFor="let reagent of lot.reagents">{{reagent.location.name}}
+                    @for (reagent of lot.reagents; track reagent) {
+                    <mat-list-item>{{reagent.location.name}}
                         ({{reagent.amount}})</mat-list-item>
+                    }
                 </mat-list>
             </div>
         </mat-card-content>

@@ -1,7 +1,24 @@
-<h1 mat-dialog-title>{{title}}</h1>
-<div mat-dialog-content class="content">
-    <button mat-raised-button color="accent" *ngFor="let choice of choices" [mat-dialog-close]="choice">{{choice.name}}</button>
-</div>
-<div mat-dialog-actions class="actions">
-    <button mat-raised-button color="warn" (click)="onAbort()">Abbruch</button>
+<h1 mat-dialog-title>{{ title }}</h1>
+<div
+  mat-dialog-content
+  class="content"
+>
+  @for (choice of choices; track choice) {
+    <button
+      mat-raised-button
+      color="accent"
+      [mat-dialog-close]="choice"
+    >
+      {{ choice.name }}
+    </button>
+  }
+  @if (displayCancel) {
+    <button
+      mat-raised-button
+      color="warn"
+      [mat-dialog-close]="null"
+    >
+      Abbruch
+    </button>
+  }
 </div>

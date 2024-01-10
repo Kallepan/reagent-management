@@ -1,0 +1,14 @@
+.actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 1rem;
+  margin: 1rem 0 0 0;
+}
+
+.text {
+  text-align: start;
+}
+
+mat-form-field {
+  min-width: 500px;
+}

@@ -3,15 +3,16 @@
 export interface Removal {
     id: string;
     reagentID: string;
-    at: Date;
-    by: string;
+    created_at: Date;
+    created_by: string;
     amount: number;
+    comment: string;
 }
 
 // Used to post a new removal
 export interface CreateRemoval {
-    reagentID: string;
-    by: string;
-    at: string;
+    reagent_id: string;
+    created_by: string;
     amount: number;
+    comment: string;
 }

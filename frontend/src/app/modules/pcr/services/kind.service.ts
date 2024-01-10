@@ -1,34 +1,44 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Kind } from '../interfaces/simple';
-import { Observable, of } from 'rxjs';
-
-const mockKinds: Kind[] = [
-  {
-    id: "1",
-    name: "Standard",
-  },
-  {
-    id: "2",
-    name: "Kontrolle",
-  },
-  {
-    id: "3",
-    name: "Mastermix",
-  },
-];
+import { Observable, map, of } from 'rxjs';
+import { CustomResponseType } from '@app/core/interfaces/response';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { constants } from '@app/core/constants/constants';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: null
 })
 export class KindService {
 
-  constructor() { }
+  private http = inject(HttpClient);
 
-  getKind(name: string): Observable<Kind> {
-    return of(mockKinds.find(kind => kind.name === name)!);
+  getKindByID(id: string): Observable<Kind> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      withCredentials: true,
+    };
+
+    return this.http.get<CustomResponseType>(constants.APIS.PCR.BASE + '/kinds/' + id, httpOptions).pipe(
+      map(resp => {
+        return resp.data as Kind;
+      })
+    );
   }
 
   getKinds(): Observable<Kind[]> {
-    return of(mockKinds);
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+      withCredentials: true,
+    };
+
+    return this.http.get<CustomResponseType>(constants.APIS.PCR.BASE + '/kinds', httpOptions).pipe(
+      map(resp => {
+        return resp.data.results as Kind[];
+      })
+    );
   }
 }

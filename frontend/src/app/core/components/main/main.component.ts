@@ -2,9 +2,9 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { Component, HostBinding, effect, inject, signal } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { HeaderComponent } from '../header/header.component';
+import { RouterOutlet } from '@angular/router';
 import { FooterComponent } from '../footer/footer.component';
-import { RouterModule } from '@angular/router';
+import { HeaderComponent } from '../header/header.component';
 import { SidenavComponent } from '../sidenav/sidenav.component';
 
 @Component({
@@ -18,7 +18,7 @@ import { SidenavComponent } from '../sidenav/sidenav.component';
     HeaderComponent,
     FooterComponent,
     SidenavComponent,
-    RouterModule,
+    RouterOutlet,
   ],
 })
 export class MainComponent {

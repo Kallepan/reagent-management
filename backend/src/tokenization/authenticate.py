@@ -2,9 +2,6 @@ from rest_framework.request import Request
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.conf import settings
 
-from rest_framework.authentication import CSRFCheck
-from rest_framework.exceptions import PermissionDenied
-
 class CustomAuthentication(JWTAuthentication):
     def authenticate(self, request: Request):
         header = self.get_header(request)

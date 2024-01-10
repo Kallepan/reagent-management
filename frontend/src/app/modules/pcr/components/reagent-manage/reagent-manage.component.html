@@ -1,1 +1,31 @@
-<p>reagent-manage works!</p>
+<h3
+  class="text-start"
+  matTooltip="Die fett markierte Reagenzie wurde eingescannt"
+>
+  Reagenzien in diesem Batch
+</h3>
+
+<mat-chip-listbox
+  class="mat-mdc-chip-set-stacked reagents"
+  [multiple]="false"
+>
+  @for (reagent of reagents; track reagent) {
+    <mat-chip-option
+      [class]="getStyle($index)"
+      (selectionChange)="selectionChange.emit($event)"
+      [value]="reagent"
+      [selected]="reagent.id === activeReagent?.id"
+    >
+      @if (scannedReagent?.id === reagent.id) {
+        <strong>
+          {{ reagent.id }}
+        </strong>
+        ({{ reagent.current_amount }}/{{ reagent.initial_amount }})
+      } @else {
+        {{ reagent.id }} ({{ reagent.current_amount }}/{{
+          reagent.initial_amount
+        }})
+      }
+    </mat-chip-option>
+  }
+</mat-chip-listbox>

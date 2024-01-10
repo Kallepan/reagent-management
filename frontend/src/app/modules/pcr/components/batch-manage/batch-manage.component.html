@@ -1,1 +1,80 @@
-<p>batch-manage works!</p>
+<div class="container">
+  @defer (when batch()) {
+    @if (batch(); as batch) {
+      <div class="card-container">
+        <mat-card class="card">
+          <mat-card-header class="card-header">
+            <mat-card-title> Identifikator: {{ batch.id }} </mat-card-title>
+
+            <mat-card-subtitle>Batch</mat-card-subtitle>
+            <mat-card-subtitle
+              >{{ batch.device.name }}: {{ batch.analysis.name }}-{{
+                batch.kind.name
+              }}</mat-card-subtitle
+            >
+          </mat-card-header>
+          <mat-divider></mat-divider>
+          <mat-card-content class="card-multiple-content">
+            <app-reagent-manage
+              [reagents]="batch.reagents"
+              (selectionChange)="handleReagentSelectionChange($event)"
+              [activeReagent]="activeReagent()"
+              [scannedReagent]="scannedReagent()">
+            </app-reagent-manage>
+            <app-removal-manage
+              [reagent]="activeReagent()"
+              (onCreate)="handleRemovalCreation($event)"
+              (onDelete)="handleRemovalDeletion($event)"></app-removal-manage>
+          </mat-card-content>
+          <mat-divider></mat-divider>
+          <mat-card-footer class="card-footer">
+            @if (loading()) {
+              <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            } @else {
+              Restmenge: {{ batch.current_amount }}/{{ batch.initial_amount }}
+              @if (batch.kind.name === 'Mastermix') {
+                @if (batch.first_opened_at !== null) {
+                  <span class="info">
+                    NEG PRAEP Kontrolle gelaufen am
+                    {{ batch.first_opened_at | date: 'dd.MM.yyyy' }},
+                    {{ batch.first_opened_by | titlecase }}
+                  </span>
+                } @else {
+                  <span> Kontrolle <strong>NICHT</strong> gelaufen. </span>
+                }
+              }
+            }
+          </mat-card-footer>
+          <mat-divider></mat-divider>
+          <mat-card-footer class="card-footer">
+            <app-edit-textarea
+              [text]="batch.comment"
+              label="Kommentar"
+              hint="Kommentar bearbeiten"
+              (onSubmit)="
+                updateBatchComment(batch.id, $event)
+              "></app-edit-textarea>
+          </mat-card-footer>
+          <mat-card-actions class="card-actions">
+            <button mat-raised-button (click)="deleteBatch()" color="warn">
+              Löschen
+            </button>
+          </mat-card-actions>
+        </mat-card>
+        <mat-expansion-panel class="card">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Weitere Reagenzien hinzufuegen</mat-panel-title>
+          </mat-expansion-panel-header>
+          <app-single-reagent-create
+            [batch]="batch"
+            (createEvent)="refreshBatch()"></app-single-reagent-create>
+        </mat-expansion-panel>
+      </div>
+    } @else {
+      <!-- This should not be displayed as we are redirected before this is displayed, anyhow this is here just to be sure-->
+      <h1>Keine Batches gefunden</h1>
+    }
+  } @placeholder {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+</div>

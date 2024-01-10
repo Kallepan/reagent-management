@@ -1,20 +1,51 @@
 <ng-container formArrayName="reagents">
-    @for (reagentForm of reagents.controls; track $index) {
-    <fieldset [formGroup]="getReagent($index)" class="row">
+  <div class="reagent-form">
+    @for (reagentForm of reagentControls.controls; track $index) {
+      <span [formGroup]="getReagentFormGroup($index)" class="row">
         <mat-form-field appearance="fill">
-            <mat-label>Reagenz</mat-label>
-            <input matInput formControlName="id" placeholder="RTS150ING|U0623-017|250131|230626882" required>
-            <mat-hint>Bitte geben Sie die Reagenz-ID ein.</mat-hint>
+          <mat-label>Reagenz</mat-label>
+          <input
+            matInput
+            formControlName="id"
+            placeholder="Reagenz-ID..."
+            class="input-element" />
+          <mat-hint>Bsp.: RTS150ING|U0623-017|250131|230626882</mat-hint>
+          @if (
+            getReagentFormGroup($index).controls['id'].hasError(
+              'reagentAlreadyExists'
+            )
+          ) {
+            <mat-error> Reagenz mit dieser ID existiert bereits. </mat-error>
+          }
+          @if (getReagentFormGroup($index).controls['id'].hasError('pattern')) {
+            <mat-error> Das Format der Reagenz-ID ist ungültig. </mat-error>
+          }
         </mat-form-field>
-        <button mat-mini-fab color="warn" (click)="deleteReagent($index)">
-            <mat-icon>
-                delete_forever
-            </mat-icon>
+        <button
+          mat-mini-fab
+          color="warn"
+          (click)="removeReagentFormGroup($index)"
+          class="remove-button">
+          <mat-icon> delete_forever </mat-icon>
         </button>
-    </fieldset>
+      </span>
     }
+    <div class="actions">
+      <button
+        class="add-button"
+        mat-mini-fab
+        color="accent"
+        (click)="addReagentFormGroup()">
+        <mat-icon>add</mat-icon>
+      </button>
+      <button
+        class="submit-button"
+        mat-mini-fab
+        color="accent"
+        (click)="submitEvent.emit()"
+        [disabled]="isDisabled()">
+        <mat-icon>done</mat-icon>
+      </button>
+    </div>
+  </div>
 </ng-container>
-
-<button mat-mini-fab color="accent" (click)="addReagent()">
-    <mat-icon>add</mat-icon>
-</button>

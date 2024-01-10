@@ -1,0 +1,26 @@
+.text-start {
+    text-align: start;
+}
+
+.small {
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+.vertical-center {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.list {
+    .item:hover {
+        background-color: #a9a9a9;
+        border-radius: 100px;
+        cursor: pointer;
+    }
+
+    .item {
+        color: red;
+    }
+}

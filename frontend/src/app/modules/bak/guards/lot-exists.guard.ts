@@ -1,7 +1,6 @@
 import { inject } from "@angular/core";
 import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from "@angular/router";
 import { BakStateHandlerService } from "../services/bak-state-handler.service";
-import { Observable, map } from "rxjs";
 
 // This guard tests if the id is in the BakStateHandlerService lots list. It uses the ActivatedRouteSnapshot to get the id from the url.
 export function lotExistsGuard(

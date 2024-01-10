@@ -1,13 +1,13 @@
-import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '@app/core/services/auth.service';
+import { Component, type OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AuthService } from '@app/core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -27,22 +27,22 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 })
 export class LoginComponent implements OnInit {
   authService = inject(AuthService);
-  private _fb = inject(FormBuilder);
+  private readonly _fb = inject(FormBuilder);
 
   loginForm = this._fb.group({
     identifier: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(5)]],
     password: ['', [Validators.required]]
   });
 
-  stopPropagation(event: Event) {
+  stopPropagation (event: Event): void {
     event.stopPropagation();
   }
 
-  ngOnInit(): void {
+  ngOnInit (): void {
     this.authService.verifyLogin();
   }
 
-  onSubmitLogin() {
-    this.authService.login(this.loginForm.controls['identifier'].value, this.loginForm.controls['password'].value);
+  onSubmitLogin (): void {
+    this.authService.login(this.loginForm.controls.identifier.value, this.loginForm.controls.password.value);
   }
 }

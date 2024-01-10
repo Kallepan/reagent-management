@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rms-backend
+  namespace: reagent-management
+  labels:
+    app: rms-django
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rms-django
+  template:
+    metadata:
+      labels:
+        app: rms-django
+        tier: backend
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+        - image: kallepan/reagent-management-backend
+          imagePullPolicy: Always
+          name: rms-django
+          envFrom:
+            - secretRef:
+                name: secrets
+          ports:
+            - containerPort: 9000
+              name: gunicorn
+          readinessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 12
+            timeoutSeconds: 60
+          livenessProbe:
+            initialDelaySeconds: 60
+            timeoutSeconds: 60
+            tcpSocket:
+              port: 9000
+          resources:
+            limits:
+              memory: "1Gi"
+            requests:
+              memory: "1Gi"
+          securityContext:
+            allowPrivilegeEscalation: false

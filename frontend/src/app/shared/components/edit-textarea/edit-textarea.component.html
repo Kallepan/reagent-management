@@ -1,0 +1,35 @@
+@if (isEditing()) {
+  <mat-form-field>
+    <mat-label>{{ label }}</mat-label>
+    <textarea
+      matInput
+      [formControl]="formControl"
+      placeholder="placeholder"
+    >
+    </textarea>
+    <mat-hint>{{ hint }}</mat-hint>
+  </mat-form-field>
+} @else {
+  <div class="text">{{ text || 'Kein Kommentar hinterlegt' }}</div>
+}
+
+<div class="actions">
+  <button
+    id="toggle-edit"
+    mat-mini-fab
+    color="accent"
+    (click)="isEditing.set(!isEditing())"
+    [disabled]="isEditing()"
+  >
+    <mat-icon>edit</mat-icon>
+  </button>
+  <button
+    id="submit"
+    mat-mini-fab
+    color="accent"
+    (click)="submit()"
+    [disabled]="formControl.invalid || !isEditing()"
+  >
+    <mat-icon>save</mat-icon>
+  </button>
+</div>

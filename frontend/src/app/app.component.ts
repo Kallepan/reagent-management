@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { MainComponent } from './core/components/main/main.component';
-import { RouterOutlet } from '@angular/router';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MainComponent } from './core/components/main/main.component';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +11,6 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
   imports: [
     CommonModule,
     MainComponent,
-    RouterOutlet,
     MatSnackBarModule,
   ],
 })

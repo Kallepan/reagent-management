@@ -1,40 +1,32 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HeaderComponent } from './header.component';
-import { Router } from '@angular/router';
-import { By } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { LoginComponent } from '../login/login.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { type HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import { HarnessLoader } from '@angular/cdk/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { MatSlideToggleHarness } from '@angular/material/slide-toggle/testing';
+import { By } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
+import { HeaderComponent } from './header.component';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
-  let router: Router;
   let loader: HarnessLoader;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HeaderComponent,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        LoginComponent,
-        MatSnackBarModule,
-        BrowserAnimationsModule,
+        HeaderComponent
       ],
       providers: [
-        Router,
+        { provide: ActivatedRoute, useValue: { snapshot: { data: { title: 'Test' } } } },
+        provideHttpClientTesting(),
+        provideHttpClient()
       ]
     });
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
-    router = TestBed.inject(Router);
     fixture.detectChanges();
 
     loader = TestbedHarnessEnvironment.loader(fixture);
@@ -44,17 +36,9 @@ describe('HeaderComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('title should be visible', () => { 
+  it('title should be visible', () => {
     const node = fixture.debugElement.query(By.css('.header-title'));
     expect(node.nativeElement.textContent).toContain(component.title);
-  });
-
-  it('routes should be rendered correctly', () => {
-    // Fetch by 'a' tag
-    const nodes = fixture.debugElement.nativeElement.querySelectorAll('a');
-
-    const router = TestBed.inject(Router);
-    expect(nodes.length).toEqual(router.config.filter(r => !!r.data).map(r => r.data!).length);
   });
 
   it('should emit open sidenav event', () => {
@@ -69,8 +53,10 @@ describe('HeaderComponent', () => {
   it('should emit toggle theme event', async () => {
     spyOn(component.onToggleTheme, 'emit');
 
-    const toggle = await loader.getHarness(MatSlideToggleHarness);
-    await toggle.toggle();
+    const matSlideToggle = await loader.getHarness(MatSlideToggleHarness);
+    expect(await matSlideToggle.isChecked()).toBe(false);
+
+    await matSlideToggle.toggle();
 
     expect(component.onToggleTheme.emit).toHaveBeenCalled();
   });

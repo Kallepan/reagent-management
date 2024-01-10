@@ -1,0 +1,117 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "start",
+      "path": "frontend",
+      "isBackground": true,
+      "problemMatcher": [
+        {
+          "owner": "typescript",
+          "source": "ts",
+          "fileLocation": ["relative", "${workspaceFolder}/frontend"],
+          "pattern": "$tsc",
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": {
+              "regexp": "(.*?)"
+            },
+            "endsPattern": {
+              "regexp": "Local"
+            }
+          }
+        }
+      ],
+      "label": "npm: start",
+      "detail": "ng serve",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "type": "npm",
+      "script": "test",
+      "path": "frontend",
+      "label": "npm: test",
+      "detail": "ng test",
+      "isBackground": true,
+      "problemMatcher": [
+        {
+          "owner": "typescript",
+          "source": "ts",
+          "fileLocation": ["relative", "${workspaceFolder}/frontend"],
+          "pattern": "$tsc",
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": {
+              "regexp": "(.*?)"
+            },
+            "endsPattern": {
+              "regexp": "Browser application bundle generation complete"
+            }
+          }
+        }
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      }
+    },
+    {
+      // Django Tests
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "backend/src/manage.py",
+        "test",
+        "tokenization",
+        "authentication",
+        "bak",
+        "pcr"
+      ],
+      "problemMatcher": [],
+      "label": "python: test",
+      "detail": "python manage.py test tokenization authentication bak pcr",
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      }
+    },
+    {
+      // Django migrations
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "backend/src/manage.py",
+        "makemigrations",
+        "--noinput",
+        "&&",
+        "python",
+        "backend/src/manage.py",
+        "migrate",
+        "--noinput",
+        "&&",
+        "export",
+        "DJANGO_SUPERUSER_PASSWORD=admin",
+        "&&",
+        "python",
+        "backend/src/manage.py",
+        "createsuperuser",
+        "--noinput",
+        "--identifier",
+        "admin",
+        "--email",
+        "admin@example.com"
+      ],
+      "problemMatcher": [],
+      "label": "python: migrations",
+      "detail": "python manage.py makemigrations --noinput && python manage.py migrate --noinput && export DJANGO_SUPERUSER_PASSWORD=admin && python manage.py createsuperuser --noinput --identifier admin --email admin@example.com",
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      }
+    }
+  ]
+}

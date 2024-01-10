@@ -1,0 +1,20 @@
+Standard,CMV,4
+Kontrolle,CMV,4
+Mastermix,CMV,24
+Standard,EBV,4
+Kontrolle,EBV,4
+Mastermix,EBV,24
+Standard,PNJI,4
+Kontrolle,PNJI,4
+Mastermix,PNJI,12
+Standard,HEV,4
+Kontrolle,HEV,4
+Mastermix,HEV,30
+Kontrolle,RB,4
+Mastermix,RB,60
+Kontrolle,MTB,2
+Mastermix,MTB,12
+Kontrolle,CLOS,4
+Mastermix,CLOS,24
+Interne Kontrolle,CPE,12
+Interne Kontrolle,IC500,32

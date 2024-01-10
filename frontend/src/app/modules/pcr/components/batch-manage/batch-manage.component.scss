@@ -1,0 +1,51 @@
+.container {
+  display: flex;
+  margin: auto;
+  justify-content: center;
+  text-align: center;
+}
+
+.card-container {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  justify-content: center;
+  width: 50%;
+  gap: 1rem;
+}
+
+.card {
+  .card-header {
+    text-align: left;
+    margin-bottom: 1rem;
+  }
+
+  .card-multiple-content {
+    display: grid;
+    grid-template-columns: 1fr 0.5fr;
+
+    height: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .card-single-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .card-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 1rem;
+  }
+}
+
+.info {
+  color: red;
+  font-size: bolder;
+}
