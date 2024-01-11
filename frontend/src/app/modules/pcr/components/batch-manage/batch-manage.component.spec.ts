@@ -371,4 +371,39 @@ describe('BatchManageComponent', () => {
     expect(dialogSpy).toHaveBeenCalledTimes(2);
     expect(notificationService.infoMessage).toHaveBeenCalled();
   }));
+
+  it('returned user of the dialog should be all lowercase', () => {
+    pcrStateHandlerService.getBatch.and.returnValue(of(DUMMY_BATCH));
+    component._batch.next(DUMMY_BATCH.id);
+
+    fixture.detectChanges();
+
+    pcrStateHandlerService.postRemoval.and.returnValue(
+      of(DUMMY_REMOVAL) as any,
+    );
+    pcrStateHandlerService.getMaxRecommendedRemovalsForReagent.and.returnValue(
+      of(10),
+    );
+    const dialogSpy = spyOn(component.dialog, 'open').and.returnValue({
+      afterClosed: () =>
+        of({
+          amount: 1,
+          user: 'TESTUSER',
+          comment: 'test',
+        }),
+    } as any);
+
+    // call the method
+    component.handleRemovalCreation(DUMMY_BATCH.reagents[0]);
+
+    // expect the dialog to be opened
+    expect(dialogSpy).toHaveBeenCalled();
+    expect(pcrStateHandlerService.postRemoval).toHaveBeenCalledWith(
+      DUMMY_BATCH.reagents[0].id,
+      'testuser',
+      1,
+      'test',
+    );
+    expect(notificationService.infoMessage).toHaveBeenCalled();
+  });
 });

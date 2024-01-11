@@ -189,6 +189,15 @@ export class BatchManageComponent implements OnInit {
       data,
     };
 
+    // user form
+    const userControlSubscription = data.formGroup.controls[
+      'user'
+    ].valueChanges.subscribe((value) => {
+      data.formGroup.controls['user']?.patchValue(value.trim().toLowerCase(), {
+        emitEvent: false,
+      });
+    });
+    // open dialog
     this.dialog
       .open(GenericCreateDialogComponent, matDialogConfig)
       .afterClosed()
@@ -268,6 +277,7 @@ export class BatchManageComponent implements OnInit {
       .subscribe({
         next: (maxRemovals) => {
           console.log('maxRemovals: ', maxRemovals);
+          userControlSubscription.unsubscribe();
         },
       });
   }
