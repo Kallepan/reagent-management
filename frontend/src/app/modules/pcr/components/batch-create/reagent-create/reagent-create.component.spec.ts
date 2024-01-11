@@ -193,6 +193,7 @@ describe('ReagentCreateComponent', () => {
       'RTS000ING|U0000-000|000000|000000001',
       'STD015PLD-5|U1222-017|241130|220020887',
       'RTS150ING|U0623-017|250131|230626882',
+      'RTS130ING|P0523-171|241130|230524844'
     ];
 
     // add formControls
