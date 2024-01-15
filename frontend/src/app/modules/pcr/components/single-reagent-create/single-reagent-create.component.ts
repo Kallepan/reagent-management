@@ -93,9 +93,14 @@ export class SingleReagentCreateComponent implements OnInit {
       ?.valueChanges.pipe(
         takeUntilDestroyed(this.destroyRef$),
         filter((value): value is string => typeof value === 'string'),
+        map((value) => value.trim()),
+        map((value) => value.toLocaleLowerCase()),
         debounceTime(500),
       )
       .subscribe((value) => {
+        this.formGroup.get('createdBy')?.patchValue(value, {
+          emitEvent: false,
+        });
         localStorage.setItem('lastUser', value);
       });
   }
