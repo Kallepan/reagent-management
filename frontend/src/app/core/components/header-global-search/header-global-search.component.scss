@@ -9,7 +9,11 @@
 }
 
 .actions {
-  button + button {
+  button+button {
+    margin-left: 10px;
+  }
+
+  button+a {
     margin-left: 10px;
   }
 }
