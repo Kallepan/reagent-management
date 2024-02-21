@@ -9,11 +9,15 @@
 }
 
 .actions {
-  button+button {
+  button + button {
     margin-left: 10px;
   }
 
-  button+a {
+  button + a {
     margin-left: 10px;
   }
+}
+
+.checkbox {
+  margin-right: 10px;
 }

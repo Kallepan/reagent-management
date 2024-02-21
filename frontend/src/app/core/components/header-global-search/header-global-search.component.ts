@@ -5,20 +5,24 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { messages } from '@app/core/constants/messages';
 import { NotificationService } from '@app/core/services/notification.service';
 import { LotAPIService } from '@app/modules/bak/services/lot-api.service';
 import { cleanQuery } from '@app/modules/pcr/functions/query-cleaner.function';
+import { ChoiceDialogComponent, ChoiceDialogData } from '@app/shared/components/choice-dialog/choice-dialog.component';
 import { SearchBarComponent } from '@app/shared/components/search-bar/search-bar.component';
 import { Subject, filter, map, of, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-header-global-search',
   standalone: true,
-  imports: [CommonModule, SearchBarComponent, MatButtonModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, SearchBarComponent, MatButtonModule, RouterLink, MatCheckboxModule, MatTooltipModule],
   templateUrl: './header-global-search.component.html',
   styleUrl: './header-global-search.component.scss',
 })
@@ -29,6 +33,9 @@ export class HeaderGlobalSearchComponent implements OnInit {
   private destroyRef$ = inject(DestroyRef);
 
   control = new FormControl('');
+  searchEmpty = new FormControl(false);
+
+  dialog = inject(MatDialog);
 
   activatedRoute$ = this._router.events.pipe(
     filter((event) => event instanceof NavigationEnd),
@@ -56,27 +63,44 @@ export class HeaderGlobalSearchComponent implements OnInit {
             map((query) => query.trim()),
             filter((query) => query.length > 0),
             map((query) => {
-              return { search: query, is_empty: 'false' };
+              return { search: query, is_empty: this.searchEmpty.value! };
             }),
             switchMap((params) => this._lotAPIService.searchLots(params)),
             tap((lots) => {
               if (lots.length === 0) {
-                this._notificationService.warnMessage(
-                  messages.GENERAL.NO_RESULTS_FOUND,
-                );
+                this._notificationService.warnMessage(messages.GENERAL.NO_RESULTS_FOUND);
               }
             }),
             filter((lots) => lots.length > 0),
-            tap((lots) =>
-              this._notificationService.infoMessage(
-                `${lots.length} lots gefunden. Navigiert zu ${lots[0].name}`,
-              ),
-            ),
-            map((lots) => lots[0]),
+            tap((lots) => console.log(lots)),
+            switchMap((lots) => {
+              if (lots.length === 1) {
+                return of(lots[0].id);
+              }
+
+              const formattedLots = lots.map((lot) => ({
+                id: lot.id,
+                name: `${lot.name} (${lot.type.producer}-${lot.type.name})`,
+              }));
+
+              const data: ChoiceDialogData = {
+                title: 'Es wurden mehrere Lots gefunden. Bitte wählen Sie eine aus.',
+                choices: formattedLots,
+                displayCancel: true,
+              };
+
+              const config = new MatDialogConfig();
+              config.enterAnimationDuration = 300;
+              config.enterAnimationDuration = 300;
+              config.data = data;
+              return this.dialog
+                .open(ChoiceDialogComponent, config)
+                .afterClosed()
+                .pipe(map((choice) => (choice ? choice.id : null)));
+            }),
+            filter((lotId) => lotId !== null),
             tap(() => this.control.setValue('', { emitEvent: false })),
-            switchMap((lot) =>
-              this._router.navigate(['bak', 'lots', 'detail', lot.id]),
-            ),
+            switchMap((lotId) => this._router.navigate(['bak', 'lots', 'detail', lotId])),
           );
         case 'PCR':
           return of(query).pipe(
@@ -88,13 +112,7 @@ export class HeaderGlobalSearchComponent implements OnInit {
             ),
           );
         default:
-          return of(null).pipe(
-            tap(() =>
-              this._notificationService.warnMessage(
-                messages.GENERAL.FEATURE_NOT_IMPLEMENTED,
-              ),
-            ),
-          );
+          return of(null).pipe(tap(() => this._notificationService.warnMessage(messages.GENERAL.FEATURE_NOT_IMPLEMENTED)));
       }
     }),
     filter((query) => query !== null),

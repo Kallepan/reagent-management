@@ -14,3 +14,6 @@ pip install -r backend/requirements.txt
 # install yarn packages
 cd frontend
 yarn install
+
+ng config -g cli.analytics false && \
+    ng config -g cli.completion.prompted true

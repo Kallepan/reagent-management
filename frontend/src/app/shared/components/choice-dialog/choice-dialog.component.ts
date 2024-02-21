@@ -15,7 +15,7 @@ export interface Choice {
 export interface ChoiceDialogData {
   title: string;
   choices: Choice[];
-  displayCancel?: boolean;
+  displayCancel?: boolean; // displays the cancel button
 }
 
 @Component({

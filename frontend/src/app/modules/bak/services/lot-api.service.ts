@@ -12,7 +12,7 @@ export class LotAPIService {
   private http = inject(HttpClient);
 
   getLots(): Observable<BakLot[]> {
-    const url = `${constants.APIS.BAK.BASE}/lots/`
+    const url = `${constants.APIS.BAK.BASE}/lots/`;
 
     const httpOptions = {
       headers: new HttpHeaders({
@@ -21,20 +21,20 @@ export class LotAPIService {
       params: new HttpParams({
         fromObject: {
           is_empty: 'false',
-        }
+        },
       }),
       withCredentials: true,
     };
 
     return this.http.get<CustomResponseType>(url, httpOptions).pipe(
-      map(resp => {
+      map((resp) => {
         return resp.data.results as BakLot[];
       }),
-    )
+    );
   }
 
-  searchLots(query: { [param: string]: string | number | boolean | readonly (string | number | boolean)[]; }): Observable<BakLot[]> {
-    const url = `${constants.APIS.BAK.BASE}/lots/`
+  searchLots(query: { [param: string]: string | number | boolean | readonly (string | number | boolean)[] }): Observable<BakLot[]> {
+    const url = `${constants.APIS.BAK.BASE}/lots/`;
 
     const httpOptions = {
       headers: new HttpHeaders({
@@ -47,14 +47,14 @@ export class LotAPIService {
     };
 
     return this.http.get<CustomResponseType>(url, httpOptions).pipe(
-      map(resp => {
+      map((resp) => {
         return resp.data.results as BakLot[];
       }),
-    )
+    );
   }
 
   getLotById(id: string): Observable<BakLot> {
-    const url = `${constants.APIS.BAK.BASE}/lots/${id}`
+    const url = `${constants.APIS.BAK.BASE}/lots/${id}`;
 
     const httpOptions = {
       headers: new HttpHeaders({
@@ -64,14 +64,14 @@ export class LotAPIService {
     };
 
     return this.http.get<CustomResponseType>(url, httpOptions).pipe(
-      map(resp => {
+      map((resp) => {
         return resp.data as BakLot;
       }),
-    )
+    );
   }
 
   postLot(lot: CreateBakLot): Observable<BakLot> {
-    const url = `${constants.APIS.BAK.BASE}/lots/`
+    const url = `${constants.APIS.BAK.BASE}/lots/`;
 
     const httpOptions = {
       headers: new HttpHeaders({
@@ -81,14 +81,14 @@ export class LotAPIService {
     };
 
     return this.http.post<CustomResponseType>(url, lot, httpOptions).pipe(
-      map(resp => {
+      map((resp) => {
         return resp.data as BakLot;
       }),
-    )
+    );
   }
 
   patchLot(lotId: string, data: any) {
-    const url = `${constants.APIS.BAK.BASE}/lots/${lotId}/`
+    const url = `${constants.APIS.BAK.BASE}/lots/${lotId}/`;
 
     const httpOptions = {
       headers: new HttpHeaders({
@@ -98,14 +98,14 @@ export class LotAPIService {
     };
 
     return this.http.patch<CustomResponseType>(url, data, httpOptions).pipe(
-      map(resp => {
+      map((resp) => {
         return resp.data as BakLot;
       }),
     );
   }
 
   deleteLot(lotId: string) {
-    const url = `${constants.APIS.BAK.BASE}/lots/${lotId}/`
+    const url = `${constants.APIS.BAK.BASE}/lots/${lotId}/`;
 
     const httpOptions = {
       headers: new HttpHeaders({

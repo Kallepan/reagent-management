@@ -1,9 +1,4 @@
-import {
-  ComponentFixture,
-  TestBed,
-  fakeAsync,
-  tick,
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
@@ -11,6 +6,7 @@ import { NotificationService } from '@app/core/services/notification.service';
 import { LotAPIService } from '@app/modules/bak/services/lot-api.service';
 import { of } from 'rxjs';
 import { HeaderGlobalSearchComponent } from './header-global-search.component';
+import { MatDialog } from '@angular/material/dialog';
 
 describe('HeaderGlobalSearchComponent', () => {
   let component: HeaderGlobalSearchComponent;
@@ -19,12 +15,10 @@ describe('HeaderGlobalSearchComponent', () => {
   let router: jasmine.SpyObj<Router>;
   let activatedRoute: jasmine.SpyObj<ActivatedRoute>;
   let lotAPIService: jasmine.SpyObj<LotAPIService>;
+  let mockDialog: jasmine.SpyObj<MatDialog>;
 
   beforeEach(() => {
-    notificationService = jasmine.createSpyObj('NotificationService', [
-      'infoMessage',
-      'warnMessage',
-    ]);
+    notificationService = jasmine.createSpyObj('NotificationService', ['infoMessage', 'warnMessage']);
 
     // setup router
     router = jasmine.createSpyObj('Router', ['navigate'], {
@@ -42,6 +36,8 @@ describe('HeaderGlobalSearchComponent', () => {
   });
 
   beforeEach(async () => {
+    mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
+
     await TestBed.configureTestingModule({
       imports: [HeaderGlobalSearchComponent],
       providers: [
@@ -49,6 +45,7 @@ describe('HeaderGlobalSearchComponent', () => {
         { provide: Router, useValue: router },
         { provide: LotAPIService, useValue: lotAPIService },
         { provide: ActivatedRoute, useValue: activatedRoute },
+        { provide: MatDialog, useValue: mockDialog },
         provideNoopAnimations(),
       ],
     }).compileComponents();
@@ -64,22 +61,68 @@ describe('HeaderGlobalSearchComponent', () => {
 
   it(`onSearch should call lotAPIService.searchLots`, () => {
     const query = 'query';
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const lot = { id: 1, name: 'lot' } as any;
     lotAPIService.searchLots.and.returnValue(of([lot]));
     component.onSearch('BAK', query);
     expect(lotAPIService.searchLots).toHaveBeenCalled();
   });
 
-  it(`onSearch should call notificationService.infoMessage`, () => {
+  it('searchEmpty should be false', () => {
+    expect(component.searchEmpty.value).toBeFalse();
+  });
+
+  it('searchEmpty should modify the request', () => {
     const query = 'query';
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const lot = { id: 1, name: 'lot' } as any;
+    lotAPIService.searchLots.and.returnValue(of([lot]));
+    component.searchEmpty.setValue(true);
+    component.onSearch('BAK', query);
+    expect(lotAPIService.searchLots).toHaveBeenCalledWith({ search: query, is_empty: true });
+
+    lotAPIService.searchLots.calls.reset();
+
+    component.searchEmpty.setValue(false);
+    component.onSearch('BAK', query);
+    expect(lotAPIService.searchLots).toHaveBeenCalledWith({ search: query, is_empty: false });
+  });
+
+  it('onSearch should navigate if one sample is found', () => {
+    const query = 'query';
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const lot = { id: 1, name: 'lot' } as any;
     lotAPIService.searchLots.and.returnValue(of([lot]));
     component.onSearch('BAK', query);
-    expect(notificationService.infoMessage).toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalled();
+  });
+
+  it(`onSearch should open dialog if multiple samples are found`, () => {
+    const query = 'query';
+
+    const controlSpy = spyOn(component.control, 'setValue');
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mockDialog.open.and.returnValue({ afterClosed: () => of('1') } as any);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const lot = { id: '1', name: 'lot', type: { producer: 'test1', name: 'test2' } } as any;
+    lotAPIService.searchLots.and.returnValue(of([lot, lot]));
+    component.onSearch('BAK', query);
+
+    expect(mockDialog.open).toHaveBeenCalled();
+
+    expect(controlSpy).toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalled();
   });
 
   it(`onSearch should call router.navigate`, () => {
     const query = 'query';
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const lot = { id: 1, name: 'lot' } as any;
     lotAPIService.searchLots.and.returnValue(of([lot]));
     component.onSearch('BAK', query);
