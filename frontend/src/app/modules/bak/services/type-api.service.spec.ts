@@ -2,9 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { TypeAPIService } from './type-api.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import {
-  BakType
-} from '../interfaces/type';
+import { BakType } from '../interfaces/type';
 import { constants } from '@app/core/constants/constants';
 describe('TypeAPIService', () => {
   let service: TypeAPIService;
@@ -30,20 +28,20 @@ describe('TypeAPIService', () => {
       { id: '3', name: 'test3', producer: 'test_producer_3', created_at: '2021-01-01T00:00:00.000Z' },
     ];
 
-    service.getTypes().subscribe(types => {
+    service.getTypes().subscribe((types) => {
       expect(types.length).toBe(3);
       expect(types).toEqual(mockTypes);
     });
 
-    const req = httpMock.expectOne(constants.APIS.BAK.BASE + '/types');
+    const req = httpMock.expectOne(constants.APIS.BAK.BASE + '/types' + '?limit=500');
     expect(req.request.method).toBe('GET');
     req.flush({ data: { results: mockTypes } });
   });
 
   it('should get a type by id', () => {
-    const mockType = { id: "1", name: 'Type 1', producer: 'test_producer_1', created_at: '2021-01-01T00:00:00.000Z' };
+    const mockType = { id: '1', name: 'Type 1', producer: 'test_producer_1', created_at: '2021-01-01T00:00:00.000Z' };
 
-    service.getTypeById("1").subscribe(type => {
+    service.getTypeById('1').subscribe((type) => {
       expect(type).toEqual(mockType);
     });
 

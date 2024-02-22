@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { BakType } from '../interfaces/type';
@@ -20,6 +20,11 @@ export class TypeAPIService {
         'Content-Type': 'application/json',
       }),
       withCredentials: true,
+      params: new HttpParams({
+        fromObject: {
+          limit: constants.BAK.TYPES_LIMIT
+        }
+      })
     };
 
     return this.http.get<CustomResponseType>(url, httpOptions).pipe(
