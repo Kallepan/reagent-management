@@ -15,11 +15,14 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 describe('LotsDetailComponent', () => {
   let component: LotsDetailComponent;
   let fixture: ComponentFixture<LotsDetailComponent>;
-  let bakStateHandlerService: jasmine.SpyObj<BakStateHandlerService>
+  let bakStateHandlerService: jasmine.SpyObj<BakStateHandlerService>;
   let lotAPIService: jasmine.SpyObj<LotAPIService>;
 
   beforeEach(() => {
-    bakStateHandlerService = jasmine.createSpyObj('BakStateHandlerService', ['getTypes', 'getLots', 'getLocations', 'getReagents'], { 'lots': new BehaviorSubject([]), 'activeLot': new BehaviorSubject({}) });
+    bakStateHandlerService = jasmine.createSpyObj('BakStateHandlerService', ['getTypes', 'getLots', 'getLocations', 'getReagents'], {
+      lots: new BehaviorSubject([]),
+      activeLot: new BehaviorSubject({}),
+    });
     lotAPIService = jasmine.createSpyObj('LotAPIService', ['getLots', 'deleteLot', 'getLotById']);
 
     const dummyLot: BakLot = {
@@ -37,40 +40,33 @@ describe('LotsDetailComponent', () => {
       valid_until: '2021-01-01',
       created_at: '2021-01-01',
       created_by: 'Test',
-      in_use_from: '2021-01-01',
-      in_use_until: '2021-01-01',
       totalAmount: 0,
     };
 
     lotAPIService.getLotById.and.returnValue(of(dummyLot));
 
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        MatDialogModule,
-        MatSnackBarModule,
-        LotsDetailComponent,
-      ],
+      imports: [HttpClientTestingModule, MatDialogModule, MatSnackBarModule, LotsDetailComponent],
       providers: [
         provideNoopAnimations(),
         {
           provide: BakStateHandlerService,
-          useValue: bakStateHandlerService
+          useValue: bakStateHandlerService,
         },
         {
           provide: LotAPIService,
-          useValue: lotAPIService
+          useValue: lotAPIService,
         },
         {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
               paramMap: {
-                get: () => '1'
-              }
-            }
-          }
-        }
+                get: () => '1',
+              },
+            },
+          },
+        },
       ],
     });
     fixture = TestBed.createComponent(LotsDetailComponent);

@@ -11,6 +11,7 @@ Simple storage system which keeps track of locations, the type of the reagent, a
 #### Documentation
 
 - How to add a Location:
+
   - Go to the admin page
   - Click on the 'Locations' link
   - Click on the 'Add Location' button
@@ -52,9 +53,6 @@ Table Lot {
 
   created_at timestamp
   created_by varchar
-
-  in_use_from date
-  in_use_until date
 
   is_empty boolean [note: 'calculated field']
 }

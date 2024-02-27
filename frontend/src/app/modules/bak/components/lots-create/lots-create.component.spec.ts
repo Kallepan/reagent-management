@@ -20,7 +20,11 @@ describe('LotsCreateComponent', () => {
   const lastUser = 'TEST';
 
   beforeEach(() => {
-    bakStateHandlerService = jasmine.createSpyObj('BakStateHandlerService', ['getTypes', 'getLots', 'getLocations', 'getReagents', 'createLot'], { lots: new BehaviorSubject([]), types: new BehaviorSubject([]), locations: new BehaviorSubject([]) });
+    bakStateHandlerService = jasmine.createSpyObj('BakStateHandlerService', ['getTypes', 'getLots', 'getLocations', 'getReagents', 'createLot'], {
+      lots: new BehaviorSubject([]),
+      types: new BehaviorSubject([]),
+      locations: new BehaviorSubject([]),
+    });
     TestBed.configureTestingModule({
       imports: [
         BrowserAnimationsModule,
@@ -36,8 +40,8 @@ describe('LotsCreateComponent', () => {
       providers: [
         {
           provide: BakStateHandlerService,
-          useValue: bakStateHandlerService
-        }
+          useValue: bakStateHandlerService,
+        },
       ],
     });
     localStorage.setItem('lastUser', lastUser);
@@ -46,8 +50,7 @@ describe('LotsCreateComponent', () => {
     fixture.detectChanges();
   });
 
-  beforeAll(() => {
-  });
+  beforeAll(() => {});
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -60,8 +63,6 @@ describe('LotsCreateComponent', () => {
       createdBy: 'TESTs',
       validUntil: new Date(),
       validFrom: '',
-      inUseFrom: '',
-      inUseUntil: '',
       type: 'type',
     });
     component.submit();
@@ -97,8 +98,6 @@ describe('LotsCreateComponent', () => {
       createdBy: 'KALL',
       validUntil: new Date(),
       validFrom: '',
-      inUseFrom: '',
-      inUseUntil: '',
       type: 'typeId',
     });
     component.submit();

@@ -1,90 +1,53 @@
 <div class="container">
-    <form action="submit" [formGroup]="formGroup" class="form">
-        <div class="form__row">
-            <mat-form-field>
-                <mat-label>Charge</mat-label>
-                <input matInput type="text" formControlName="name" autocomplete="off">
-                <mat-error *ngIf="formGroup.get('name')?.hasError('required')">
-                    Charge muss angegeben werden
-                </mat-error>
-            </mat-form-field>
-            <mat-form-field>
-                <mat-label>Kürzel</mat-label>
-                <input matInput type="text" formControlName="createdBy" autocomplete="off">
-                <mat-error *ngIf="formGroup.get('createdBy')?.hasError('required')">
-                    Kürzel muss angegeben werden
-                </mat-error>
-                <mat-error *ngIf="formGroup.get('createdBy')?.hasError('minlength')">
-                    Kürzel muss mindestens 4 Zeichen lang sein
-                </mat-error>
-                <mat-error *ngIf="formGroup.get('createdBy')?.hasError('maxlength')">
-                    Kürzel darf maximal 4 Zeichen lang sein
-                </mat-error>
-                <mat-error *ngIf="formGroup.get('createdBy')?.hasError('pattern')">
-                    Kürzel darf nur aus Buchstaben bestehen
-                </mat-error>
-                <mat-hint>Format: ABCD</mat-hint>
-            </mat-form-field>
-        </div>
-        <div class="form__row">
-            <mat-form-field>
-                <mat-label>Gültig ab</mat-label>
-                <input matInput [matDatepicker]="pickerValidFrom" formControlName="validFrom">
-                <mat-datepicker-toggle matSuffix [for]="pickerValidFrom"></mat-datepicker-toggle>
-                <mat-datepicker #pickerValidFrom></mat-datepicker>
-                <mat-hint>Format: JJJJ-MM-TT</mat-hint>
-            </mat-form-field>
-            <mat-form-field>
-                <mat-label>Haltbarkeit</mat-label>
-                <input matInput [matDatepicker]="pickerValidUntil" [matDatepickerFilter]="filterNotBeforeToday"
-                    formControlName="validUntil">
-                <mat-datepicker-toggle matSuffix [for]="pickerValidUntil"></mat-datepicker-toggle>
-                <mat-datepicker #pickerValidUntil></mat-datepicker>
-                <mat-error *ngIf="formGroup.get('validUntil')?.hasError('required')">
-                    Haltbarkeit muss angegeben werden
-                </mat-error>
-                <mat-hint>Format: JJJJ-MM-TT</mat-hint>
-            </mat-form-field>
-        </div>
-        <div class="form__row">
-            <mat-form-field>
-                <mat-label>In Gebrauch von</mat-label>
-                <input matInput [matDatepicker]="pickerInUseFrom" [matDatepickerFilter]="filterNotBeforeToday"
-                    formControlName="inUseFrom">
-                <mat-datepicker-toggle matSuffix [for]="pickerInUseFrom"></mat-datepicker-toggle>
-                <mat-datepicker #pickerInUseFrom></mat-datepicker>
-                <mat-hint>Format: JJJJ-MM-TT</mat-hint>
-            </mat-form-field>
-            <mat-form-field>
-                <mat-label>In Gebrauch bis</mat-label>
-                <input matInput [matDatepicker]="pickerInUseUntil" [matDatepickerFilter]="filterNotBeforeToday"
-                    formControlName="inUseUntil">
-                <mat-datepicker-toggle matSuffix [for]="pickerInUseUntil"></mat-datepicker-toggle>
-                <mat-datepicker #pickerInUseUntil></mat-datepicker>
-                <mat-hint>Format: JJJJ-MM-TT</mat-hint>
-            </mat-form-field>
-        </div>
-        <div class="form__row">
-            <mat-form-field>
-                <mat-label>Artikelart</mat-label>
-                <input type="text" placeholder="Artikel der Lot" matInput formControlName="type"
-                    [matAutocomplete]="auto">
-                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-                    @for (type of filteredTypes | async; track type) {
-                    <mat-option [value]="type">
-                        {{type.name}} - {{type.producer}} - Art. Nr.: {{type.article_number}}
-                    </mat-option>
-                    }
-                </mat-autocomplete>
-                <mat-error *ngIf="formGroup.get('typeId')?.hasError('required')">
-                    Artikelart muss angegeben werden
-                </mat-error>
-            </mat-form-field>
-        </div>
+  <form action="submit" [formGroup]="formGroup" class="form">
+    <div class="form__row">
+      <mat-form-field>
+        <mat-label>Charge</mat-label>
+        <input matInput type="text" formControlName="name" autocomplete="off" />
+        <mat-error *ngIf="formGroup.get('name')?.hasError('required')"> Charge muss angegeben werden </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Kürzel</mat-label>
+        <input matInput type="text" formControlName="createdBy" autocomplete="off" />
+        <mat-error *ngIf="formGroup.get('createdBy')?.hasError('required')"> Kürzel muss angegeben werden </mat-error>
+        <mat-error *ngIf="formGroup.get('createdBy')?.hasError('minlength')"> Kürzel muss mindestens 4 Zeichen lang sein </mat-error>
+        <mat-error *ngIf="formGroup.get('createdBy')?.hasError('maxlength')"> Kürzel darf maximal 4 Zeichen lang sein </mat-error>
+        <mat-error *ngIf="formGroup.get('createdBy')?.hasError('pattern')"> Kürzel darf nur aus Buchstaben bestehen </mat-error>
+        <mat-hint>Format: ABCD</mat-hint>
+      </mat-form-field>
+    </div>
+    <div class="form__row">
+      <mat-form-field>
+        <mat-label>Gültig ab</mat-label>
+        <input matInput [matDatepicker]="pickerValidFrom" formControlName="validFrom" />
+        <mat-datepicker-toggle matSuffix [for]="pickerValidFrom"></mat-datepicker-toggle>
+        <mat-datepicker #pickerValidFrom></mat-datepicker>
+        <mat-hint>Format: JJJJ-MM-TT</mat-hint>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Haltbarkeit</mat-label>
+        <input matInput [matDatepicker]="pickerValidUntil" [matDatepickerFilter]="filterNotBeforeToday" formControlName="validUntil" />
+        <mat-datepicker-toggle matSuffix [for]="pickerValidUntil"></mat-datepicker-toggle>
+        <mat-datepicker #pickerValidUntil></mat-datepicker>
+        <mat-error *ngIf="formGroup.get('validUntil')?.hasError('required')"> Haltbarkeit muss angegeben werden </mat-error>
+        <mat-hint>Format: JJJJ-MM-TT</mat-hint>
+      </mat-form-field>
+    </div>
+    <div class="form__row">
+      <mat-form-field>
+        <mat-label>Artikelart</mat-label>
+        <input type="text" placeholder="Artikel der Lot" matInput formControlName="type" [matAutocomplete]="auto" />
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+          @for (type of filteredTypes | async; track type) {
+            <mat-option [value]="type"> {{ type.name }} - {{ type.producer }} - Art. Nr.: {{ type.article_number }} </mat-option>
+          }
+        </mat-autocomplete>
+        <mat-error *ngIf="formGroup.get('typeId')?.hasError('required')"> Artikelart muss angegeben werden </mat-error>
+      </mat-form-field>
+    </div>
 
-        <div class="form__row">
-            <button id="submitButton" mat-raised-button color="accent" (click)="submit()"
-                [disabled]="formGroup.invalid">Absenden</button>
-        </div>
-    </form>
+    <div class="form__row">
+      <button id="submitButton" mat-raised-button color="accent" (click)="submit()" [disabled]="formGroup.invalid">Absenden</button>
+    </div>
+  </form>
 </div>

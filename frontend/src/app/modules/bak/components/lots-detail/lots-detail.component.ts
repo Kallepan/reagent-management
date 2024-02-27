@@ -23,20 +23,7 @@ import { BakLot } from '../../interfaces/lot';
   templateUrl: './lots-detail.component.html',
   styleUrls: ['./lots-detail.component.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-
-    MatCardModule,
-    MatListModule,
-    MatFormFieldModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatInputModule,
-    MatButtonModule,
-
-    ReagentEditComponent,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatListModule, MatFormFieldModule, MatDatepickerModule, MatNativeDateModule, MatInputModule, MatButtonModule, ReagentEditComponent],
 })
 export class LotsDetailComponent implements OnInit {
   private bakStateHandlerService = inject(BakStateHandlerService);
@@ -48,35 +35,28 @@ export class LotsDetailComponent implements OnInit {
 
   id = this.route.snapshot.paramMap.get('id');
   lot$ = this.bakStateHandlerService.activeLot.asObservable().pipe(
-    filter((lot): lot is any => !!lot),
-    map(lot => lot as BakLot),
+    filter((lot): lot is BakLot => !!lot),
     map((lot) => {
-      // calculate total amount
       lot.totalAmount = lot.reagents.reduce((acc: number, reagent: any) => acc + reagent.amount, 0);
       return lot;
     }),
-    tap(lot => {
+    tap((lot) => {
       // populate form
       this.formGroup.get('validFrom')?.setValue(lot.valid_from ? new Date(lot.valid_from) : '', { emitEvent: false });
-      this.formGroup.get('inUseFrom')?.setValue(lot.in_use_from ? new Date(lot.in_use_from) : '', { emitEvent: false });
-      this.formGroup.get('inUseUntil')?.setValue(lot.in_use_until ? new Date(lot.in_use_until) : '', { emitEvent: false });
     }),
   );
-
 
   formGroup: FormGroup;
   fb = inject(FormBuilder);
 
   constructor() {
     this.formGroup = this.fb.group({
-      validFrom: ['',],
-      inUseFrom: ['',],
-      inUseUntil: ['',],
+      validFrom: [''],
     });
   }
 
   ngOnInit(): void {
-    this.lotAPIService.getLotById(this.id || "").subscribe({
+    this.lotAPIService.getLotById(this.id || '').subscribe({
       next: (lot) => this.bakStateHandlerService.activeLot.next(lot),
     });
   }
@@ -85,15 +65,11 @@ export class LotsDetailComponent implements OnInit {
     if (this.formGroup.invalid) return;
 
     const validFrom = this.formGroup.get('validFrom')?.value as Date | null;
-    const inUseFrom = this.formGroup.get('inUseFrom')?.value as Date | null;
-    const inUseUntil = this.formGroup.get('inUseUntil')?.value as Date | null;
 
-    if (!validFrom && !inUseFrom && !inUseUntil) return;
-
-    const data: any = {
+    const data: {
+      valid_from: string | null;
+    } = {
       valid_from: isoDateFormat(validFrom),
-      in_use_from: isoDateFormat(inUseFrom),
-      in_use_until: isoDateFormat(inUseUntil),
     };
 
     this.bakStateHandlerService.patchLot(this.id!, data);
@@ -102,20 +78,28 @@ export class LotsDetailComponent implements OnInit {
   openDialog() {
     const dialogRef = this.dialog.open(ReagentTransferComponent, {
       data: {
-        reagents: this.bakStateHandlerService.lots.getValue().find(lot => lot.id === this.id)!.reagents,
-      }
+        reagents: this.bakStateHandlerService.lots.getValue().find((lot) => lot.id === this.id)!.reagents,
+      },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (!result) return;
 
       const transferAmount = result.transferAmount as number;
 
       const sourceReagent = result.sourceReagent as string;
-      const sourceAmount = this.bakStateHandlerService.lots.getValue().find(lot => lot.id === this.id)!.reagents.find(r => r.id === sourceReagent)!.amount - transferAmount;
+      const sourceAmount =
+        this.bakStateHandlerService.lots
+          .getValue()
+          .find((lot) => lot.id === this.id)!
+          .reagents.find((r) => r.id === sourceReagent)!.amount - transferAmount;
 
       const targetReagent = result.targetReagent as string;
-      const targetAmount = this.bakStateHandlerService.lots.getValue().find(lot => lot.id === this.id)!.reagents.find(r => r.id === targetReagent)!.amount + transferAmount;
+      const targetAmount =
+        this.bakStateHandlerService.lots
+          .getValue()
+          .find((lot) => lot.id === this.id)!
+          .reagents.find((r) => r.id === targetReagent)!.amount + transferAmount;
 
       // calculate amount
       this.bakStateHandlerService.handleReagentTransfer({

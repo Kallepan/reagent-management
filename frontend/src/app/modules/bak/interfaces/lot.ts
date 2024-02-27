@@ -1,42 +1,37 @@
-import { BakType } from "./type";
-import { BakLocation } from "./location";
+import { BakType } from './type';
+import { BakLocation } from './location';
 
 export interface BakLot {
-    id: string;
-    name: string;
-    type: BakType;
+  id: string;
+  name: string;
+  type: BakType;
 
-    reagents: BakLotReagent[];
+  reagents: BakLotReagent[];
 
-    valid_from: string | null;
-    valid_until: string;
+  valid_from: string | null;
+  valid_until: string;
 
-    created_at: string;
-    created_by: string;
+  created_at: string;
+  created_by: string;
 
-    in_use_from: string | null;
-    in_use_until: string | null;
-
-    totalAmount: number;
-};
+  totalAmount: number;
+}
 
 export interface BakLotReagent {
-    id: string,
-    location: BakLocation,
+  id: string;
+  location: BakLocation;
 
-    created_at: string,
-    created_by: string,
+  created_at: string;
+  created_by: string;
 
-    amount: number,
+  amount: number;
 }
 
 // Post data
 export interface CreateBakLot {
-    name: string;
-    created_by: string;
-    valid_from: string | null;
-    valid_until: string;
-    in_use_from: string | null;
-    in_use_until: string | null;
-    type_id: string;
+  name: string;
+  created_by: string;
+  valid_from: string | null;
+  valid_until: string;
+  type_id: string;
 }

@@ -1,12 +1,12 @@
 #!/bin/bash
 
-export $(grep -v '^#' .env | xargs)
+export $(grep -v '^#' .prod.env | xargs)
 
 echo $DOCKER_REGISTRY_PASSWORD | docker login --username $DOCKER_REGISTRY_USERNAME --password-stdin
 
 kubectl delete secret secrets -n $NAMESPACE --kubeconfig=$KUBECONFIG
 kubectl create secret generic secrets -n $NAMESPACE \
-    --from-env-file=.env \
+    --from-env-file=.prod.env \
     --kubeconfig=$KUBECONFIG
 kubectl delete secret regcred -n $NAMESPACE --kubeconfig=$KUBECONFIG
 kubectl create secret docker-registry -n $NAMESPACE \
