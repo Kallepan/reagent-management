@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { CommonModule } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 export interface DialogData {
   reagents: BakLotReagent[]
@@ -22,12 +23,12 @@ export interface DialogData {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-
     MatInputModule,
     MatFormFieldModule,
     MatSelectModule,
     MatIconModule,
     MatDialogModule,
+    MatButtonModule,
   ],
 })
 export class ReagentTransferComponent implements OnInit {
