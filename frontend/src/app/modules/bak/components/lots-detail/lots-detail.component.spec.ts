@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LotsDetailComponent } from './lots-detail.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ActivatedRoute } from '@angular/router';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { BakStateHandlerService } from '../../services/bak-state-handler.service';
-import { BehaviorSubject, of } from 'rxjs';
-import { LotAPIService } from '../../services/lot-api.service';
-import { BakLot, BakLotReagent } from '../../interfaces/lot';
-import { BakType } from '../../interfaces/type';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
+import { BehaviorSubject, of } from 'rxjs';
+import { BakLot, BakLotReagent } from '../../interfaces/lot';
+import { Product } from '../../interfaces/type';
+import { BakStateHandlerService } from '../../services/bak-state-handler.service';
+import { LotAPIService } from '../../services/lot-api.service';
+import { LotsDetailComponent } from './lots-detail.component';
 
 describe('LotsDetailComponent', () => {
   let component: LotsDetailComponent;
@@ -19,26 +19,39 @@ describe('LotsDetailComponent', () => {
   let lotAPIService: jasmine.SpyObj<LotAPIService>;
 
   beforeEach(() => {
-    bakStateHandlerService = jasmine.createSpyObj('BakStateHandlerService', ['getTypes', 'getLots', 'getLocations', 'getReagents'], {
-      lots: new BehaviorSubject([]),
-      activeLot: new BehaviorSubject({}),
-    });
+    bakStateHandlerService = jasmine.createSpyObj(
+      'BakStateHandlerService',
+      ['getTypes', 'getLots', 'getLocations', 'getReagents'],
+      {
+        lots: new BehaviorSubject([]),
+        activeLot: new BehaviorSubject({}),
+      },
+    );
     lotAPIService = jasmine.createSpyObj('LotAPIService', ['getLots', 'deleteLot', 'getLotById']);
 
     const dummyLot: BakLot = {
       id: '1',
       name: 'Test',
-      type: {
+      product: {
         id: '1',
         name: 'Test',
-        producer: 'Test',
-        created_at: '2021-01-01',
+        producer: {
+          name: 'Test',
+          id: '1',
+          created_at: new Date(),
+        },
+        type: {
+          name: 'Test',
+          id: '1',
+          created_at: new Date(),
+        },
+        created_at: new Date(),
         created_by: 'Test',
-      } as BakType,
+      } as Product,
       reagents: [] as BakLotReagent[],
       valid_from: '2021-01-01',
       valid_until: '2021-01-01',
-      created_at: '2021-01-01',
+      created_at: new Date(),
       created_by: 'Test',
       totalAmount: 0,
     };

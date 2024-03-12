@@ -9,14 +9,14 @@ import { of } from 'rxjs';
 import { BakStateHandlerService } from './bak-state-handler.service';
 import { LocationAPIService } from './location-api.service';
 import { LotAPIService } from './lot-api.service';
+import { ProductAPIService } from './product-api.service';
 import { ReagentAPIService } from './reagent-api.service';
-import { TypeAPIService } from './type-api.service';
 
 describe('BakStateHandlerService', () => {
   let service: BakStateHandlerService;
   let httpMock: HttpTestingController;
 
-  let typeAPIService: jasmine.SpyObj<TypeAPIService>;
+  let productAPIService: jasmine.SpyObj<ProductAPIService>;
   let lotAPIService: jasmine.SpyObj<LotAPIService>;
   let locationAPIService: jasmine.SpyObj<LocationAPIService>;
   let reagentAPIService: jasmine.SpyObj<ReagentAPIService>;
@@ -26,12 +26,12 @@ describe('BakStateHandlerService', () => {
   const mockLot = { id: 123 } as any;
 
   beforeEach(() => {
-    typeAPIService = jasmine.createSpyObj('TypeAPIService', ['getTypes']);
+    productAPIService = jasmine.createSpyObj('TypeAPIService', ['getProducts']);
     lotAPIService = jasmine.createSpyObj('LotAPIService', ['getLots', 'postLot', 'deleteLot']);
     locationAPIService = jasmine.createSpyObj('LocationAPIService', ['getLocations']);
     reagentAPIService = jasmine.createSpyObj('ReagentAPIService', ['getReagents', 'patchReagent']);
 
-    typeAPIService.getTypes.and.returnValue(of([]));
+    productAPIService.getProducts.and.returnValue(of([]));
     lotAPIService.getLots.and.returnValue(of([]));
     locationAPIService.getLocations.and.returnValue(of([]));
 
@@ -41,15 +41,13 @@ describe('BakStateHandlerService', () => {
     router = jasmine.createSpyObj('Router', ['navigate']);
 
     TestBed.configureTestingModule({
-      imports: [
-        MatSnackBarModule,
-      ],
+      imports: [MatSnackBarModule],
       providers: [
         provideNoopAnimations(),
         NotificationService,
         {
-          provide: TypeAPIService,
-          useValue: typeAPIService,
+          provide: ProductAPIService,
+          useValue: productAPIService,
         },
         {
           provide: LotAPIService,
@@ -68,7 +66,7 @@ describe('BakStateHandlerService', () => {
           useValue: router,
         },
         provideHttpClientTesting(),
-      ]
+      ],
     });
     httpMock = TestBed.inject(HttpTestingController);
   });
@@ -77,7 +75,6 @@ describe('BakStateHandlerService', () => {
     TestBed.runInInjectionContext(() => {
       service = new BakStateHandlerService();
     });
-
   });
 
   it('should be created', () => {
@@ -121,21 +118,21 @@ describe('BakStateHandlerService', () => {
 
   it('patch reagent should update value if present in array', () => {
     const mockLot = {
-      id: "123456",
+      id: '123456',
       reagents: [
         {
-          id: "123456",
+          id: '123456',
           amount: 1000,
-        }
-      ]
+        },
+      ],
     } as any;
 
     const mockResponse = {
-      id: "123456",
+      id: '123456',
       amount: 123,
       lot: {
-        id: "123456",
-      }
+        id: '123456',
+      },
     } as any;
 
     service.lots.next([mockLot]);
@@ -149,21 +146,21 @@ describe('BakStateHandlerService', () => {
 
   it('should handle patching reagent in single lot', () => {
     const mockLot = {
-      id: "123456",
+      id: '123456',
       reagents: [
         {
-          id: "123456",
+          id: '123456',
           amount: 1000,
-        }
-      ]
+        },
+      ],
     } as any;
 
     const mockResponse = {
-      id: "123456",
+      id: '123456',
       amount: 123,
       lot: {
-        id: "123456",
-      }
+        id: '123456',
+      },
     } as any;
 
     service.activeLot.next(mockLot);
@@ -177,11 +174,11 @@ describe('BakStateHandlerService', () => {
 
   it('should handle patching reagent in single lot when active lot is null', () => {
     const mockResponse = {
-      id: "123456",
+      id: '123456',
       amount: 123,
       lot: {
-        id: "123456",
-      }
+        id: '123456',
+      },
     } as any;
 
     service.activeLot.next(null);

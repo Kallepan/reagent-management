@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 
+import { MatDialog } from '@angular/material/dialog';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { NotificationService } from '@app/core/services/notification.service';
 import { LotAPIService } from '@app/modules/bak/services/lot-api.service';
 import { of } from 'rxjs';
 import { HeaderGlobalSearchComponent } from './header-global-search.component';
-import { MatDialog } from '@angular/material/dialog';
 
 describe('HeaderGlobalSearchComponent', () => {
   let component: HeaderGlobalSearchComponent;
@@ -18,7 +18,10 @@ describe('HeaderGlobalSearchComponent', () => {
   let mockDialog: jasmine.SpyObj<MatDialog>;
 
   beforeEach(() => {
-    notificationService = jasmine.createSpyObj('NotificationService', ['infoMessage', 'warnMessage']);
+    notificationService = jasmine.createSpyObj('NotificationService', [
+      'infoMessage',
+      'warnMessage',
+    ]);
 
     // setup router
     router = jasmine.createSpyObj('Router', ['navigate'], {
@@ -109,7 +112,11 @@ describe('HeaderGlobalSearchComponent', () => {
     mockDialog.open.and.returnValue({ afterClosed: () => of('1') } as any);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const lot = { id: '1', name: 'lot', type: { producer: 'test1', name: 'test2' } } as any;
+    const lot = {
+      id: '1',
+      name: 'lot',
+      product: { producer: { name: 'producer 1' }, name: 'test2' },
+    } as any;
     lotAPIService.searchLots.and.returnValue(of([lot, lot]));
     component.onSearch('BAK', query);
 

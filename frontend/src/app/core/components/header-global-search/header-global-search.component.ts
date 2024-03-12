@@ -15,14 +15,25 @@ import { messages } from '@app/core/constants/messages';
 import { NotificationService } from '@app/core/services/notification.service';
 import { LotAPIService } from '@app/modules/bak/services/lot-api.service';
 import { cleanQuery } from '@app/modules/pcr/functions/query-cleaner.function';
-import { ChoiceDialogComponent, ChoiceDialogData } from '@app/shared/components/choice-dialog/choice-dialog.component';
+import {
+  ChoiceDialogComponent,
+  ChoiceDialogData,
+} from '@app/shared/components/choice-dialog/choice-dialog.component';
 import { SearchBarComponent } from '@app/shared/components/search-bar/search-bar.component';
 import { Subject, filter, map, of, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-header-global-search',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, SearchBarComponent, MatButtonModule, RouterLink, MatCheckboxModule, MatTooltipModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    SearchBarComponent,
+    MatButtonModule,
+    RouterLink,
+    MatCheckboxModule,
+    MatTooltipModule,
+  ],
   templateUrl: './header-global-search.component.html',
   styleUrl: './header-global-search.component.scss',
 })
@@ -80,7 +91,7 @@ export class HeaderGlobalSearchComponent implements OnInit {
 
               const formattedLots = lots.map((lot) => ({
                 id: lot.id,
-                name: `${lot.name} (${lot.type.producer}-${lot.type.name})`,
+                name: `${lot.name} (${lot.product.name})`,
               }));
 
               const data: ChoiceDialogData = {
@@ -112,7 +123,11 @@ export class HeaderGlobalSearchComponent implements OnInit {
             ),
           );
         default:
-          return of(null).pipe(tap(() => this._notificationService.warnMessage(messages.GENERAL.FEATURE_NOT_IMPLEMENTED)));
+          return of(null).pipe(
+            tap(() =>
+              this._notificationService.warnMessage(messages.GENERAL.FEATURE_NOT_IMPLEMENTED),
+            ),
+          );
       }
     }),
     filter((query) => query !== null),

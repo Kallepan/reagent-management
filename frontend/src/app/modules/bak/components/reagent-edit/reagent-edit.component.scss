@@ -1,10 +1,23 @@
 .reagents {
-    display: flex;
-    gap: .5rem;
-    flex-direction: row;
-    align-items: center;
+  display: grid;
+  grid-template-columns: max-content repeat(3, min-content) min-content repeat(3, min-content);
+  align-items: center;
 
-    .reagents__amount {
-        font-weight: bold;
-    }
+  .reagents__name {
+    margin-right: 1rem;
+  }
+
+  .reagents__amount {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.25rem;
+    grid-column: 5;
+    grid-row: 1;
+    margin: 0 1rem;
+  }
+}
+
+.custom-button {
+  font-weight: bold;
+  margin: 0 0.25rem;
 }

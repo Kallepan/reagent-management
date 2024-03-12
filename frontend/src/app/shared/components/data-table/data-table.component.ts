@@ -1,20 +1,29 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { CdkColumnDef } from '@angular/cdk/table';
-import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { DatePipe, NgStyle, NgTemplateOutlet } from '@angular/common';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRippleModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { CdkDetailRowDirective } from '@app/shared/directives/cdk-detail-row.directive';
 
 export type ColumnsSchema = {
-  key: string,
-  label: string,
-  type: 'text' | 'color',
-  fn: (row: any) => string | number,
+  key: string;
+  label: string;
+  type: 'text' | 'color' | 'date';
+  fn: (row: any) => string | number | Date;
 };
 
 @Component({
@@ -24,7 +33,9 @@ export type ColumnsSchema = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
-    CommonModule,
+    NgStyle,
+    NgTemplateOutlet,
+    DatePipe,
     MatSortModule,
     MatPaginatorModule,
     MatTableModule,
@@ -32,9 +43,7 @@ export type ColumnsSchema = {
     MatIconModule,
     MatButtonModule,
   ],
-  providers: [
-    CdkColumnDef
-  ],
+  providers: [CdkColumnDef],
   animations: [
     trigger('detailExpand', [
       state('collapsed', style({ height: '0px', minHeight: '0' })),
@@ -67,7 +76,7 @@ export class DataTableComponent<T> implements OnInit, AfterViewInit {
     this.dataSource.filterPredicate = (data: T, filter: string) => {
       const dataStr = JSON.stringify(data).toLowerCase();
       return dataStr.indexOf(filter) !== -1;
-    }
+    };
   }
 
   ngAfterViewInit(): void {
@@ -78,6 +87,6 @@ export class DataTableComponent<T> implements OnInit, AfterViewInit {
       const fn = this.schema.find((column) => column.key === property)?.fn;
       if (fn) return fn(item);
       return item[property];
-    }
+    };
   }
 }

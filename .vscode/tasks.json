@@ -80,15 +80,23 @@
       }
     },
     {
-      // Django migrations
+      // Django make migrations
+      "type": "shell",
+      "command": "python",
+      "args": ["backend/src/manage.py", "makemigrations", "--noinput"],
+      "problemMatcher": [],
+      "label": "python: makemigrations",
+      "detail": "python manage.py makemigrations --noinput",
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      }
+    },
+    {
+      // Django migrate
       "type": "shell",
       "command": "python",
       "args": [
-        "backend/src/manage.py",
-        "makemigrations",
-        "--noinput",
-        "&&",
-        "python",
         "backend/src/manage.py",
         "migrate",
         "--noinput",
@@ -107,7 +115,7 @@
       ],
       "problemMatcher": [],
       "label": "python: migrations",
-      "detail": "python manage.py makemigrations --noinput && python manage.py migrate --noinput && export DJANGO_SUPERUSER_PASSWORD=admin && python manage.py createsuperuser --noinput --identifier admin --email admin@example.com",
+      "detail": "python manage.py migrate --noinput && export DJANGO_SUPERUSER_PASSWORD=admin && python manage.py createsuperuser --noinput --identifier admin --email admin@example.com",
       "group": {
         "kind": "test",
         "isDefault": false

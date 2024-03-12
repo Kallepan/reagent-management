@@ -1,24 +1,21 @@
 import { NgModule } from '@angular/core';
 
-import { LocationAPIService } from './services/location-api.service';
-import { TypeAPIService } from './services/type-api.service';
-import { LotAPIService } from './services/lot-api.service';
-import { BakStateHandlerService } from './services/bak-state-handler.service';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
+import { BakStateHandlerService } from './services/bak-state-handler.service';
+import { LocationAPIService } from './services/location-api.service';
+import { ProductAPIService } from './services/product-api.service';
 import { ReagentAPIService } from './services/reagent-api.service';
 
 @NgModule({
-    providers: [
-        BakStateHandlerService,
-        LocationAPIService,
-        TypeAPIService,
-        ReagentAPIService,
-        {
-            provide: MAT_DATE_LOCALE,
-            useValue: 'de-DE',
-        },
-    ],
+  providers: [
+    BakStateHandlerService,
+    LocationAPIService,
+    ProductAPIService,
+    ReagentAPIService,
+    {
+      provide: MAT_DATE_LOCALE,
+      useValue: 'de-DE',
+    },
+  ],
 })
-export class BakModule {
-
-}
+export class BakModule {}

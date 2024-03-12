@@ -1,6 +1,6 @@
 #!/bin/bash
 
-python manage.py migrate --no-input
+# python manage.py migrate --no-input
 
 # Apply database migrations
 if [ -n "$DJANGO_SUPERUSER_USERNAME" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ] ; then

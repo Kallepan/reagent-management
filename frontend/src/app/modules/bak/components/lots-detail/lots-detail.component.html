@@ -1,11 +1,17 @@
 <div class="container" *ngIf="lot$ | async as lot">
   <div class="reagents">
     <h3>Lagerorte</h3>
-    <span class="row">
-      <app-reagent-edit *ngFor="let reagent of lot.reagents" [reagent]="reagent" (onPatchReagent)="patchReagent(reagent.id, $event)"></app-reagent-edit>
+    <span class="grid">
+      <app-reagent-edit
+        *ngFor="let reagent of lot.reagents"
+        [reagent]="reagent"
+        (onPatchReagent)="patchReagent(reagent.id, $event)"
+      ></app-reagent-edit>
     </span>
   </div>
-  <button mat-raised-button (click)="openDialog()" color="accent">Reagenzien zwischen Lagern verschieben</button>
+  <button mat-raised-button (click)="openTransferDialog()" color="accent">
+    Reagenzien zwischen Lagern verschieben
+  </button>
   <mat-card class="large-card">
     <mat-card-header>
       <mat-card-title>
@@ -13,8 +19,8 @@
       </mat-card-title>
       <mat-card-subtitle>
         <h3>
-          {{ lot.type.name }} - {{ lot.type.producer }}, Art-nr.:
-          {{ lot.type.article_number }}
+          {{ lot.product.name }} - {{ lot.product.producer.name }}, Art-nr.:
+          {{ lot.product.article_number }}, Art: {{ lot.product.type.name }}
         </h3>
       </mat-card-subtitle>
     </mat-card-header>
@@ -22,9 +28,15 @@
       <div class="content-block">
         <p>Metadaten</p>
         <mat-list role="list">
-          <mat-list-item role="listitem"> Haltbar bis: {{ lot.valid_until | date: 'dd.MM.yyyy' }} </mat-list-item>
-          <mat-list-item role="listitem"> Erstellt am: {{ lot.created_at | date: 'dd.MM.yyyy' }} </mat-list-item>
-          <mat-list-item role="listitem"> Erstellt von: {{ lot.created_by | titlecase }} </mat-list-item>
+          <mat-list-item role="listitem">
+            Haltbar bis: {{ lot.valid_until | date: 'dd.MM.yyyy' }}
+          </mat-list-item>
+          <mat-list-item role="listitem">
+            Erstellt am: {{ lot.created_at | date: 'dd.MM.yyyy' }}
+          </mat-list-item>
+          <mat-list-item role="listitem">
+            Erstellt von: {{ lot.created_by | titlecase }}
+          </mat-list-item>
           <mat-list-item role="listitem"> Gesamtmenge: {{ lot.totalAmount }} </mat-list-item>
         </mat-list>
       </div>
@@ -46,9 +58,13 @@
           <mat-datepicker #pickerValidFrom></mat-datepicker>
           <mat-hint>Format: JJJJ-MM-TT</mat-hint>
         </mat-form-field>
-        <button mat-raised-button color="accent" (click)="submit()" [disabled]="formGroup.invalid">Absenden</button>
+        <button mat-raised-button color="accent" (click)="submit()" [disabled]="formGroup.invalid">
+          Speichern
+        </button>
       </form>
     </mat-card-actions>
   </mat-card>
-  <button mat-raised-button color="warn" (click)="deleteLot()">Lot mitsamt Lagerorte loeschen</button>
+  <button mat-raised-button color="warn" (click)="deleteLot()">
+    Lot mitsamt allen Lagerorten loeschen
+  </button>
 </div>

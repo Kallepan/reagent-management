@@ -3,9 +3,47 @@ from django.contrib.auth import get_user_model
 
 from rest_framework.test import APIClient
 
-from .models import Type, Lot, Reagent, Location
+from .models import ProductType, ProductProducer, Product, Lot, Reagent, Location
 
 import logging
+
+
+class PermissionsTest(TestCase):
+    """Test the user model using the APIClient"""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create(
+            identifier="testuser", email="testuser@example.com", password="testpass123"
+        )
+
+        type = ProductType.objects.create(name="Test Type")
+        producer = ProductProducer.objects.create(name="Test Producer")
+        self.product = Product.objects.create(
+            name="Test Product", type=type, producer=producer
+        )
+
+    def test_permissions(self):
+        data = {
+            "name": "Test Lot 2",
+            "valid_until": "2021-12-31",
+            "created_by": "Test User",
+            "product_id": self.product.id,
+        }
+
+        # try to post to the api without authentication
+        response = self.client.post("/api/v1/bak/lots/", data=data, format="json")
+        self.assertEqual(response.status_code, 401)
+
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post("/api/v1/bak/lots/", data=data, format="json")
+        self.assertEqual(response.status_code, 403)
+
+        self.user.groups.create(name="BAK")
+
+        # try to post to the api with authentication
+        response = self.client.post("/api/v1/bak/lots/", data=data, format="json")
+        self.assertEqual(response.status_code, 201)
 
 
 class LotTest(TestCase):
@@ -29,7 +67,12 @@ class LotTest(TestCase):
         self.assertEqual(len(data), 0)
 
     def test_is_empty_filter(self):
-        type = Type.objects.create(name="Test Type", producer="Test Producer")
+        type = ProductType.objects.create(name="Test Type")
+        producer = ProductProducer.objects.create(name="Test Producer")
+
+        product = Product.objects.create(
+            name="Test Product", type=type, producer=producer
+        )
         loc = Location.objects.create(name="Test Location")
 
         # get empty
@@ -42,19 +85,19 @@ class LotTest(TestCase):
             name="Test Lot 2",
             valid_until="2021-12-31",
             created_by="Test User",
-            type=type,
+            product=product,
         )
         lot_three = Lot.objects.create(
             name="Test Lot 3",
             valid_until="2021-12-31",
             created_by="Test User",
-            type=type,
+            product=product,
         )
         lot_four = Lot.objects.create(
             name="Test Lot 4",
             valid_until="2021-12-31",
             created_by="Test User",
-            type=type,
+            product=product,
         )
         lot_two.reagents.create(amount=0, created_by=self.user, location=loc)
 
@@ -85,9 +128,16 @@ class LotTest(TestCase):
         self.assertEqual(len(data), 1)
 
     def test_get_specific_lot(self):
-        type = Type.objects.create(name="Test Type", producer="Test Producer")
+        type = ProductType.objects.create(name="Test Type")
+        producer = ProductProducer.objects.create(name="Test Producer")
+        product = Product.objects.create(
+            name="Test Product", type=type, producer=producer
+        )
         lot = Lot.objects.create(
-            name="Test Lot", valid_until="2021-12-31", created_by="Test User", type=type
+            name="Test Lot",
+            valid_until="2021-12-31",
+            created_by="Test User",
+            product=product,
         )
 
         response = self.client.get(f"/api/v1/bak/lots/{lot.id}/")
@@ -98,18 +148,22 @@ class LotTest(TestCase):
         self.assertEqual(data["valid_until"], lot.valid_until)
         self.assertEqual(data["created_by"], lot.created_by)
 
-        self.assertEqual(data["type"]["id"], str(type.id))
+        self.assertEqual(data["product"]["id"], str(product.id))
 
         self.assertIn("is_empty", data)
 
     def test_delete_lot(self):
-        type = Type.objects.create(name="Test Type", producer="Test Producer")
+        type = ProductType.objects.create(name="Test Type")
+        producer = ProductProducer.objects.create(name="Test Producer")
+        product = Product.objects.create(
+            name="Test Product", type=type, producer=producer
+        )
         lot = Lot.objects.create(
             name="Test Lot",
             valid_until="2021-12-31",
             valid_from="2020-01-14",
             created_by="Test User",
-            type=type,
+            product=product,
         )
 
         response = self.client.delete(f"/api/v1/bak/lots/{lot.id}/")
@@ -120,9 +174,16 @@ class LotTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_update_lot(self):
-        type = Type.objects.create(name="Test Type", producer="Test Producer")
+        type = ProductType.objects.create(name="Test Type")
+        producer = ProductProducer.objects.create(name="Test Producer")
+        product = Product.objects.create(
+            name="Test Product", type=type, producer=producer
+        )
         lot = Lot.objects.create(
-            name="Test Lot", valid_until="2021-12-31", created_by="Test User", type=type
+            name="Test Lot",
+            valid_until="2021-12-31",
+            created_by="Test User",
+            product=product,
         )
 
         test_cases = [
@@ -132,7 +193,7 @@ class LotTest(TestCase):
                 "data": {
                     "valid_until": "2021-12-31",
                     "created_by": "Test User",
-                    "type_id": "Test Type",
+                    "product_id": "Test Product",
                 },
             },
             {
@@ -163,7 +224,11 @@ class LotTest(TestCase):
             self.assertEqual(response.status_code, step["status_code"])
 
     def test_create_lot(self):
-        type = Type.objects.create(name="Test Type", producer="Test Producer")
+        type = ProductType.objects.create(name="Test Type")
+        producer = ProductProducer.objects.create(name="Test Producer")
+        product = Product.objects.create(
+            name="Test Product", type=type, producer=producer
+        )
 
         # test the creation of a lot
         test_steps = [
@@ -174,7 +239,7 @@ class LotTest(TestCase):
                     "name": "Test Lot",
                     "valid_until": "2021-12-31",
                     "created_by": "Test User",
-                    "type_id": "Test-Type",
+                    "product_id": "Test-Type",
                 },
             },
             {
@@ -184,7 +249,7 @@ class LotTest(TestCase):
                     "name": None,
                     "valid_until": "2021-12-31",
                     "created_by": "Test User",
-                    "type_id": type.id,
+                    "product_id": product.id,
                 },
             },
             {
@@ -194,7 +259,7 @@ class LotTest(TestCase):
                     "name": "Test Lot 2",
                     "valid_until": "2021-12-31",
                     "created_by": "Test User",
-                    "type_id": type.id,
+                    "product_id": product.id,
                 },
             },
             {
@@ -204,7 +269,7 @@ class LotTest(TestCase):
                     "name": "Test Lot 2",
                     "valid_until": "2021-12-31",
                     "created_by": "Test User",
-                    "type_id": type.id,
+                    "product_id": product.id,
                 },
             },
             {
@@ -215,7 +280,7 @@ class LotTest(TestCase):
                     "valid_from": "2021-12-31",
                     "valid_until": "2021-12-30",
                     "created_by": "Test User",
-                    "type_id": type.id,
+                    "product_id": product.id,
                 },
             },
         ]
@@ -241,7 +306,7 @@ class LocationTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         data = response.data["results"]
-        self.assertEqual(len(data), 4)  # migrations from database
+        self.assertEqual(len(data), 2)
 
     def test_get_specific_location(self):
         response = self.client.get(f"/api/v1/bak/locations/{self.location_one.id}/")
@@ -249,78 +314,6 @@ class LocationTest(TestCase):
 
         data = response.data
         self.assertEqual(data["name"], self.location_one.name)
-
-
-class PermissionsTest(TestCase):
-    """Test the user model using the APIClient"""
-
-    def setUp(self):
-        self.client = APIClient()
-        self.user = get_user_model().objects.create(
-            identifier="testuser", email="testuser@example.com", password="testpass123"
-        )
-        self.type = Type.objects.create(name="Test Type", producer="Test Producer")
-
-    def test_permissions(self):
-        data = {
-            "name": "Test Lot 2",
-            "valid_until": "2021-12-31",
-            "created_by": "Test User",
-            "type_id": self.type.id,
-        }
-
-        # try to post to the api without authentication
-        response = self.client.post("/api/v1/bak/lots/", data=data, format="json")
-        self.assertEqual(response.status_code, 401)
-
-        self.client.force_authenticate(user=self.user)
-        response = self.client.post("/api/v1/bak/lots/", data=data, format="json")
-        self.assertEqual(response.status_code, 403)
-
-        self.user.groups.create(name="BAK")
-
-        # try to post to the api with authentication
-        response = self.client.post("/api/v1/bak/lots/", data=data, format="json")
-        self.assertEqual(response.status_code, 201)
-
-
-class TypeTest(TestCase):
-    """Test the type model using the APIClient"""
-
-    def setUp(self):
-        self.client = APIClient()
-
-    def test_get_types(self):
-        response = self.client.get("/api/v1/bak/types/")
-        self.assertEqual(response.status_code, 200)
-
-        data = response.data["results"]
-
-        self.assertEqual(len(data), 46)  # 46 types are created in the migration
-
-        type = Type.objects.create(name="Test Type", producer="Test Producer")
-        type_two = Type.objects.create(name="Test Type 2", producer="Test Producer 2")
-
-        response = self.client.get("/api/v1/bak/types/")
-        self.assertEqual(response.status_code, 200)
-
-        data = response.data["results"]
-
-        self.assertEqual(len(data), 48)
-        self.assertEqual(data[46]["name"], type.name)
-        self.assertEqual(data[46]["producer"], type.producer)
-        self.assertEqual(data[47]["name"], type_two.name)
-        self.assertEqual(data[47]["producer"], type_two.producer)
-
-    def test_get_specific_type(self):
-        type = Type.objects.create(name="Test Type", producer="Test Producer")
-        response = self.client.get(f"/api/v1/bak/types/{type.id}/")
-        self.assertEqual(response.status_code, 200)
-
-        data = response.data
-
-        self.assertEqual(data["name"], type.name)
-        self.assertEqual(data["producer"], type.producer)
 
 
 class LotReagentTestCase(TestCase):
@@ -341,11 +334,18 @@ class LotReagentTestCase(TestCase):
 
     def test_lot_reagent(self):
         # create dummy type
-        type = Type.objects.create(name="Test Type", producer="Test Producer")
+        producer = ProductProducer.objects.create(name="Test Producer")
+        type = ProductType.objects.create(name="Test Type")
+        product = Product.objects.create(
+            name="Test Product", type=type, producer=producer
+        )
 
         # create dummy lot
         lot = Lot.objects.create(
-            name="Test Lot", valid_until="2021-12-31", created_by="Test User", type=type
+            name="Test Lot",
+            valid_until="2021-12-31",
+            created_by="Test User",
+            product=product,
         )
 
         # create dummy location
@@ -394,10 +394,18 @@ class LotReagentTestCase(TestCase):
 
 class ReagentTest(TestCase):
     def setUp(self) -> None:
+        producer_one = ProductProducer.objects.create(name="Test Producer 1")
+        producer_two = ProductProducer.objects.create(name="Test Producer 2")
+
+        type_one = ProductType.objects.create(name="Test Type 1")
+        type_two = ProductType.objects.create(name="Test Type 2")
+
         # create dummy type
-        self.type = Type.objects.create(name="Test Type", producer="Test Producer")
-        self.type_two = Type.objects.create(
-            name="Test Type 2", producer="Test Producer 2"
+        self.product_one = Product.objects.create(
+            name="Test Product 1", type=type_one, producer=producer_one
+        )
+        self.product_two = Product.objects.create(
+            name="Test Product 2", type=type_two, producer=producer_two
         )
 
         # create dummy lot
@@ -405,13 +413,13 @@ class ReagentTest(TestCase):
             name="Test Lot",
             valid_until="2021-12-31",
             created_by="Test User",
-            type=self.type,
+            product=self.product_one,
         )
         self.lot_two = Lot.objects.create(
             name="Test Lot 2",
             valid_until="2021-12-31",
             created_by="Test User",
-            type=self.type_two,
+            product=self.product_two,
         )
 
         # create dummy location
@@ -555,3 +563,65 @@ class ReagentTest(TestCase):
                 "/api/v1/bak/reagents/", data=step["data"], format="json"
             )
             self.assertEqual(response.status_code, step["status_code"])
+
+
+class ProductTest(TestCase):
+    """Test the type model using the APIClient"""
+
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_get_types(self):
+        response = self.client.get("/api/v1/bak/products/")
+        self.assertEqual(response.status_code, 200)
+
+        data = response.data["results"]
+
+        self.assertEqual(len(data), 0)
+
+        producer_one = ProductProducer.objects.create(name="Test Producer 1")
+        procuer_two = ProductProducer.objects.create(name="Test Producer 2")
+        type_one = ProductType.objects.create(name="Test Type 1")
+        type_two = ProductType.objects.create(name="Test Type 2")
+
+        product_one = Product.objects.create(
+            name="Test Product 1", type=type_one, producer=producer_one
+        )
+        product_two = Product.objects.create(
+            name="Test Product 2", type=type_two, producer=procuer_two
+        )
+
+        response = self.client.get("/api/v1/bak/products/")
+        self.assertEqual(response.status_code, 200)
+
+        data = response.data["results"]
+
+        self.assertEqual(len(data), 2)
+        self.assertEqual(data[0]["name"], product_one.name)
+        self.assertEqual(data[0]["producer"]["name"], product_one.producer.name)
+        self.assertEqual(data[0]["producer"]["id"], str(product_one.producer.id))
+        self.assertEqual(data[0]["type"]["name"], product_one.type.name)
+        self.assertEqual(data[0]["type"]["id"], str(product_one.type.id))
+        self.assertEqual(data[1]["name"], product_two.name)
+        self.assertEqual(data[1]["producer"]["name"], product_two.producer.name)
+        self.assertEqual(data[1]["producer"]["id"], str(product_two.producer.id))
+        self.assertEqual(data[1]["type"]["name"], product_two.type.name)
+        self.assertEqual(data[1]["type"]["id"], str(product_two.type.id))
+
+    def test_get_specific_type(self):
+        type = ProductType.objects.create(name="Test Type")
+        producer = ProductProducer.objects.create(name="Test Producer")
+
+        product = Product.objects.create(
+            name="Test Product", type=type, producer=producer
+        )
+        response = self.client.get(f"/api/v1/bak/products/{product.id}/")
+        self.assertEqual(response.status_code, 200)
+
+        data = response.data
+
+        self.assertEqual(data["name"], product.name)
+        self.assertEqual(data["producer"]["name"], product.producer.name)
+        self.assertEqual(data["producer"]["id"], str(product.producer.id))
+        self.assertEqual(data["type"]["name"], product.type.name)
+        self.assertEqual(data["type"]["id"], str(product.type.id))

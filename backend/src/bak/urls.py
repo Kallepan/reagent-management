@@ -1,16 +1,14 @@
 from rest_framework import routers
 
-from .views import LocationViewSet, TypeViewSet, LotViewSet, ReagentViewSet
+from .views import LocationViewSet, ProductViewSet, LotViewSet, ReagentViewSet
 
 router = routers.SimpleRouter()
 
-router.register(r'locations', LocationViewSet)
-router.register(r'types', TypeViewSet)
-router.register(r'lots', LotViewSet)
-router.register(r'reagents', ReagentViewSet)
+router.register(r"locations", LocationViewSet)
+router.register(r"products", ProductViewSet)
+router.register(r"lots", LotViewSet)
+router.register(r"reagents", ReagentViewSet)
 
-urlpatterns = [
-
-]
+urlpatterns = []
 
 urlpatterns += router.urls

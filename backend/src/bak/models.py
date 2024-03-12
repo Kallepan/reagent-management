@@ -21,27 +21,67 @@ class Location(models.Model):
         return self.name
 
 
-class Type(models.Model):
+class ProductType(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100, db_index=True, unique=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'bak"."product_type'
+        ordering = ["name"]
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class ProductProducer(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100, db_index=True, unique=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'bak"."product_producer'
+        ordering = ["name"]
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class Product(models.Model):
     """
-    Reagent type model.
-    Describes the differing types of reagents. E.g. "Blood", "KV", "Sab", etc.
+    The reagent product.
+    Describes the differing products of reagents. E.g. "Blood", "KV", "Sab", etc.
     """
 
     id = models.UUIDField(
         primary_key=True, db_index=True, default=uuid.uuid4, editable=False
     )
     name = models.CharField(max_length=50, db_index=True)
-    producer = models.CharField(max_length=100, db_index=True)
+    producer = models.ForeignKey(
+        ProductProducer, on_delete=models.CASCADE, related_name="products"
+    )
+    type = models.ForeignKey(
+        ProductType,
+        on_delete=models.CASCADE,
+        related_name="products",
+    )
 
     article_number = models.CharField(max_length=50, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'bak"."type'
-        index_together = [["name", "producer"]]
+        db_table = 'bak"."product'
+        index_together = [
+            [
+                "name",
+                "producer",
+            ]
+        ]
 
     def __str__(self) -> str:
-        return f"{self.name} ({self.producer})"
+        return f"{self.name} ({self.producer.name}, {self.type.name})"
 
 
 class Lot(models.Model):
@@ -55,7 +95,7 @@ class Lot(models.Model):
     )
     name = models.CharField(max_length=50, db_index=True)
 
-    type = models.ForeignKey(Type, on_delete=models.CASCADE, related_name="lots")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="lots")
 
     valid_from = models.DateField(null=True, blank=True)
     valid_until = models.DateField()
@@ -67,9 +107,9 @@ class Lot(models.Model):
 
     class Meta:
         db_table = 'bak"."lot'
-        index_together = [["name", "type"]]
+        index_together = [["name", "product"]]
         constraints = [
-            UniqueConstraint(fields=["name", "type"], name="unique_lot"),
+            UniqueConstraint(fields=["name", "product"], name="unique_lot"),
         ]
 
     # check if all reagents of this lot are empty
@@ -78,7 +118,7 @@ class Lot(models.Model):
         return self.reagents.filter(amount__gt=0).count() == 0
 
     def __str__(self) -> str:
-        return f"{self.name} ({self.type})"
+        return f"{self.name} ({self.product})"
 
 
 class Reagent(models.Model):
@@ -86,7 +126,7 @@ class Reagent(models.Model):
     Actual reagent model which keeps track of the amount of reagent in stock.
     """
 
-    # Unique constraint on type, location and lot
+    # Unique constraint on product, location and lot
     id = models.UUIDField(
         primary_key=True, db_index=True, default=uuid.uuid4, editable=False
     )

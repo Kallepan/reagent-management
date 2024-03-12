@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Location, Type, Lot, Reagent
+from .models import Location, ProductProducer, ProductType, Product, Lot, Reagent
 
 from datetime import date
 
@@ -37,14 +37,46 @@ class LocationSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "created_at"]
 
 
-class TypeSerializer(serializers.ModelSerializer):
+class ProductProducerSerializer(serializers.ModelSerializer):
     """
-    Serializer for Type model.
+    Serializer for ProductProducer model.
     """
 
     class Meta:
-        model = Type
-        fields = ["id", "name", "producer", "created_at", "article_number"]
+        model = ProductProducer
+        fields = ["id", "name", "created_at"]
+        read_only_fields = ["id", "created_at"]
+
+
+class ProductTypeSerializer(serializers.ModelSerializer):
+    """
+    Serializer for ProductType model.
+    """
+
+    class Meta:
+        model = ProductType
+        fields = ["id", "name", "created_at"]
+        read_only_fields = ["id", "created_at"]
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Product model.
+    """
+
+    producer = ProductProducerSerializer(read_only=True)
+    type = ProductTypeSerializer(read_only=True)
+
+    class Meta:
+        model = Product
+        fields = [
+            "id",
+            "name",
+            "created_at",
+            "article_number",
+            "producer",
+            "type",
+        ]
         read_only_fields = ["id", "created_at"]
 
 
@@ -66,9 +98,9 @@ class LotSerializer(serializers.ModelSerializer):
         many=True,
         read_only=True,
     )
-    type = TypeSerializer(read_only=True)
-    type_id = serializers.PrimaryKeyRelatedField(
-        queryset=Type.objects.all(), write_only=True
+    product = ProductSerializer(read_only=True)
+    product_id = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(), write_only=True
     )
 
     class Meta:
@@ -76,8 +108,8 @@ class LotSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
-            "type",
-            "type_id",
+            "product",
+            "product_id",
             "reagents",
             "valid_from",
             "valid_until",
@@ -88,9 +120,9 @@ class LotSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "created_at", "is_empty"]
 
     def create(self, validated_data):
-        # we need to manually pop the type_id from validated_data and create the lot with it
-        type_id = validated_data.pop("type_id")
-        lot = Lot.objects.create(**validated_data, type=type_id)
+        # we need to manually pop the product_id from validated_data and create the lot with it
+        product_id = validated_data.pop("product_id")
+        lot = Lot.objects.create(**validated_data, product=product_id)
         lot.save()
 
         # create lot with each location, for future me: this could lead to a lot of errors
@@ -104,28 +136,29 @@ class LotSerializer(serializers.ModelSerializer):
         return lot
 
     def validate(self, *args, **kwargs):
-        # check if name and type combination is unique
+        # check if name and product combination is unique
         if Lot.objects.filter(
             name=self.initial_data.get("name", None),
-            type=self.initial_data.get("type_id", None),
+            product=self.initial_data.get("product_id", None),
         ).exists():
             raise serializers.ValidationError(
-                "Lot with this name and type already exists"
+                "Lot with this name and product already exists"
             )
         if self.instance:
-            # if instance exists, check if name and type combination is unique
+            # if instance exists, check if name and product combination is unique
             if Lot.objects.filter(
-                name=self.initial_data.get("name", None), type=self.instance.type
+                name=self.initial_data.get("name", None), product=self.instance.product
             ).exists():
                 raise serializers.ValidationError(
-                    "Lot with this name and type already exists"
+                    "Lot with this name and product already exists"
                 )
-            # if instance exists, check if name and type combination is unique
+            # if instance exists, check if name and product combination is unique
             if Lot.objects.filter(
-                name=self.instance.name, type=self.initial_data.get("type_id", None)
+                name=self.instance.name,
+                product=self.initial_data.get("product_id", None),
             ).exists():
                 raise serializers.ValidationError(
-                    "Lot with this name and type already exists"
+                    "Lot with this name and typproduct already exists"
                 )
 
         # check saved valid_from and valid_until
@@ -148,13 +181,16 @@ class LotSerializer(serializers.ModelSerializer):
 
 
 class ReagentLotSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Lot model. Used in ReagentSerializer to show the lot details.
+    """
 
     class Meta:
         model = Lot
         fields = [
             "id",
             "name",
-            "type",
+            "product",
             "valid_from",
             "valid_until",
             "is_empty",
@@ -162,7 +198,7 @@ class ReagentLotSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "id",
             "name",
-            "type",
+            "product",
             "valid_from",
             "valid_until",
             "is_empty",
