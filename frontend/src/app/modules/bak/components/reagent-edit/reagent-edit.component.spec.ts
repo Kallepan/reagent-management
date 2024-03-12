@@ -36,6 +36,7 @@ describe('ReagentEditComponent', () => {
 
   it('should emit the correct amount when a button is clicked', () => {
     const spy = spyOn(component.onPatchReagent, 'emit');
+    const componentSpy = spyOn(component, 'emitReagentAmountWith').and.callThrough();
     (fixture.nativeElement.querySelectorAll('button') as any[]).forEach((button, index) => {
       const expectedAmount =
         component.reagent.amount + component.buttonConfigs[index].amountToBeAddedToTheReagent < 0
@@ -44,12 +45,48 @@ describe('ReagentEditComponent', () => {
       button.click();
       expect(spy).toHaveBeenCalledWith(expectedAmount);
       spy.calls.reset();
+
+      expect(componentSpy).toHaveBeenCalledWith(
+        component.buttonConfigs[index].amountToBeAddedToTheReagent,
+      );
+      componentSpy.calls.reset();
     });
   });
 
   it('each button should have a grid-column property', () => {
     (fixture.nativeElement.querySelectorAll('button') as any[]).forEach((button, index) => {
       expect(button.style.gridColumn).toBe(component.buttonConfigs[index].gridColumn.toString());
+    });
+  });
+
+  it('should not emit a value higher than 999', () => {
+    const spy = spyOn(component.onPatchReagent, 'emit');
+    component.emitReagentAmountWith(1000);
+    expect(spy).toHaveBeenCalledWith(999);
+  });
+
+  it('should not emit a value lower than 0', () => {
+    const spy = spyOn(component.onPatchReagent, 'emit');
+    component.emitReagentAmountWith(-1);
+    expect(spy).toHaveBeenCalledWith(0);
+  });
+
+  it('should emit the correct amount when a button is clicked', () => {
+    const spy = spyOn(component.onPatchReagent, 'emit');
+    const componentSpy = spyOn(component, 'emitReagentAmountWith').and.callThrough();
+    (fixture.nativeElement.querySelectorAll('button') as any[]).forEach((button, index) => {
+      const expectedAmount =
+        component.reagent.amount + component.buttonConfigs[index].amountToBeAddedToTheReagent < 0
+          ? 0
+          : component.reagent.amount + component.buttonConfigs[index].amountToBeAddedToTheReagent;
+      button.click();
+      expect(spy).toHaveBeenCalledWith(expectedAmount);
+      spy.calls.reset();
+
+      expect(componentSpy).toHaveBeenCalledWith(
+        component.buttonConfigs[index].amountToBeAddedToTheReagent,
+      );
+      componentSpy.calls.reset();
     });
   });
 });

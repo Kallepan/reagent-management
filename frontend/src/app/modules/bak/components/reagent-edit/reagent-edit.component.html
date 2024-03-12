@@ -4,13 +4,7 @@
     <button
       class="custom-button"
       mat-mini-fab
-      (click)="
-        onPatchReagent.emit(
-          buttonConfig.amountToBeAddedToTheReagent + reagent.amount < 0
-            ? 0
-            : buttonConfig.amountToBeAddedToTheReagent + reagent.amount
-        )
-      "
+      (click)="emitReagentAmountWith(buttonConfig.amountToBeAddedToTheReagent)"
       [ngStyle]="{ 'grid-column': buttonConfig.gridColumn, 'grid-row': 1 }"
     >
       {{ buttonConfig.text }}

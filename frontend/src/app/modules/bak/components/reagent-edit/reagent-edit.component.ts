@@ -17,12 +17,26 @@ export class ReagentEditComponent {
   @Output() onPatchReagent = new EventEmitter<number>();
 
   buttonConfigs = [
-    { amountToBeAddedToTheReagent: 100, text: '+100', gridColumn: 2 },
-    { amountToBeAddedToTheReagent: 10, text: '+10', gridColumn: 3 },
-    { amountToBeAddedToTheReagent: 1, text: '+1', gridColumn: 4 },
+    { amountToBeAddedToTheReagent: -100, text: '-100', gridColumn: 2 },
+    { amountToBeAddedToTheReagent: -10, text: '-10', gridColumn: 3 },
+    { amountToBeAddedToTheReagent: -1, text: '-1', gridColumn: 4 },
     // 5 is reserved for the reagent amount
-    { amountToBeAddedToTheReagent: -1, text: '-1', gridColumn: 6 },
-    { amountToBeAddedToTheReagent: -10, text: '-10', gridColumn: 7 },
-    { amountToBeAddedToTheReagent: -100, text: '-100', gridColumn: 8 },
+    { amountToBeAddedToTheReagent: 1, text: '+1', gridColumn: 6 },
+    { amountToBeAddedToTheReagent: 10, text: '+10', gridColumn: 7 },
+    { amountToBeAddedToTheReagent: 100, text: '+100', gridColumn: 8 },
   ];
+
+  emitReagentAmountWith(amount: number) {
+    if (this.reagent.amount + amount < 0) {
+      this.onPatchReagent.emit(0);
+      return;
+    }
+
+    if (this.reagent.amount + amount > 999) {
+      this.onPatchReagent.emit(999);
+      return;
+    }
+
+    this.onPatchReagent.emit(amount + this.reagent.amount);
+  }
 }
