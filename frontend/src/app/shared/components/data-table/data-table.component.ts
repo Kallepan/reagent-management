@@ -68,7 +68,7 @@ export class DataTableComponent<T> implements OnInit, AfterViewInit {
 
   displayedColumns: string[] = [];
   dataSource: MatTableDataSource<T> = new MatTableDataSource<T>();
-  pageSizeOptions: number[] = [5, 10, 25, 50, 100];
+  pageSizeOptions: number[] = [10, 50, 100, 500];
   expandedElement: T | null = null;
 
   ngOnInit(): void {
