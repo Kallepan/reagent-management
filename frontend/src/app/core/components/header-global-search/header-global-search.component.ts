@@ -83,7 +83,6 @@ export class HeaderGlobalSearchComponent implements OnInit {
               }
             }),
             filter((lots) => lots.length > 0),
-            tap((lots) => console.log(lots)),
             switchMap((lots) => {
               if (lots.length === 1) {
                 return of(lots[0].id);
