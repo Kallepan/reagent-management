@@ -26,15 +26,17 @@ ALTER TABLE bak.product_producer ADD CONSTRAINT product_producer_name_key UNIQUE
 CREATE INDEX IF NOT EXISTS product_producer_name_like ON bak.product_producer USING btree (name varchar_pattern_ops);
 
 -- insert data
+-- Fetch the producer usin: SELECT DISTINCT producer FROM bak.type;
 INSERT INTO bak.product_producer (name, id, created_at) 
 VALUES
 ('OXOID', '98797ea0-f8fb-435e-9a46-8341a953d889', '2024-03-12 07:33:46.454523+00'),
 ('r-biopharm', '0c78c2b5-cf30-477a-ba6c-6d54e7f3f97a', '2024-03-12 07:33:46.454523+00'),
+('EO Labs', 'f3e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3e', '2024-03-12 07:33:46.454523+00'),
 ('BD', '2c31c767-e108-4a67-bbc4-5b43884d48db', '2024-03-12 07:33:46.454523+00'),
-('bioM', '8c11667f-42fd-439e-a9e7-20376bee0b27', '2024-03-12 07:33:46.454523+00'),
 ('bioMerieux', '06cf9010-fb9c-4623-bd0a-86a43b451db5', '2024-03-12 07:33:46.454523+00'),
 ('MAST', '9be3c307-53b6-4d48-8cd5-05a75b86d22e', '2024-03-12 07:33:46.454523+00');
 
+-- FROM HERE ONWARDS, WE WILL BE MIGRATING THE DATA
 -- rename table
 ALTER TABLE bak.type RENAME TO product;
 -- rename foreign key constraint
