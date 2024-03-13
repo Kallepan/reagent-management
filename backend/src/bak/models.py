@@ -77,6 +77,7 @@ class Product(models.Model):
             [
                 "name",
                 "producer",
+                "article_number",
             ]
         ]
 
