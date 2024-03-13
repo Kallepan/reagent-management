@@ -1,10 +1,23 @@
 .reagents {
-    display: flex;
-    gap: .5rem;
-    flex-direction: row;
-    align-items: center;
+  display: grid;
+  // I know defining the values like this is not the best practice, but it works for now
+  grid-template-columns: 12rem repeat(3, min-content) 5rem repeat(3, min-content);
+  align-items: center;
 
-    .reagents__amount {
-        font-weight: bold;
-    }
+  .reagents__name {
+    margin-right: 1rem;
+  }
+
+  .reagents__amount {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.25rem;
+    grid-column: 5;
+    grid-row: 1;
+  }
+}
+
+.custom-button {
+  font-weight: bold;
+  margin: 0 0.25rem;
 }

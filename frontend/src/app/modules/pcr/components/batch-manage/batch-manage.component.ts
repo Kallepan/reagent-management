@@ -20,16 +20,7 @@ import {
   CreateDialogData,
   GenericCreateDialogComponent,
 } from '@app/shared/components/generic-create-dialog/generic-create-dialog.component';
-import {
-  BehaviorSubject,
-  catchError,
-  filter,
-  map,
-  of,
-  switchMap,
-  tap,
-  throwError,
-} from 'rxjs';
+import { BehaviorSubject, catchError, filter, map, of, switchMap, tap, throwError } from 'rxjs';
 import { Batch, Reagent } from '../../interfaces/reagent';
 import { Removal } from '../../interfaces/removal';
 import { PCRStateHandlerService } from '../../services/pcrstate-handler.service';
@@ -101,9 +92,7 @@ export class BatchManageComponent implements OnInit {
         const searchTerm = this.pcrStateHandlerService.getLastSearchTerm();
 
         // get reagent from batch where id matches searchTerm
-        const reagent = batch.reagents.find(
-          (reagent) => reagent.id === searchTerm,
-        );
+        const reagent = batch.reagents.find((reagent) => reagent.id === searchTerm);
 
         // set scannedReagent
         this.scannedReagent.set(reagent || null);
@@ -111,9 +100,7 @@ export class BatchManageComponent implements OnInit {
       tap((batch) => {
         // update activeReagent if it is not null:
         if (this.activeReagent() !== null) {
-          const reagent = batch.reagents.find(
-            (reagent) => reagent.id === this.activeReagent()?.id,
-          );
+          const reagent = batch.reagents.find((reagent) => reagent.id === this.activeReagent()?.id);
           if (reagent !== undefined) this.activeReagent.set(reagent);
           else this.activeReagent.set(null);
         }
@@ -190,28 +177,25 @@ export class BatchManageComponent implements OnInit {
     };
 
     // user form
-    const userControlSubscription = data.formGroup.controls[
-      'user'
-    ].valueChanges.subscribe((value) => {
-      data.formGroup.controls['user']?.patchValue(value.trim().toLowerCase(), {
-        emitEvent: false,
-      });
-    });
+    const userControlSubscription = data.formGroup.controls['user'].valueChanges.subscribe(
+      (value) => {
+        data.formGroup.controls['user']?.patchValue(value.trim().toLowerCase(), {
+          emitEvent: false,
+        });
+      },
+    );
     // open dialog
     this.dialog
       .open(GenericCreateDialogComponent, matDialogConfig)
       .afterClosed()
       .pipe(
         filter(
-          (
-            result,
-          ): result is { amount: number; user: string; comment: string } =>
+          (result): result is { amount: number; user: string; comment: string } =>
             result !== undefined && result !== null,
         ),
         // set default comment to empty string
         map((result) => {
-          if (result.comment === undefined || result.comment === null)
-            result.comment = '';
+          if (result.comment === undefined || result.comment === null) result.comment = '';
           return result;
         }),
         tap((result) => localStorage.setItem('pcr_current_user', result.user)),
@@ -227,18 +211,14 @@ export class BatchManageComponent implements OnInit {
             .pipe(catchError((err) => throwError(() => err))),
         ),
         catchError(() => {
-          this.notificationService.warnMessage(
-            messages.PCR.REMOVAL_CREATE_FAILED,
-          );
+          this.notificationService.warnMessage(messages.PCR.REMOVAL_CREATE_FAILED);
           return of(null);
         }),
         tap(() => this.loading.set(false)),
         filter((removal): removal is Removal => removal !== null),
         tap(() => {
           // Side effects
-          this.notificationService.infoMessage(
-            messages.PCR.REMOVAL_CREATE_SUCCESS,
-          );
+          this.notificationService.infoMessage(messages.PCR.REMOVAL_CREATE_SUCCESS);
           this._batch.next(this._batch.value);
         }),
         switchMap(() => {
@@ -269,14 +249,11 @@ export class BatchManageComponent implements OnInit {
             },
           };
 
-          return this.dialog
-            .open(ChoiceDialogComponent, matDialogConfig)
-            .afterClosed();
+          return this.dialog.open(ChoiceDialogComponent, matDialogConfig).afterClosed();
         }),
       )
       .subscribe({
         next: (maxRemovals) => {
-          console.log('maxRemovals: ', maxRemovals);
           userControlSubscription.unsubscribe();
         },
       });
@@ -309,15 +286,11 @@ export class BatchManageComponent implements OnInit {
       )
       .subscribe({
         next: () => {
-          this.notificationService.infoMessage(
-            messages.PCR.REMOVAL_DELETE_SUCCESS,
-          );
+          this.notificationService.infoMessage(messages.PCR.REMOVAL_DELETE_SUCCESS);
           this._batch.next(this._batch.value);
         },
         error: () => {
-          this.notificationService.warnMessage(
-            messages.PCR.REMOVAL_DELETE_FAILED,
-          );
+          this.notificationService.warnMessage(messages.PCR.REMOVAL_DELETE_FAILED);
         },
         complete: () => this.loading.set(false),
       });
@@ -342,10 +315,7 @@ export class BatchManageComponent implements OnInit {
         ),
         filter((result) => result.id === 'yes'),
         map(() => this.batch()?.id),
-        filter(
-          (batchId): batchId is string =>
-            batchId !== undefined && batchId !== null,
-        ),
+        filter((batchId): batchId is string => batchId !== undefined && batchId !== null),
         switchMap((batchId) =>
           this.pcrStateHandlerService
             .deleteBatch(batchId)
@@ -355,14 +325,10 @@ export class BatchManageComponent implements OnInit {
       )
       .subscribe({
         next: () => {
-          this.notificationService.infoMessage(
-            messages.PCR.BATCH_DELETE_SUCCESS,
-          );
+          this.notificationService.infoMessage(messages.PCR.BATCH_DELETE_SUCCESS);
         },
         error: () => {
-          this.notificationService.warnMessage(
-            messages.PCR.BATCH_DELETE_FAILED,
-          );
+          this.notificationService.warnMessage(messages.PCR.BATCH_DELETE_FAILED);
         },
       });
   }

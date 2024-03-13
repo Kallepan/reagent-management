@@ -28,9 +28,9 @@ describe('LocationAPIService', () => {
 
   it('should get all locations ', () => {
     const mockLocations: BakLocation[] = [
-      { id: '1', name: 'test1', created_at: '2021-01-01T00:00:00.000Z' },
-      { id: '2', name: 'test2', created_at: '2021-01-01T00:00:00.000Z' },
-      { id: '3', name: 'test3', created_at: '2021-01-01T00:00:00.000Z' },
+      { id: '1', name: 'test1', created_at: new Date() },
+      { id: '2', name: 'test2', created_at: new Date() },
+      { id: '3', name: 'test3', created_at: new Date() },
     ];
 
     service.getLocations().subscribe((locations) => {
@@ -44,7 +44,7 @@ describe('LocationAPIService', () => {
   });
 
   it('should get a location by id', () => {
-    const mockLocation = { id: "1", name: 'Location 1', created_at: '2021-01-01T00:00:00.000Z' };
+    const mockLocation = { id: "1", name: 'Location 1', created_at: new Date() };
 
     service.getLocationById("1").subscribe(location => {
       expect(location).toEqual(mockLocation);

@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LotsCreateComponent } from './lots-create.component';
-import { BakStateHandlerService } from '../../services/bak-state-handler.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BehaviorSubject } from 'rxjs';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { BakType } from '../../interfaces/type';
+import { Product } from '../../interfaces/type';
+import { BakStateHandlerService } from '../../services/bak-state-handler.service';
+import { LotsCreateComponent } from './lots-create.component';
 
 describe('LotsCreateComponent', () => {
   let component: LotsCreateComponent;
@@ -20,11 +20,15 @@ describe('LotsCreateComponent', () => {
   const lastUser = 'TEST';
 
   beforeEach(() => {
-    bakStateHandlerService = jasmine.createSpyObj('BakStateHandlerService', ['getTypes', 'getLots', 'getLocations', 'getReagents', 'createLot'], {
-      lots: new BehaviorSubject([]),
-      types: new BehaviorSubject([]),
-      locations: new BehaviorSubject([]),
-    });
+    bakStateHandlerService = jasmine.createSpyObj(
+      'BakStateHandlerService',
+      ['getProducts', 'getLots', 'getLocations', 'getReagents', 'createLot'],
+      {
+        lots: new BehaviorSubject([]),
+        products: new BehaviorSubject([]),
+        locations: new BehaviorSubject([]),
+      },
+    );
     TestBed.configureTestingModule({
       imports: [
         BrowserAnimationsModule,
@@ -76,13 +80,28 @@ describe('LotsCreateComponent', () => {
   });
 
   it('should display type name', () => {
-    const undefinedType = undefined as unknown as BakType;
+    const undefinedType = undefined as unknown as Product;
     expect(component.displayFn(undefinedType)).toBe('');
 
-    const type = { name: 'name', producer: 'producer', article_number: 'article_number' } as BakType;
-    expect(component.displayFn(type)).toBe(`${type.name} - ${type.producer} - ${type.article_number}`);
+    const product = {
+      name: 'name',
+      producer: {
+        name: 'producer',
+        id: 'id',
+        created_at: new Date(),
+      },
+      type: {
+        name: 'type',
+        id: 'id',
+        created_at: new Date(),
+      },
+      article_number: 'article_number',
+    } as unknown as Product;
+    expect(component.displayFn(product)).toBe(
+      `${product.name} - ${product.producer.name} - ${product.type.name} - ${product.article_number}`,
+    );
 
-    const type2 = {} as BakType;
+    const type2 = {} as Product;
     expect(component.displayFn(type2)).toBe('');
   });
 
