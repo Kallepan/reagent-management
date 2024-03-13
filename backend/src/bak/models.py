@@ -73,13 +73,7 @@ class Product(models.Model):
 
     class Meta:
         db_table = 'bak"."product'
-        index_together = [
-            [
-                "name",
-                "producer",
-                "article_number",
-            ]
-        ]
+        index_together = [["name", "producer"]]
 
     def __str__(self) -> str:
         return f"{self.name} ({self.producer.name}, {self.type.name})"

@@ -6,6 +6,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { NotificationService } from '@app/core/services/notification.service';
 import { of } from 'rxjs';
+import { FilterTrackerService } from '../components/choose-type-filter/filter-tracker.service';
 import { BakStateHandlerService } from './bak-state-handler.service';
 import { LocationAPIService } from './location-api.service';
 import { LotAPIService } from './lot-api.service';
@@ -20,12 +21,14 @@ describe('BakStateHandlerService', () => {
   let lotAPIService: jasmine.SpyObj<LotAPIService>;
   let locationAPIService: jasmine.SpyObj<LocationAPIService>;
   let reagentAPIService: jasmine.SpyObj<ReagentAPIService>;
+  let mockFilterTrackerService: jasmine.SpyObj<FilterTrackerService>;
 
   let router: jasmine.SpyObj<Router>;
 
   const mockLot = { id: 123 } as any;
 
   beforeEach(() => {
+    mockFilterTrackerService = jasmine.createSpyObj('FilterTrackerService', ['toggleFilter']);
     productAPIService = jasmine.createSpyObj('TypeAPIService', ['getProducts']);
     lotAPIService = jasmine.createSpyObj('LotAPIService', ['getLots', 'postLot', 'deleteLot']);
     locationAPIService = jasmine.createSpyObj('LocationAPIService', ['getLocations']);
@@ -64,6 +67,10 @@ describe('BakStateHandlerService', () => {
         {
           provide: Router,
           useValue: router,
+        },
+        {
+          provide: FilterTrackerService,
+          useValue: mockFilterTrackerService,
         },
         provideHttpClientTesting(),
       ],

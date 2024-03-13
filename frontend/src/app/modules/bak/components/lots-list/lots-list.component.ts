@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 import { messages } from '@app/core/constants/messages';
 import { NotificationService } from '@app/core/services/notification.service';
@@ -13,9 +14,10 @@ import {
   DataTableComponent,
 } from '@app/shared/components/data-table/data-table.component';
 import { SearchBarComponent } from '@app/shared/components/search-bar/search-bar.component';
-import { debounceTime, filter, map, switchMap, tap } from 'rxjs';
+import { catchError, debounceTime, filter, switchMap, tap, throwError } from 'rxjs';
 import { BakLot } from '../../interfaces/lot';
 import { BakStateHandlerService } from '../../services/bak-state-handler.service';
+import { ChooseTypeFilterComponent } from '../choose-type-filter/choose-type-filter.component';
 import { ReagentEditComponent } from '../reagent-edit/reagent-edit.component';
 import { ReagentTransferComponent } from '../reagent-transfer/reagent-transfer.component';
 
@@ -30,6 +32,8 @@ import { ReagentTransferComponent } from '../reagent-transfer/reagent-transfer.c
     SearchBarComponent,
     DataTableComponent,
     MatButtonModule,
+    ChooseTypeFilterComponent,
+    MatProgressSpinner,
   ],
 })
 export class LotsListComponent implements OnInit {
@@ -37,14 +41,18 @@ export class LotsListComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   dialog = inject(MatDialog);
 
-  // Search stuff
+  // Filter stuff
   filterControl = new FormControl('');
   filter$ = this.filterControl.valueChanges
     .pipe(
       takeUntilDestroyed(this.destroyRef),
       filter((contents): contents is string => typeof contents === 'string'),
       debounceTime(200),
-      switchMap((searchString) => this.bakStateHandlerService.searchLots(searchString, false)),
+      switchMap((searchString) =>
+        this.bakStateHandlerService
+          .searchLots(searchString, false)
+          .pipe(catchError((err) => throwError(() => err))),
+      ),
     )
     .subscribe((lots) => {
       this.bakStateHandlerService.lots.next(lots);
@@ -53,15 +61,7 @@ export class LotsListComponent implements OnInit {
   // Table stuff
   bakStateHandlerService = inject(BakStateHandlerService);
   private notificationService = inject(NotificationService);
-  lots$ = this.bakStateHandlerService.lots.pipe(
-    map((lots) => {
-      // calculate the total amount of reagents in each lot
-      return lots.map((lot) => {
-        lot.totalAmount = lot.reagents.reduce((acc, reagent) => acc + reagent.amount, 0);
-        return lot;
-      });
-    }),
-  );
+  lots$ = this.bakStateHandlerService.lots$;
   columnsSchema: ColumnsSchema[] = [
     {
       key: 'name',
@@ -76,10 +76,16 @@ export class LotsListComponent implements OnInit {
       fn: (lot: BakLot) => new Date(lot.valid_until),
     },
     {
+      key: 'product',
+      label: 'Produkt',
+      type: 'text',
+      fn: (lot: BakLot) => lot.product.name,
+    },
+    {
       key: 'type',
       label: 'Typ',
       type: 'text',
-      fn: (lot: BakLot) => lot.product.name,
+      fn: (lot: BakLot) => lot.product.type.name,
     },
     {
       key: 'producer',

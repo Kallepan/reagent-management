@@ -1,0 +1,10 @@
+<div class="container">
+  <span>Artikelart zum verstecken auswählen</span>
+  <div class="filters">
+    @for (filter of filterTrackerService.productTypesToBeFilteredOut$(); track $index) {
+      <mat-checkbox class="filter-checkbox" (change)="filterTrackerService.toggleFilter(filter)">
+        {{ filter.name }}
+      </mat-checkbox>
+    }
+  </div>
+</div>

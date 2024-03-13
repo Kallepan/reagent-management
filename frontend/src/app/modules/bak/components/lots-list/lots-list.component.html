@@ -5,10 +5,11 @@
       (searchSubmit)="queryLot($event)"
       formHint="Durchsucht die Tabelle. Mit Enter kann eine bestimmte Charge gesucht werden."
     ></app-search-bar>
-    @if ({ tableData: lots$ | async }; as vm) {
+    @if (lots$ | async; as lots) {
+      <app-choose-type-filter></app-choose-type-filter>
       <app-data-table
         [schema]="columnsSchema"
-        [data]="vm.tableData || []"
+        [data]="lots"
         (editClick)="editLot($event)"
         [detailRowTemplate]="detailRowTemplate"
       ></app-data-table>
@@ -37,4 +38,8 @@
       }
     </div>
   </ng-template>
+} @else {
+  <div class="loading">
+    <mat-spinner></mat-spinner>
+  </div>
 }

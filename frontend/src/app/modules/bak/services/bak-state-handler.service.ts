@@ -1,9 +1,10 @@
 import { DestroyRef, Injectable, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { messages } from '@app/core/constants/messages';
 import { NotificationService } from '@app/core/services/notification.service';
-import { BehaviorSubject, filter, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, combineLatestWith, filter, map, switchMap, tap } from 'rxjs';
+import { FilterTrackerService } from '../components/choose-type-filter/filter-tracker.service';
 import { BakLocation } from '../interfaces/location';
 import { BakLot, CreateBakLot } from '../interfaces/lot';
 import { Product } from '../interfaces/type';
@@ -23,11 +24,30 @@ export class BakStateHandlerService {
   private reagentAPIService = inject(ReagentAPIService);
   private notificationService = inject(NotificationService);
   private router = inject(Router);
+  private filterTrackerService = inject(FilterTrackerService);
 
   locations = new BehaviorSubject<BakLocation[]>([]);
   products = new BehaviorSubject<Product[]>([]);
 
   lots = new BehaviorSubject<BakLot[]>([]);
+  public lots$ = this.lots.pipe(
+    map((lots) => {
+      // calculate the total amount of reagents in each lot
+      return lots.map((lot) => {
+        lot.totalAmount = lot.reagents.reduce((acc, reagent) => acc + reagent.amount, 0);
+        return lot;
+      });
+    }),
+    tap((lots) => (this.filterTrackerService.productTypesToBeFilteredOut = lots)),
+    combineLatestWith(toObservable(this.filterTrackerService.productTypesToBeFilteredOut$).pipe(map(filters => filters.filter(filter => filter.checked).map(filter => filter.id)))),
+    map(([lots, filters]) => {
+      // filter out the lots by product type id if the filter is active from the filterTrackerService
+
+      if (filters.length === 0) return lots;
+
+      return lots.filter((lot) => !filters.includes(lot.product.type.id));
+    }),
+  );
   activeLot = new BehaviorSubject<BakLot | null>(null);
 
   private _finishedLoading = false;
@@ -203,10 +223,11 @@ export class BakStateHandlerService {
             .find((lot) => lot.id === data.lot.id)!
             .reagents.find((reagent) => reagent.id === data.id)!.amount = data.amount;
         }),
+        switchMap((data) => this.lotAPIService.getLotById(data.lot.id)),
+        tap((lot) => this.activeLot.next(lot)),
       )
       .subscribe({
         next: () => {
-          this.router.navigate(['bak', 'lots']);
           this.notificationService.infoMessage(messages.BAK.REAGENT_TRANSFER_SUCCESS);
         },
         error: (err) => {

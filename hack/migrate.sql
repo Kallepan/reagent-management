@@ -64,4 +64,4 @@ ALTER TABLE bak.product ALTER COLUMN producer_id SET NOT NULL;
 ALTER TABLE bak.product ALTER COLUMN type_id SET NOT NULL;
 
 -- Create unique constraint for product name and producer_id
-ALTER TABLE bak.product ADD CONSTRAINT product_name_producer_id_key UNIQUE (name, producer_id, article_number);
+ALTER TABLE bak.product ADD CONSTRAINT product_name_producer_id_key UNIQUE (name, producer_id);

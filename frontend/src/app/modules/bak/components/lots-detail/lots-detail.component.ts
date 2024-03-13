@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute } from '@angular/router';
 import { filterNotBeforeToday, isoDateFormat } from '@app/core/functions/date.function';
 import { filter, map, tap } from 'rxjs';
@@ -33,6 +34,7 @@ import { ReagentTransferComponent } from '../reagent-transfer/reagent-transfer.c
     MatNativeDateModule,
     MatInputModule,
     MatButtonModule,
+    MatProgressSpinnerModule,
     ReagentEditComponent,
   ],
 })
@@ -44,8 +46,7 @@ export class LotsDetailComponent implements OnInit {
 
   filterNotBeforeToday = filterNotBeforeToday;
 
-  id = this.route.snapshot.paramMap.get('id');
-  lot$ = this.bakStateHandlerService.activeLot.asObservable().pipe(
+  lot$ = this.bakStateHandlerService.activeLot.pipe(
     filter((lot): lot is BakLot => !!lot),
     map((lot) => {
       lot.totalAmount = lot.reagents.reduce((acc: number, reagent: any) => acc + reagent.amount, 0);
@@ -68,10 +69,18 @@ export class LotsDetailComponent implements OnInit {
     });
   }
 
+  private activeID: string | null = null;
   ngOnInit(): void {
-    this.lotAPIService.getLotById(this.id || '').subscribe({
-      next: (lot) => this.bakStateHandlerService.activeLot.next(lot),
-    });
+    this.route.params
+      .pipe(
+        map((params) => params['id']),
+        tap((id) => (this.activeID = id)),
+      )
+      .subscribe((id) => {
+        this.lotAPIService.getLotById(id || '').subscribe({
+          next: (lot) => this.bakStateHandlerService.activeLot.next(lot),
+        });
+      });
   }
 
   submit() {
@@ -85,14 +94,15 @@ export class LotsDetailComponent implements OnInit {
       valid_from: isoDateFormat(validFrom),
     };
 
-    this.bakStateHandlerService.patchLot(this.id!, data);
+    if (!this.activeID) return;
+
+    this.bakStateHandlerService.patchLot(this.activeID, data);
   }
 
   openTransferDialog() {
     const dialogRef = this.dialog.open(ReagentTransferComponent, {
       data: {
-        reagents: this.bakStateHandlerService.lots.getValue().find((lot) => lot.id === this.id)!
-          .reagents,
+        reagents: this.bakStateHandlerService.activeLot.getValue()!.reagents,
       },
     });
 
@@ -103,16 +113,14 @@ export class LotsDetailComponent implements OnInit {
 
       const sourceReagent = result.sourceReagent as string;
       const sourceAmount =
-        this.bakStateHandlerService.lots
-          .getValue()
-          .find((lot) => lot.id === this.id)!
+        this.bakStateHandlerService.activeLot
+          .getValue()!
           .reagents.find((r) => r.id === sourceReagent)!.amount - transferAmount;
 
       const targetReagent = result.targetReagent as string;
       const targetAmount =
-        this.bakStateHandlerService.lots
-          .getValue()
-          .find((lot) => lot.id === this.id)!
+        this.bakStateHandlerService.activeLot
+          .getValue()!
           .reagents.find((r) => r.id === targetReagent)!.amount + transferAmount;
 
       // calculate amount
@@ -137,6 +145,8 @@ export class LotsDetailComponent implements OnInit {
     )
       return;
 
-    this.bakStateHandlerService.deleteLot(this.id!);
+    if (!this.activeID) return;
+
+    this.bakStateHandlerService.deleteLot(this.activeID);
   }
 }

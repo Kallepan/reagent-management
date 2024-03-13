@@ -1,6 +1,7 @@
 .reagents {
   display: grid;
-  grid-template-columns: max-content repeat(3, min-content) 5rem repeat(3, min-content);
+  // I know defining the values like this is not the best practice, but it works for now
+  grid-template-columns: 12rem repeat(3, min-content) 5rem repeat(3, min-content);
   align-items: center;
 
   .reagents__name {
