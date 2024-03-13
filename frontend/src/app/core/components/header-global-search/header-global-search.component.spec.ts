@@ -198,4 +198,12 @@ describe('HeaderGlobalSearchComponent', () => {
     // expect form to be cleared
     expect(component.control.value).toEqual('');
   }));
+
+  it('should have a bak home button', () => {
+    component.activatedRoute$ = of('BAK');
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement;
+
+    expect(compiled.querySelector('.bak-home-button')).toBeTruthy();
+  });
 });

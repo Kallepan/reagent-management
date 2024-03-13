@@ -1,17 +1,55 @@
 @if (activatedRoute$ | async; as featureFlag) {
   @if (featureFlag === 'BAK') {
-    <div class="container">
-      <app-search-bar class="search-bar" [control]="control" formHint="" (searchSubmit)="onSearch(featureFlag, $event)" placeholder="Suche nach Lot"></app-search-bar>
-      <mat-checkbox class="checkbox" [formControl]="searchEmpty" matTooltip="Leere lots durchsuchen"></mat-checkbox>
-      <button class="lot-create-button" mat-raised-button color="accent" routerLink="/bak/lots/create">Lot Anlegen</button>
+    <div class="container actions">
+      <app-search-bar
+        class="search-bar"
+        [control]="control"
+        formHint=""
+        (searchSubmit)="onSearch(featureFlag, $event)"
+        placeholder="Suche nach Lot"
+      ></app-search-bar>
+      <mat-checkbox
+        class="checkbox"
+        [formControl]="searchEmpty"
+        matTooltip="Leere lots durchsuchen"
+      ></mat-checkbox>
+      <button
+        class="lot-create-button"
+        mat-raised-button
+        color="accent"
+        routerLink="/bak/lots/create"
+      >
+        Lot Anlegen
+      </button>
+      <button class="bak-home-button" mat-raised-button color="accent" routerLink="/bak/lots">
+        Home
+      </button>
     </div>
   }
   @if (featureFlag === 'PCR') {
     <div class="container actions">
-      <app-search-bar class="search-bar" [control]="control" formHint="" (searchSubmit)="onSearch(featureFlag, $event)" placeholder="Suche nach Lot"> </app-search-bar>
-      <button class="pcr-home-button" mat-raised-button color="accent" routerLink="/pcr/batch">PCR Home</button>
-      <button class="lot-create-button" mat-raised-button color="accent" routerLink="/pcr/batch/create">Lot Anlegen</button>
-      <a mat-raised-button href="https://pcr-inge.labmed.de/" target="_blank" class="header-link">Inge</a>
+      <app-search-bar
+        class="search-bar"
+        [control]="control"
+        formHint=""
+        (searchSubmit)="onSearch(featureFlag, $event)"
+        placeholder="Suche nach Lot"
+      >
+      </app-search-bar>
+      <button class="pcr-home-button" mat-raised-button color="accent" routerLink="/pcr/batch">
+        Home
+      </button>
+      <button
+        class="lot-create-button"
+        mat-raised-button
+        color="accent"
+        routerLink="/pcr/batch/create"
+      >
+        Lot Anlegen
+      </button>
+      <a mat-raised-button href="https://pcr-inge.labmed.de/" target="_blank" class="header-link"
+        >Inge</a
+      >
     </div>
   }
 }
