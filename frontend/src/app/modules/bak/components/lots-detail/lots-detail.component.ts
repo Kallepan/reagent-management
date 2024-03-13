@@ -1,29 +1,42 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { BakStateHandlerService } from '../../services/bak-state-handler.service';
-import { ActivatedRoute } from '@angular/router';
-import { filter, map, tap } from 'rxjs';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { filterNotBeforeToday, isoDateFormat } from '@app/core/functions/date.function';
-import { MatDialog } from '@angular/material/dialog';
-import { ReagentTransferComponent } from '../reagent-transfer/reagent-transfer.component';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatListModule } from '@angular/material/list';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { ReagentEditComponent } from '../reagent-edit/reagent-edit.component';
-import { MatInputModule } from '@angular/material/input';
+import { Component, OnInit, inject } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatNativeDateModule } from '@angular/material/core';
-import { LotAPIService } from '../../services/lot-api.service';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ActivatedRoute } from '@angular/router';
+import { filterNotBeforeToday, isoDateFormat } from '@app/core/functions/date.function';
+import { filter, map, tap } from 'rxjs';
 import { BakLot } from '../../interfaces/lot';
+import { BakStateHandlerService } from '../../services/bak-state-handler.service';
+import { LotAPIService } from '../../services/lot-api.service';
+import { ReagentEditComponent } from '../reagent-edit/reagent-edit.component';
+import { ReagentTransferComponent } from '../reagent-transfer/reagent-transfer.component';
 
 @Component({
   selector: 'app-lots-detail',
   templateUrl: './lots-detail.component.html',
   styleUrls: ['./lots-detail.component.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatListModule, MatFormFieldModule, MatDatepickerModule, MatNativeDateModule, MatInputModule, MatButtonModule, ReagentEditComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatListModule,
+    MatFormFieldModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatInputModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    ReagentEditComponent,
+  ],
 })
 export class LotsDetailComponent implements OnInit {
   private bakStateHandlerService = inject(BakStateHandlerService);
@@ -33,8 +46,7 @@ export class LotsDetailComponent implements OnInit {
 
   filterNotBeforeToday = filterNotBeforeToday;
 
-  id = this.route.snapshot.paramMap.get('id');
-  lot$ = this.bakStateHandlerService.activeLot.asObservable().pipe(
+  lot$ = this.bakStateHandlerService.activeLot.pipe(
     filter((lot): lot is BakLot => !!lot),
     map((lot) => {
       lot.totalAmount = lot.reagents.reduce((acc: number, reagent: any) => acc + reagent.amount, 0);
@@ -42,7 +54,9 @@ export class LotsDetailComponent implements OnInit {
     }),
     tap((lot) => {
       // populate form
-      this.formGroup.get('validFrom')?.setValue(lot.valid_from ? new Date(lot.valid_from) : '', { emitEvent: false });
+      this.formGroup
+        .get('validFrom')
+        ?.setValue(lot.valid_from ? new Date(lot.valid_from) : '', { emitEvent: false });
     }),
   );
 
@@ -55,10 +69,18 @@ export class LotsDetailComponent implements OnInit {
     });
   }
 
+  private activeID: string | null = null;
   ngOnInit(): void {
-    this.lotAPIService.getLotById(this.id || '').subscribe({
-      next: (lot) => this.bakStateHandlerService.activeLot.next(lot),
-    });
+    this.route.params
+      .pipe(
+        map((params) => params['id']),
+        tap((id) => (this.activeID = id)),
+      )
+      .subscribe((id) => {
+        this.lotAPIService.getLotById(id || '').subscribe({
+          next: (lot) => this.bakStateHandlerService.activeLot.next(lot),
+        });
+      });
   }
 
   submit() {
@@ -72,13 +94,15 @@ export class LotsDetailComponent implements OnInit {
       valid_from: isoDateFormat(validFrom),
     };
 
-    this.bakStateHandlerService.patchLot(this.id!, data);
+    if (!this.activeID) return;
+
+    this.bakStateHandlerService.patchLot(this.activeID, data);
   }
 
-  openDialog() {
+  openTransferDialog() {
     const dialogRef = this.dialog.open(ReagentTransferComponent, {
       data: {
-        reagents: this.bakStateHandlerService.lots.getValue().find((lot) => lot.id === this.id)!.reagents,
+        reagents: this.bakStateHandlerService.activeLot.getValue()!.reagents,
       },
     });
 
@@ -89,16 +113,14 @@ export class LotsDetailComponent implements OnInit {
 
       const sourceReagent = result.sourceReagent as string;
       const sourceAmount =
-        this.bakStateHandlerService.lots
-          .getValue()
-          .find((lot) => lot.id === this.id)!
+        this.bakStateHandlerService.activeLot
+          .getValue()!
           .reagents.find((r) => r.id === sourceReagent)!.amount - transferAmount;
 
       const targetReagent = result.targetReagent as string;
       const targetAmount =
-        this.bakStateHandlerService.lots
-          .getValue()
-          .find((lot) => lot.id === this.id)!
+        this.bakStateHandlerService.activeLot
+          .getValue()!
           .reagents.find((r) => r.id === targetReagent)!.amount + transferAmount;
 
       // calculate amount
@@ -116,8 +138,15 @@ export class LotsDetailComponent implements OnInit {
   }
 
   deleteLot() {
-    if (!confirm('Sind Sie sicher, dass Sie diesen Lot löschen wollen?')) return;
+    if (
+      !confirm(
+        'Sind Sie sicher, dass Sie diesen Lot löschen wollen? Diese Aktion kann nicht rueckgängig gemacht werden.',
+      )
+    )
+      return;
 
-    this.bakStateHandlerService.deleteLot(this.id!);
+    if (!this.activeID) return;
+
+    this.bakStateHandlerService.deleteLot(this.activeID);
   }
 }

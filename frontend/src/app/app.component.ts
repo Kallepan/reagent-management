@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MainComponent } from './core/components/main/main.component';
@@ -8,12 +7,6 @@ import { MainComponent } from './core/components/main/main.component';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    MainComponent,
-    MatSnackBarModule,
-  ],
+  imports: [MainComponent, MatSnackBarModule],
 })
-export class AppComponent {
-
-}
+export class AppComponent {}

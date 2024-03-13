@@ -1,33 +1,53 @@
 import { DestroyRef, Injectable, inject } from '@angular/core';
-import { TypeAPIService } from './type-api.service';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
+import { messages } from '@app/core/constants/messages';
+import { NotificationService } from '@app/core/services/notification.service';
+import { BehaviorSubject, combineLatestWith, filter, map, switchMap, tap } from 'rxjs';
+import { FilterTrackerService } from '../components/choose-type-filter/filter-tracker.service';
+import { BakLocation } from '../interfaces/location';
+import { BakLot, CreateBakLot } from '../interfaces/lot';
+import { Product } from '../interfaces/type';
 import { LocationAPIService } from './location-api.service';
 import { LotAPIService } from './lot-api.service';
-import { BehaviorSubject, filter, switchMap, tap } from 'rxjs';
-import { BakLocation } from '../interfaces/location';
-import { BakType } from '../interfaces/type';
+import { ProductAPIService } from './product-api.service';
 import { ReagentAPIService } from './reagent-api.service';
-import { BakLot, CreateBakLot } from '../interfaces/lot';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
-import { NotificationService } from '@app/core/services/notification.service';
-import { messages } from '@app/core/constants/messages';
 
 @Injectable({
   providedIn: null,
 })
 export class BakStateHandlerService {
-  private destroyRef = inject(DestroyRef)
-  private typeAPIService = inject(TypeAPIService);
+  private destroyRef = inject(DestroyRef);
+  private productAPIService = inject(ProductAPIService);
   private lotAPIService = inject(LotAPIService);
   private locationAPIService = inject(LocationAPIService);
   private reagentAPIService = inject(ReagentAPIService);
   private notificationService = inject(NotificationService);
   private router = inject(Router);
+  private filterTrackerService = inject(FilterTrackerService);
 
   locations = new BehaviorSubject<BakLocation[]>([]);
-  types = new BehaviorSubject<BakType[]>([]);
+  products = new BehaviorSubject<Product[]>([]);
 
   lots = new BehaviorSubject<BakLot[]>([]);
+  public lots$ = this.lots.pipe(
+    map((lots) => {
+      // calculate the total amount of reagents in each lot
+      return lots.map((lot) => {
+        lot.totalAmount = lot.reagents.reduce((acc, reagent) => acc + reagent.amount, 0);
+        return lot;
+      });
+    }),
+    tap((lots) => (this.filterTrackerService.productTypesToBeFilteredOut = lots)),
+    combineLatestWith(toObservable(this.filterTrackerService.productTypesToBeFilteredOut$).pipe(map(filters => filters.filter(filter => filter.checked).map(filter => filter.id)))),
+    map(([lots, filters]) => {
+      // filter out the lots by product type id if the filter is active from the filterTrackerService
+
+      if (filters.length === 0) return lots;
+
+      return lots.filter((lot) => !filters.includes(lot.product.type.id));
+    }),
+  );
   activeLot = new BehaviorSubject<BakLot | null>(null);
 
   private _finishedLoading = false;
@@ -38,24 +58,29 @@ export class BakStateHandlerService {
   }
 
   refreshData() {
-    this.locationAPIService.getLocations().pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe((locations) => {
-      this.locations.next(locations);
-    });
-    this.typeAPIService.getTypes().pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe((types) => {
-      this.types.next(types);
-    });
+    this.locationAPIService
+      .getLocations()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((locations) => {
+        this.locations.next(locations);
+      });
+    this.productAPIService
+      .getProducts()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((data) => {
+        this.products.next(data);
+      });
 
     // populate lots
-    this.lotAPIService.getLots().pipe(
-      takeUntilDestroyed(this.destroyRef),
-      tap(() => this._finishedLoading = true),
-    ).subscribe((lots) => {
-      this.lots.next(lots);
-    });
+    this.lotAPIService
+      .getLots()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        tap(() => (this._finishedLoading = true)),
+      )
+      .subscribe((lots) => {
+        this.lots.next(lots);
+      });
   }
 
   // search for a lot
@@ -76,42 +101,40 @@ export class BakStateHandlerService {
       next: (resp) => {
         // update lots
         const lots = this.lots.getValue();
-        const lotIndex = lots.findIndex(lot => lot.id === resp.lot.id);
+        const lotIndex = lots.findIndex((lot) => lot.id === resp.lot.id);
 
-        if (lotIndex === -1)
-          return;
+        if (lotIndex === -1) return;
 
-        const reagentIndex = lots[lotIndex].reagents.findIndex(reagent => reagent.id === resp.id);
-        if (reagentIndex === -1)
-          return;
+        const reagentIndex = lots[lotIndex].reagents.findIndex((reagent) => reagent.id === resp.id);
+        if (reagentIndex === -1) return;
 
         lots[lotIndex].reagents[reagentIndex].amount = resp.amount;
         this.lots.next(lots);
-      }
+      },
     });
   }
 
   patchReagentSingle(reagentId: string, amount: number) {
-    this.reagentAPIService.patchReagent(reagentId, amount).pipe(
-      filter(() => this.activeLot.value !== null),
-    ).subscribe({
-      next: (resp) => {
-        // update lots
-        const lot = this.activeLot.value!;
+    this.reagentAPIService
+      .patchReagent(reagentId, amount)
+      .pipe(filter(() => this.activeLot.value !== null))
+      .subscribe({
+        next: (resp) => {
+          // update lots
+          const lot = this.activeLot.value!;
 
-        const reagentIndex = lot.reagents.findIndex(reagent => reagent.id === resp.id);
-        if (reagentIndex === -1)
-          return;
+          const reagentIndex = lot.reagents.findIndex((reagent) => reagent.id === resp.id);
+          if (reagentIndex === -1) return;
 
-        lot.reagents[reagentIndex].amount = resp.amount;
-        this.activeLot.next(lot);
-      }
-    });
+          lot.reagents[reagentIndex].amount = resp.amount;
+          this.activeLot.next(lot);
+        },
+      });
   }
 
   // Check if a lot exists.
   lotExists(lotId: string): boolean {
-    return this.lots.getValue().some(lot => lot.id === lotId);
+    return this.lots.getValue().some((lot) => lot.id === lotId);
   }
 
   // Create a new lot.
@@ -140,7 +163,7 @@ export class BakStateHandlerService {
       next: () => {
         // remove lot from lots
         const lots = this.lots.getValue();
-        const lotIndex = lots.findIndex(lot => lot.id === lotId);
+        const lotIndex = lots.findIndex((lot) => lot.id === lotId);
         lots.splice(lotIndex, 1);
 
         // update lots
@@ -157,7 +180,7 @@ export class BakStateHandlerService {
     this.lotAPIService.patchLot(lotId, data).subscribe({
       next: (resp) => {
         const lots = this.lots.getValue();
-        const lotIndex = lots.findIndex(lot => lot.id === resp.id);
+        const lotIndex = lots.findIndex((lot) => lot.id === resp.id);
         lots[lotIndex] = resp;
 
         // update lots
@@ -176,23 +199,40 @@ export class BakStateHandlerService {
     return this._finishedLoading;
   }
 
-  public handleReagentTransfer(result: { sourceReagent: string, targetReagent: string, sourceAmount: number, targetAmount: number }) {
-    this.reagentAPIService.patchReagent(result.sourceReagent, result.sourceAmount).pipe(
-      tap((data) => {
-        this.lots.getValue().find(lot => lot.id === data.lot.id)!.reagents.find(reagent => reagent.id === data.id)!.amount = data.amount;
-      }),
-      switchMap(() => this.reagentAPIService.patchReagent(result.targetReagent, result.targetAmount)),
-      tap((data) => {
-        this.lots.getValue().find(lot => lot.id === data.lot.id)!.reagents.find(reagent => reagent.id === data.id)!.amount = data.amount;
-      }),
-    ).subscribe({
-      next: () => {
-        this.router.navigate(['bak', 'lots']);
-        this.notificationService.infoMessage(messages.BAK.REAGENT_TRANSFER_SUCCESS);
-      },
-      error: (err) => {
-        this.notificationService.warnMessage(messages.GENERAL.UPDATE_FAILED);
-      }
-    })
+  public handleReagentTransfer(result: {
+    sourceReagent: string;
+    targetReagent: string;
+    sourceAmount: number;
+    targetAmount: number;
+  }) {
+    this.reagentAPIService
+      .patchReagent(result.sourceReagent, result.sourceAmount)
+      .pipe(
+        tap((data) => {
+          this.lots
+            .getValue()
+            .find((lot) => lot.id === data.lot.id)!
+            .reagents.find((reagent) => reagent.id === data.id)!.amount = data.amount;
+        }),
+        switchMap(() =>
+          this.reagentAPIService.patchReagent(result.targetReagent, result.targetAmount),
+        ),
+        tap((data) => {
+          this.lots
+            .getValue()
+            .find((lot) => lot.id === data.lot.id)!
+            .reagents.find((reagent) => reagent.id === data.id)!.amount = data.amount;
+        }),
+        switchMap((data) => this.lotAPIService.getLotById(data.lot.id)),
+        tap((lot) => this.activeLot.next(lot)),
+      )
+      .subscribe({
+        next: () => {
+          this.notificationService.infoMessage(messages.BAK.REAGENT_TRANSFER_SUCCESS);
+        },
+        error: (err) => {
+          this.notificationService.warnMessage(messages.GENERAL.UPDATE_FAILED);
+        },
+      });
   }
 }

@@ -1,9 +1,10 @@
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 import { messages } from '@app/core/constants/messages';
 import { NotificationService } from '@app/core/services/notification.service';
@@ -13,9 +14,10 @@ import {
   DataTableComponent,
 } from '@app/shared/components/data-table/data-table.component';
 import { SearchBarComponent } from '@app/shared/components/search-bar/search-bar.component';
-import { debounceTime, filter, map, switchMap, tap } from 'rxjs';
+import { catchError, debounceTime, filter, switchMap, tap, throwError } from 'rxjs';
 import { BakLot } from '../../interfaces/lot';
 import { BakStateHandlerService } from '../../services/bak-state-handler.service';
+import { ChooseTypeFilterComponent } from '../choose-type-filter/choose-type-filter.component';
 import { ReagentEditComponent } from '../reagent-edit/reagent-edit.component';
 import { ReagentTransferComponent } from '../reagent-transfer/reagent-transfer.component';
 
@@ -25,12 +27,13 @@ import { ReagentTransferComponent } from '../reagent-transfer/reagent-transfer.c
   styleUrls: ['./lots-list.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
+    AsyncPipe,
     ReagentEditComponent,
-
     SearchBarComponent,
     DataTableComponent,
     MatButtonModule,
+    ChooseTypeFilterComponent,
+    MatProgressSpinner,
   ],
 })
 export class LotsListComponent implements OnInit {
@@ -38,7 +41,7 @@ export class LotsListComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   dialog = inject(MatDialog);
 
-  // Search stuff
+  // Filter stuff
   filterControl = new FormControl('');
   filter$ = this.filterControl.valueChanges
     .pipe(
@@ -46,7 +49,9 @@ export class LotsListComponent implements OnInit {
       filter((contents): contents is string => typeof contents === 'string'),
       debounceTime(200),
       switchMap((searchString) =>
-        this.bakStateHandlerService.searchLots(searchString, false),
+        this.bakStateHandlerService
+          .searchLots(searchString, false)
+          .pipe(catchError((err) => throwError(() => err))),
       ),
     )
     .subscribe((lots) => {
@@ -56,18 +61,7 @@ export class LotsListComponent implements OnInit {
   // Table stuff
   bakStateHandlerService = inject(BakStateHandlerService);
   private notificationService = inject(NotificationService);
-  lots$ = this.bakStateHandlerService.lots.pipe(
-    map((lots) => {
-      // calculate the total amount of reagents in each lot
-      return lots.map((lot) => {
-        lot.totalAmount = lot.reagents.reduce(
-          (acc, reagent) => acc + reagent.amount,
-          0,
-        );
-        return lot;
-      });
-    }),
-  );
+  lots$ = this.bakStateHandlerService.lots$;
   columnsSchema: ColumnsSchema[] = [
     {
       key: 'name',
@@ -78,25 +72,26 @@ export class LotsListComponent implements OnInit {
     {
       key: 'valid_until',
       label: 'Haltbarkeit',
+      type: 'date',
+      fn: (lot: BakLot) => new Date(lot.valid_until),
+    },
+    {
+      key: 'product',
+      label: 'Produkt',
       type: 'text',
-      fn: (lot: BakLot) =>
-        new Date(lot.valid_until).toLocaleDateString('de-DE', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-        }),
+      fn: (lot: BakLot) => lot.product.name,
     },
     {
       key: 'type',
       label: 'Typ',
       type: 'text',
-      fn: (lot: BakLot) => lot.type.name,
+      fn: (lot: BakLot) => lot.product.type.name,
     },
     {
       key: 'producer',
       label: 'Hersteller',
       type: 'text',
-      fn: (lot: BakLot) => lot.type.producer,
+      fn: (lot: BakLot) => lot.product.producer.name,
     },
     {
       key: 'valid_from',
@@ -120,9 +115,8 @@ export class LotsListComponent implements OnInit {
   openReagentTransferDialog(lotId: string): void {
     const dialogRef = this.dialog.open(ReagentTransferComponent, {
       data: {
-        reagents: this.bakStateHandlerService.lots
-          .getValue()
-          .find((lot) => lot.id === lotId)!.reagents,
+        reagents: this.bakStateHandlerService.lots.getValue().find((lot) => lot.id === lotId)!
+          .reagents,
       },
     });
 
@@ -136,16 +130,14 @@ export class LotsListComponent implements OnInit {
         this.bakStateHandlerService.lots
           .getValue()
           .find((lot) => lot.id === lotId)!
-          .reagents.find((r) => r.id === sourceReagent)!.amount -
-        transferAmount;
+          .reagents.find((r) => r.id === sourceReagent)!.amount - transferAmount;
 
       const targetReagent = result.targetReagent as string;
       const targetAmount =
         this.bakStateHandlerService.lots
           .getValue()
           .find((lot) => lot.id === lotId)!
-          .reagents.find((r) => r.id === targetReagent)!.amount +
-        transferAmount;
+          .reagents.find((r) => r.id === targetReagent)!.amount + transferAmount;
 
       // calculate amount
       this.bakStateHandlerService.handleReagentTransfer({
@@ -171,8 +163,7 @@ export class LotsListComponent implements OnInit {
           }
         }),
         tap((lots) => {
-          if (lots.length === 0)
-            this.notificationService.infoMessage(messages.BAK.NO_LOT_FOUND);
+          if (lots.length === 0) this.notificationService.infoMessage(messages.BAK.NO_LOT_FOUND);
         }),
         filter((lots) => lots.length > 1),
         switchMap((lots) => {
@@ -181,7 +172,7 @@ export class LotsListComponent implements OnInit {
               title: 'Mehrere Lots gefunden',
               choices: lots.map((lot) => ({
                 id: lot.id,
-                name: `${lot.name} (${lot.type.name} - ${lot.type.producer})`,
+                name: `${lot.name} (${lot.product.name} - ${lot.product.producer})`,
               })),
             },
           });

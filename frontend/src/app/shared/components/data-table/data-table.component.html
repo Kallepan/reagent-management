@@ -1,58 +1,73 @@
 <mat-table matSort [dataSource]="dataSource" multiTemplateDataRows>
-    @for (column of schema; track $index) {
+  @for (column of schema; track $index) {
     <ng-container [matColumnDef]="column.key">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>
-            {{column.label}}
-        </mat-header-cell>
-        <mat-cell *matCellDef="let element">
-            <ng-container [ngSwitch]="column.type">
-                <ng-container *ngSwitchCase="'text'">
-                    {{column.fn(element)}}
-                </ng-container>
-                <ng-container *ngSwitchCase="'color'">
-                    <div class="dot" [ngStyle]="{'background-color': column.fn(element)}"></div>
-                </ng-container>
-                <ng-container *ngSwitchDefault>NA</ng-container>
-            </ng-container>
-        </mat-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ column.label }}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        @switch (column.type) {
+          @case ('text') {
+            {{ column.fn(element) }}
+          }
+          @case ('color') {
+            <div class="dot" [ngStyle]="{ 'background-color': column.fn(element) }"></div>
+          }
+          @case ('date') {
+            {{ column.fn(element) | date: 'dd.MM.yyyy' }}
+          }
+          @default {
+            NA
+          }
+        }
+      </mat-cell>
     </ng-container>
-    }
-    <ng-container matColumnDef="actions">
-        <mat-header-cell *matHeaderCellDef>
-            &nbsp;
-        </mat-header-cell>
-        <mat-cell *matCellDef="let element" class="actions">
-            <button mat-mini-fab (click)="editClick.emit(element); $event.stopPropagation()">
-                <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-mini-fab
-                (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
-                @if (expandedElement !== element) {
-                <mat-icon>keyboard_arrow_down</mat-icon>
-                } @else {
-                <mat-icon>keyboard_arrow_up</mat-icon>
-                }
-            </button>
-        </mat-cell>
-    </ng-container>
+  }
+  <ng-container matColumnDef="actions">
+    <mat-header-cell *matHeaderCellDef> &nbsp; </mat-header-cell>
+    <mat-cell *matCellDef="let element" class="actions">
+      <button mat-mini-fab (click)="editClick.emit(element); $event.stopPropagation()">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button
+        mat-mini-fab
+        (click)="
+          expandedElement = expandedElement === element ? null : element; $event.stopPropagation()
+        "
+      >
+        @if (expandedElement !== element) {
+          <mat-icon>keyboard_arrow_down</mat-icon>
+        } @else {
+          <mat-icon>keyboard_arrow_up</mat-icon>
+        }
+      </button>
+    </mat-cell>
+  </ng-container>
 
-    <ng-container matColumnDef="expandedDetail">
-        <mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
-            <ng-container *ngTemplateOutlet="detailRowTemplate; context: { $implicit: element }"></ng-container>
-        </mat-cell>
-    </ng-container>
+  <ng-container matColumnDef="expandedDetail">
+    <mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
+      <ng-container
+        *ngTemplateOutlet="detailRowTemplate; context: { $implicit: element }"
+      ></ng-container>
+    </mat-cell>
+  </ng-container>
 
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let element; columns: displayedColumns" matRipple
-        (click)="expandedElement = expandedElement === element ? null : element"></mat-row>
-    <mat-row *matRowDef="let row; columns: ['expandedDetail']"
-        [@detailExpand]="row === expandedElement ? 'expanded' : 'collapsed'"></mat-row>
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row
+    *matRowDef="let element; columns: displayedColumns"
+    matRipple
+    (click)="expandedElement = expandedElement === element ? null : element"
+  ></mat-row>
+  <mat-row
+    *matRowDef="let row; columns: ['expandedDetail']"
+    [@detailExpand]="row === expandedElement ? 'expanded' : 'collapsed'"
+  ></mat-row>
 
-    <tr *matNoDataRow>
-        <td [attr.colspan]="displayedColumns">
-            Keine Daten zum Filter gefunden.
-        </td>
-    </tr>
+  <tr *matNoDataRow>
+    <td [attr.colspan]="displayedColumns">Keine Daten zum Filter gefunden.</td>
+  </tr>
 </mat-table>
-<mat-paginator [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSizeOptions[pageSizeOptions.length - 1]"
-    showFirstLastButtons></mat-paginator>
+<mat-paginator
+  [pageSizeOptions]="pageSizeOptions"
+  [pageSize]="pageSizeOptions[pageSizeOptions.length - 1]"
+  showFirstLastButtons
+></mat-paginator>

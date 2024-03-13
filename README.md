@@ -6,7 +6,28 @@ A system which keeps track of the reagents in the laboratory.
 
 ### Bak
 
-Simple storage system which keeps track of locations, the type of the reagent, as well as the lot number. Each lot can be present as multiple crates which are stored in different locations. Each crate can have a different amount of reagent. Each crate group has a unique composite key made up of the type of the reagent, location, lot which is used to uniquely identify it. Each create group has a coutner associated with it which tracks the number of crates in the group.
+#### Database Schema Overview
+
+The database schema embodies a straightforward storage system tailored for managing various aspects of reagent storage. It organizes data into several interconnected tables, facilitating the tracking of locations, reagent types, producers, products, lots, and reagents.
+
+#### Tables Overview
+
+- **Location**: Stores information about different storage locations.
+- **Type**: Represents various types of reagents.
+- **Producer**: Contains details about the producers of reagents.
+- **Product**: Describes individual reagent products, including their producers, types, and article numbers.
+- **Lot**: Manages lots of reagents, including validity dates and creation metadata.
+- **Reagent**: Tracks individual crates of reagents, including their amounts, creation metadata, and empty status.
+
+#### Relationships Overview
+
+- **Product to Lot**: Products are associated with multiple lots.
+- **Location to Reagent**: Locations can accommodate multiple crates of reagents.
+- **Lot to Reagent**: Each lot can encompass multiple crates of reagents.
+- **Type to Product**: Products are classified under specific reagent types.
+- **Producer to Product**: Producers are linked to the products they manufacture.
+
+This schema streamlines the organization and tracking of reagent storage, allowing efficient management of inventory across different locations and lot configurations. Additionally, it provides insights into production and type classifications for enhanced data analysis and management.
 
 #### Documentation
 
@@ -17,7 +38,7 @@ Simple storage system which keeps track of locations, the type of the reagent, a
   - Click on the 'Add Location' button
   - Fill in the form (name is necessary) and click save
 
-- How to add a new producer:
+- How to add a new product:
   - Go to the admin page
   - Click on the 'Types' link
   - Click on the 'Add Producer' button
@@ -25,7 +46,7 @@ Simple storage system which keeps track of locations, the type of the reagent, a
 
 #### BAK Database Model
 
-```dbdiagram.io
+```DBML
 Table Location {
   id uuid
   name varchar
@@ -36,7 +57,18 @@ Table Location {
 Table Type {
   id uuid
   name varchar
-  producer varchar
+}
+
+Table Producer {
+  id uuid
+  name varchar
+}
+
+Table Product {
+  id uuid
+  name varchar
+  producer uuid
+  type uuid
 
   article_number varchar
   created_at timestamp
@@ -46,7 +78,7 @@ Table Lot {
   id uuid
   name varchar
 
-  type uuid
+  product uuid
 
   valid_from date
   valid_until date
@@ -70,9 +102,11 @@ Table Reagent {
   is_empty boolean [note: 'calculated field']
 }
 
-Ref: "Type"."id" < "Lot"."type"
+Ref: "Product"."id" < "Lot"."product"
 Ref: "Location"."id" < "Reagent"."location"
 Ref: "Lot"."id" < "Reagent"."lot"
+Ref: "Type"."id" < "Product"."type"
+Ref: "Producer"."id" < "Product"."producer"
 ```
 
 ### PCR

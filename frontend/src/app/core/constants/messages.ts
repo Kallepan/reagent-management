@@ -14,6 +14,8 @@ export class messages {
 
     LOT_UPDATE_SUCCESS: 'Die Lot wurde erfolgreich aktualisiert',
     LOT_CREATE_SUCCESS: 'Die Lot wurde erfolgreich erstellt',
+
+    MAX_REAGENT_AMOUNT: 'Maximale Menge sind 999',
   };
 
   public static PCR = {

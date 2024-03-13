@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DialogData, ReagentTransferComponent } from './reagent-transfer.component';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatSelectModule } from '@angular/material/select';
-import { ReactiveFormsModule } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
-import { By } from '@angular/platform-browser';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSelectHarness } from '@angular/material/select/testing';
+import { By } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DialogData, ReagentTransferComponent } from './reagent-transfer.component';
 
 describe('ReagentTransferComponent', () => {
   let component: ReagentTransferComponent;
@@ -26,38 +26,38 @@ describe('ReagentTransferComponent', () => {
       reagents: [
         {
           id: '1',
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
           created_by: 'TEST',
           amount: 20,
           location: {
             id: '123456',
             name: 'TESTLocation',
-            created_at: new Date().toISOString(),
-          }
+            created_at: new Date(),
+          },
         },
         {
           id: '2',
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
           created_by: 'TEST',
           amount: 20,
           location: {
             id: '123456',
             name: 'TESTLocation',
-            created_at: new Date().toISOString(),
-          }
+            created_at: new Date(),
+          },
         },
         {
           id: '3',
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
           created_by: 'TEST',
           amount: 0,
           location: {
             id: '123456',
             name: 'TESTLocation',
-            created_at: new Date().toISOString(),
-          }
-        }
-      ]
+            created_at: new Date(),
+          },
+        },
+      ],
     };
 
     await TestBed.configureTestingModule({
@@ -80,8 +80,8 @@ describe('ReagentTransferComponent', () => {
         {
           provide: MAT_DIALOG_DATA,
           useValue: mockData,
-        }
-      ]
+        },
+      ],
     }).compileComponents();
   });
 

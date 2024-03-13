@@ -40,12 +40,12 @@ export class constants {
   public static IS_PRODUCTION = environment.production;
 
   public static PCR = {
-    REAGENT_REGEX:
-      /^[A-Z0-9-]{5,12}\|(U|P)[0-9]{4}-[0-9]{3}\|[0-9]{6}(\|[0-9]{9})?$/,
+    REAGENT_REGEX: /^[A-Z0-9-]{5,12}\|(U|P)[0-9]{4}-[0-9]{3}\|[0-9]{6}(\|[0-9]{9})?$/,
     REAGENT_DEBOUNCE_TIME: 500,
   };
 
   public static BAK = {
-    TYPES_LIMIT: 500
+    TYPES_LIMIT: 500,
+    PRODUCTS_LIMIT: 500,
   };
 }

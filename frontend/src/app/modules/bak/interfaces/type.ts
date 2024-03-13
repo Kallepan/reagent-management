@@ -1,8 +1,21 @@
-export interface BakType {
-    id: string;
-    name: string;
-    producer: string;
-    article_number?: string;
+type Producer = {
+  id: string;
+  name: string;
+  created_at: Date;
+};
+type Type = {
+  id: string;
+  name: string;
+  created_at: Date;
+};
 
-    created_at: string;
+export interface Product {
+  id: string;
+  name: string;
+  article_number?: string;
+
+  created_at: Date;
+
+  type: Type;
+  producer: Producer;
 }

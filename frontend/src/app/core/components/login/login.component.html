@@ -1,33 +1,57 @@
 @defer (when authService.initialized()) {
-@if (!authService.isLoggedIn()) {
-<button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>account_circle</mat-icon></button>
-<mat-menu #menu="matMenu">
-    <form action="submit" [formGroup]="loginForm" class="mat-app-background menu" (click)="stopPropagation($event)"
-        (keydown.tab)="stopPropagation($event)">
+  @if (!authService.isLoggedIn()) {
+    <button mat-raised-button [matMenuTriggerFor]="menu" color="accent">Login</button>
+    <mat-menu #menu="matMenu">
+      <form
+        action="submit"
+        [formGroup]="loginForm"
+        class="mat-app-background menu"
+        (click)="stopPropagation($event)"
+        (keydown.tab)="stopPropagation($event)"
+      >
         <mat-form-field appearance="fill">
-            <mat-label>Identifier</mat-label>
-            <input matInput placeholder="Identifier" formControlName="identifier" type="text" autocomplete="off">
-            <mat-error *ngIf="loginForm.get('identifier')?.hasError('required')">
-                Pflichtfeld
-            </mat-error>
+          <mat-label>Identifier</mat-label>
+          <input
+            matInput
+            placeholder="Identifier"
+            formControlName="identifier"
+            type="text"
+            autocomplete="off"
+          />
+          <mat-error *ngIf="loginForm.get('identifier')?.hasError('required')">
+            Pflichtfeld
+          </mat-error>
         </mat-form-field>
         <mat-form-field appearance="fill">
-            <mat-label>Passwort</mat-label>
-            <input matInput placeholder="Password" formControlName="password" type="password" autocomplete="off">
-            <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
-                Pflichtfeld
-            </mat-error>
+          <mat-label>Passwort</mat-label>
+          <input
+            matInput
+            placeholder="Password"
+            formControlName="password"
+            type="password"
+            autocomplete="off"
+          />
+          <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+            Pflichtfeld
+          </mat-error>
         </mat-form-field>
-        <button id="login-confirm" mat-raised-button color="accent" (click)="onSubmitLogin()"
-            [disabled]="loginForm.invalid">Login</button>
-    </form>
-</mat-menu>
-} @else {
-<div class="info">
-    {{authService.authData()?.department|uppercase}}
-    <button mat-icon-button (click)="authService.logout()"><mat-icon>logout</mat-icon></button>
-</div>
-}
+        <button
+          id="login-confirm"
+          mat-raised-button
+          color="accent"
+          (click)="onSubmitLogin()"
+          [disabled]="loginForm.invalid"
+        >
+          Login
+        </button>
+      </form>
+    </mat-menu>
+  } @else {
+    <div class="info">
+      {{ authService.authData()?.department | uppercase }}
+      <button mat-icon-button (click)="authService.logout()"><mat-icon>logout</mat-icon></button>
+    </div>
+  }
 } @placeholder {
-<mat-spinner color="accent" class="spinner"></mat-spinner>
+  <mat-spinner color="accent" class="spinner"></mat-spinner>
 }
