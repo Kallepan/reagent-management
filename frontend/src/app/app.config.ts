@@ -9,6 +9,7 @@ import {
 } from '@angular/router';
 import { routes } from './app.routes';
 import { httpErrorInterceptor } from './core/interceptors/http-error-interceptor';
+import { timeoutInterceptor } from './core/interceptors/timeout-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -19,6 +20,6 @@ export const appConfig: ApplicationConfig = {
       withRouterConfig({ onSameUrlNavigation: 'reload' }),
     ),
     provideAnimations(),
-    provideHttpClient(withInterceptors([httpErrorInterceptor])),
+    provideHttpClient(withInterceptors([httpErrorInterceptor, timeoutInterceptor])),
   ],
 };

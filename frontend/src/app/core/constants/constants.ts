@@ -12,6 +12,8 @@ export class constants {
     },
   };
 
+  public static DEFAULT_TIMEOUT = 10000;
+
   public static JWT = {
     // One hour time in minutes, seconds and miliseconds
     ACCESS_STORAGE: 'access_token',
