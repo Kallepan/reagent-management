@@ -1,8 +1,12 @@
 <div class="container">
-  <span>Artikelart zum verstecken auswählen</span>
+  <span>Artikelart abwählen um diese zu verstecken</span>
   <div class="filters">
-    @for (filter of filterTrackerService.productTypesToBeFilteredOut$(); track $index) {
-      <mat-checkbox class="filter-checkbox" (change)="filterTrackerService.toggleFilter(filter)">
+    @for (filter of filterTrackerService.productsTypesToShow$(); track $index) {
+      <mat-checkbox
+        class="filter-checkbox"
+        (change)="filterTrackerService.toggleFilter(filter)"
+        [checked]="filter.checked"
+      >
         {{ filter.name }}
       </mat-checkbox>
     }

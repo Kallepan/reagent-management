@@ -17,7 +17,7 @@ describe('FilterTrackerService', () => {
   });
 
   it('should populate filters', () => {
-    service.productTypesToBeFilteredOut = [
+    service.productsTypesToShow = [
       {
         id: '1',
         name: 'type 1',
@@ -43,20 +43,20 @@ describe('FilterTrackerService', () => {
         },
       } as any,
     ];
-    expect(service.productTypesToBeFilteredOut$()).toEqual([
+    expect(service.productsTypesToShow$()).toEqual([
       {
         id: '1',
         name: 'type 1',
-        checked: false,
+        checked: true,
       },
       {
         id: '2',
         name: 'type 2',
-        checked: false,
+        checked: true,
       },
     ]);
 
-    service.productTypesToBeFilteredOut = [
+    service.productsTypesToShow = [
       {
         id: '1',
         name: 'type 1',
@@ -71,27 +71,27 @@ describe('FilterTrackerService', () => {
       } as any,
     ];
 
-    expect(service.productTypesToBeFilteredOut$()).toEqual([
+    expect(service.productsTypesToShow$()).toEqual([
       {
         id: '1',
         name: 'type 1',
-        checked: false,
+        checked: true,
       },
       {
         id: '2',
         name: 'type 2',
-        checked: false,
+        checked: true,
       },
       {
         id: '3',
         name: 'type 3',
-        checked: false,
+        checked: true,
       },
     ]);
   });
 
   it('should toggle filter', () => {
-    service.productTypesToBeFilteredOut = [
+    service.productsTypesToShow = [
       {
         id: '1',
         name: 'filter',
@@ -108,14 +108,14 @@ describe('FilterTrackerService', () => {
     const filter = {
       id: '1',
       name: 'type 1',
-      checked: true,
+      checked: false,
     };
     service.toggleFilter(filter);
-    expect(service.productTypesToBeFilteredOut$()).toEqual([filter]);
+    expect(service.productsTypesToShow$()).toEqual([filter]);
   });
 
   it('should toggle filter twice', () => {
-    service.productTypesToBeFilteredOut = [
+    service.productsTypesToShow = [
       {
         id: '1',
         name: 'filter',
@@ -132,13 +132,13 @@ describe('FilterTrackerService', () => {
     const filter = {
       id: '1',
       name: 'type 1',
-      checked: true,
+      checked: false,
     };
     service.toggleFilter(filter);
-    expect(service.productTypesToBeFilteredOut$()).toEqual([filter]);
+    expect(service.productsTypesToShow$()).toEqual([filter]);
 
-    filter.checked = false;
+    filter.checked = true;
     service.toggleFilter(filter);
-    expect(service.productTypesToBeFilteredOut$()).toEqual([filter]);
+    expect(service.productsTypesToShow$()).toEqual([filter]);
   });
 });

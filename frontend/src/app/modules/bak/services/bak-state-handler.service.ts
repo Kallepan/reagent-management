@@ -38,8 +38,12 @@ export class BakStateHandlerService {
         return lot;
       });
     }),
-    tap((lots) => (this.filterTrackerService.productTypesToBeFilteredOut = lots)),
-    combineLatestWith(toObservable(this.filterTrackerService.productTypesToBeFilteredOut$).pipe(map(filters => filters.filter(filter => filter.checked).map(filter => filter.id)))),
+    tap((lots) => (this.filterTrackerService.productsTypesToShow = lots)),
+    combineLatestWith(
+      toObservable(this.filterTrackerService.productsTypesToShow$).pipe(
+        map((filters) => filters.filter((filter) => !filter.checked).map((filter) => filter.id)),
+      ),
+    ),
     map(([lots, filters]) => {
       // filter out the lots by product type id if the filter is active from the filterTrackerService
 

@@ -16,7 +16,7 @@ describe('ChooseTypeFilterComponent', () => {
 
   beforeEach(async () => {
     mockFilterTrackerService = jasmine.createSpyObj('FilterTrackerService', [
-      'productTypesToBeFilteredOut$',
+      'productsTypesToShow$',
       'toggleFilter',
     ]);
 
@@ -36,8 +36,28 @@ describe('ChooseTypeFilterComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('all checkboxes should be checked by default', async () => {
+    mockFilterTrackerService.productsTypesToShow$.and.returnValue([
+      {
+        id: '1',
+        name: 'type 1',
+        checked: true,
+      },
+      {
+        id: '2',
+        name: 'type 2',
+        checked: true,
+      },
+    ]);
+    fixture.detectChanges();
+
+    const checkboxes = await loader.getAllHarnesses(MatCheckboxHarness);
+    expect(checkboxes.length).toBe(2);
+    expect(await checkboxes[0].isChecked()).toBe(true);
+  });
+
   it('should contain as many checkboxes as there are product types', () => {
-    mockFilterTrackerService.productTypesToBeFilteredOut$.and.returnValue([
+    mockFilterTrackerService.productsTypesToShow$.and.returnValue([
       {
         id: '1',
         name: 'type 1',
@@ -56,7 +76,7 @@ describe('ChooseTypeFilterComponent', () => {
   });
 
   it('should call toggleFilter of filterTrackerService when a checkbox is clicked', async () => {
-    mockFilterTrackerService.productTypesToBeFilteredOut$.and.returnValue([
+    mockFilterTrackerService.productsTypesToShow$.and.returnValue([
       {
         id: '1',
         name: 'type 1',

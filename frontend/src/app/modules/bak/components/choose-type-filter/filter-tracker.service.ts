@@ -14,25 +14,25 @@ export type ProductTypeFilterToBeChosen = {
 })
 export class FilterTrackerService {
   toggleFilter(filter: ProductTypeFilterToBeChosen) {
-    const newFilters = this._productTypesToBeFilteredOut().map((f) => {
+    const newFilters = this._productsTypesToShow().map((f) => {
       if (f.id === filter.id) {
         f.checked = !f.checked;
       }
       return f;
     });
-    this._productTypesToBeFilteredOut.set(newFilters);
+    this._productsTypesToShow.set(newFilters);
   }
 
-  private _productTypesToBeFilteredOut: WritableSignal<ProductTypeFilterToBeChosen[]> = signal([]);
-  get productTypesToBeFilteredOut$() {
-    return this._productTypesToBeFilteredOut;
+  private _productsTypesToShow: WritableSignal<ProductTypeFilterToBeChosen[]> = signal([]);
+  get productsTypesToShow$() {
+    return this._productsTypesToShow;
   }
-  set productTypesToBeFilteredOut(lots: BakLot[]) {
-    const presentTypes = this._productTypesToBeFilteredOut().reduce((acc, type) => {
+  set productsTypesToShow(lots: BakLot[]) {
+    const presentTypes = this._productsTypesToShow().reduce((acc, type) => {
       acc[type.id] = type;
       return acc;
     }, {} as any);
-    this._productTypesToBeFilteredOut.set(
+    this._productsTypesToShow.set(
       Object.values(
         lots
           .map((lot) => lot.product.type)
@@ -40,7 +40,7 @@ export class FilterTrackerService {
             if (acc[type.id]) return acc;
             acc[type.id] = {
               ...type,
-              checked: false,
+              checked: true,
             };
             return acc;
           }, presentTypes),
