@@ -40,8 +40,8 @@ This schema streamlines the organization and tracking of reagent storage, allowi
 
 - How to add a new product:
   - Go to the admin page
-  - Click on the 'Types' link
-  - Click on the 'Add Producer' button
+  - Click on the 'Products' link
+  - Click on the 'Add Product' button
   - Fill in the form (article number, name of the product and producer name are necessary) and click save
 
 #### BAK Database Model
